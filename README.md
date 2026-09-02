@@ -77,12 +77,11 @@ python app.py
 # Open http://localhost:5000
 ```
 
-## 📁 Structure
+## 📁 Structure (Updated - index.html in root)
 ```
 FarmBridge/
-├── app.py               # Flask backend + AI grading logic
-├── templates/
-│   └── index.html       # Full stylish SPA frontend
+├── index.html           # Full stylish SPA frontend (MAIN - in root, not in folder)
+├── app.py               # Flask backend + AI grading logic (serves index.html from root)
 ├── requirements.txt
 ├── farmbridge.db        # SQLite (auto-created)
 └── README.md
