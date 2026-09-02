@@ -10,10 +10,12 @@ import re
 from PIL import Image
 import io
 
-app = Flask(__name__)
+# Serve index.html from main root (not templates folder)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+app = Flask(__name__, template_folder=BASE_DIR, static_folder=BASE_DIR)
 CORS(app)
 
-DB_PATH = os.path.join(os.path.dirname(__file__), 'farmbridge.db')
+DB_PATH = os.path.join(BASE_DIR, 'farmbridge.db')
 
 # Crop shelf life in days - for AI grading
 CROP_SHELF_LIFE = {
@@ -471,7 +473,7 @@ def stats():
     })
 
 if __name__ == '__main__':
-    os.makedirs('templates', exist_ok=True)
+    # index.html is now in main root, not templates
     port = int(os.environ.get('PORT', 5000))
     print(f"""
     🌾 FARM BRIDGE Server Starting...
