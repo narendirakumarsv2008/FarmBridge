@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<title>FARM BRIDGE - Direct Farm to Market</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,600;12..96,800&family=Syne:wght@400;600;700;800&family=Space+Grotesk:wght@300;400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root { --farm-green:#1a4d1a; --bridge-orange:#ff6b00; }
+* { -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-x:hidden; }
+.font-farm { font-family:'Syne',sans-serif; }
+.font-bridge { font-family:'Bricolage Grotesque',sans-serif; }
+.font-display { font-family:'Space Grotesk',sans-serif; }
+.glass { background:rgba(255,255,255,0.82); backdrop-filter:blur(18px); border:1px solid rgba(255,255,255,0.5); }
+.glass-dark { background:rgba(26,77,26,0.08); backdrop-filter:blur(12px); border:1px solid rgba(26,77,26,0.12); }
+.mic-pulse { animation:pulse-ring 1.8s cubic-bezier(0.455,0.03,0.515,0.955) infinite; }
+@keyframes pulse-ring { 0%{transform:scale(0.8);opacity:1} 100%{transform:scale(1.8);opacity:0} }
+.grade-a { background:linear-gradient(135deg,#16a34a,#15803d); }
+.grade-b { background:linear-gradient(135deg,#eab308,#ca8a04); }
+.grade-c { background:linear-gradient(135deg,#ef4444,#dc2626); }
+.farm-pattern { background-image:radial-gradient(circle at 1px 1px, rgba(26,77,26,0.06) 1px, transparent 0); background-size:24px 24px; }
+.voice-wave span { display:inline-block; width:3px; height:16px; margin:0 2px; background:#16a34a; border-radius:2px; animation:wave 0.8s infinite ease-in-out; }
+.voice-wave span:nth-child(2){animation-delay:0.1s;height:24px} .voice-wave span:nth-child(3){animation-delay:0.2s;height:20px} .voice-wave span:nth-child(4){animation-delay:0.3s;height:28px} .voice-wave span:nth-child(5){animation-delay:0.4s}
+@keyframes wave { 0%,100%{transform:scaleY(0.5)} 50%{transform:scaleY(1)} }
+.scrollbar-hide { -ms-overflow-style:none; scrollbar-width:none; } .scrollbar-hide::-webkit-scrollbar{display:none}
+.input-error { border-color:#ef4444 !important; box-shadow:0 0 0 4px rgba(239,68,68,0.1) !important; }
+.input-success { border-color:#16a34a !important; box-shadow:0 0 0 4px rgba(22,163,74,0.1) !important; }
+@media (max-width:640px){ .glass{ backdrop-filter:blur(12px); } }
+@media (max-width:768px){ button, a, input, select { min-height:44px; } }
+</style>
+</head>
+<body class="min-h-screen farm-pattern antialiased">
+
+<header id="appHeader" class="sticky top-0 z-50 glass border-b border-green-900/10">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-[60px] sm:h-[72px]">
+      <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+        <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-[12px] sm:rounded-[14px] bg-gradient-to-br from-green-700 to-green-900 flex items-center justify-center shadow-lg shadow-green-900/20 shrink-0">
+          <svg width="20" height="20" class="sm:w-[26px] sm:h-[26px]" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <div class="flex items-baseline gap-[1px] tracking-tight min-w-0">
+          <span class="font-farm font-[800] text-[20px] xs:text-[22px] sm:text-[26px] lg:text-[32px] leading-none text-[#1a4d1a] tracking-[-0.04em]">FARM</span>
+          <span class="font-bridge font-[300] text-[24px] xs:text-[26px] sm:text-[32px] lg:text-[38px] leading-none text-[#ff6b00] ml-[1px] sm:ml-[2px] tracking-[-0.03em] italic">BRIDGE</span>
+          <span class="hidden md:inline-flex ml-2 lg:ml-3 px-2 sm:px-2.5 py-1 rounded-full bg-green-900 text-white text-[8px] sm:text-[10px] font-bold tracking-widest font-display">DIRECT • FAIR • FAST</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div id="userChip" class="hidden items-center gap-2 pl-1.5 pr-2.5 sm:pl-2 sm:pr-3 py-1 sm:py-1.5 rounded-full bg-white border shadow-sm max-w-[160px] sm:max-w-none">
+          <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gradient-to-br from-orange-400 to-green-600 flex items-center justify-center text-white font-bold text-[10px] sm:text-xs shrink-0" id="userInitial">A</div>
+          <div class="text-sm leading-tight min-w-0 hidden xs:block">
+            <div class="font-semibold text-gray-900 text-[13px] sm:text-sm truncate" id="userNameDisplay">Farmer</div>
+            <div class="text-[10px] sm:text-[11px] text-gray-500 -mt-0.5 sm:-mt-1 truncate hidden sm:block" id="userPhoneDisplay"></div>
+          </div>
+        </div>
+        <button id="logoutBtn" class="hidden w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gray-900 text-white flex items-center justify-center hover:bg-black transition shrink-0">
+          <svg width="14" height="14" class="sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
+
+<!-- LOGIN -->
+<section id="loginPage" class="min-h-[calc(100vh-80px)] flex items-center justify-center py-4 sm:py-8">
+  <div class="w-full max-w-6xl grid lg:grid-cols-[1.1fr_0.9fr] gap-4 sm:gap-8 items-center">
+    <div class="relative hidden lg:block">
+      <div class="absolute -top-10 -left-10 w-72 h-72 bg-gradient-to-br from-green-200 to-lime-200 rounded-full blur-[60px] opacity-60"></div>
+      <div class="absolute -bottom-10 -right-10 w-96 h-96 bg-gradient-to-br from-orange-200 to-amber-200 rounded-full blur-[80px] opacity-50"></div>
+      <div class="relative bg-gradient-to-br from-[#1a4d1a] to-[#0f2e0f] rounded-[32px] p-8 text-white overflow-hidden min-h-[600px] flex flex-col">
+        <div class="absolute top-0 right-0 w-[400px] h-[400px] opacity-20">
+          <svg viewBox="0 0 200 200" class="w-full h-full"><path fill="white" d="M45,-58C58.3,-47.8,69.1,-32.3,73.3,-14.2C77.5,3.9,75.1,24.6,64.8,39.1C54.5,53.6,36.3,61.9,17.2,66.3C-1.9,70.7,-21.9,71.2,-38.4,63.1C-54.9,55,-67.9,38.3,-72.4,19.6C-76.9,0.9,-72.9,-19.8,-62.1,-35.8C-51.3,-51.8,-33.7,-63.1,-15.2,-67.5C3.3,-71.9,22.7,-69.4,45,-58Z" transform="translate(100 100)"/></svg>
+        </div>
+        <div class="relative z-10">
+          <div class="inline-flex px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs tracking-widest">TRUSTED BY 12,000+ FARMERS</div>
+          <h1 class="mt-8 font-farm text-[52px] leading-[0.9] tracking-[-0.04em] font-800">Cut the<br/>Middleman.<br/><span class="font-bridge font-light italic text-orange-300">Keep the</span><br/>Profit.</h1>
+          <p class="mt-6 text-white/70 text-[15px] leading-relaxed max-w-[36ch]">FARM BRIDGE connects you directly to buyers. 15-25% higher realization, instant UPI payouts, AI quality grading.</p>
+          <div class="mt-10 grid grid-cols-3 gap-4">
+            <div class="glass-dark rounded-2xl p-4 !bg-white/10"><div class="text-2xl font-bold font-farm">18.7%</div><div class="text-[11px] opacity-70 uppercase tracking-widest">Avg. Higher Price</div></div>
+            <div class="glass-dark rounded-2xl p-4 !bg-white/10"><div class="text-2xl font-bold font-farm">2.3s</div><div class="text-[11px] opacity-70 uppercase tracking-widest">Payout Speed</div></div>
+            <div class="glass-dark rounded-2xl p-4 !bg-white/10"><div class="text-2xl font-bold font-farm">AI</div><div class="text-[11px] opacity-70 uppercase tracking-widest">Grade Verified</div></div>
+          </div>
+        </div>
+        <div class="mt-auto relative z-10 flex items-center gap-3 text-sm">
+          <div class="flex -space-x-2"><div class="w-8 h-8 rounded-full bg-orange-300 border-2 border-green-900"></div><div class="w-8 h-8 rounded-full bg-lime-300 border-2 border-green-900"></div><div class="w-8 h-8 rounded-full bg-amber-200 border-2 border-green-900"></div></div>
+          <span class="text-white/60">Join farmers from Punjab to Kerala</span>
+        </div>
+      </div>
+    </div>
+    <div class="relative w-full">
+      <div class="lg:hidden mb-4 rounded-[20px] bg-gradient-to-br from-green-900 to-[#0f2e0f] p-5 text-white relative overflow-hidden">
+        <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/5 rounded-full blur-2xl"></div>
+        <div class="relative z-10 flex items-start justify-between gap-3">
+          <div><div class="text-[10px] tracking-widest opacity-70">TRUSTED BY 12K+ FARMERS</div><div class="mt-2 font-farm text-[22px] leading-[0.9]">Cut the Middleman.<br><span class="font-bridge font-light italic text-orange-300">Keep the Profit.</span></div></div>
+          <div class="flex -space-x-1 shrink-0"><div class="w-6 h-6 rounded-full bg-orange-300 border border-green-900"></div><div class="w-6 h-6 rounded-full bg-lime-300 border border-green-900"></div></div>
+        </div>
+      </div>
+      <div class="glass rounded-[20px] sm:rounded-[28px] shadow-[0_20px_60px_rgba(0,0,0,0.08)] p-5 sm:p-8 lg:p-10 border border-white">
+        <div class="flex items-center gap-2 mb-1 lg:hidden">
+          <span class="font-farm font-extrabold text-xl text-green-900">FARM</span><span class="font-bridge font-light text-2xl text-orange-500 italic -ml-1">BRIDGE</span>
+          <span class="ml-2 px-2 py-0.5 rounded-full bg-green-900 text-white text-[8px] font-bold">DIRECT</span>
+        </div>
+        <h2 class="font-display text-[22px] sm:text-[28px] font-bold tracking-tight text-gray-900 leading-tight">Welcome back, AnnaData 🙏</h2>
+        <p class="text-gray-500 mt-1.5 sm:mt-2 text-[13px] sm:text-sm">Enter your details to access Farmer & Buyer portals.</p>
+        <form id="loginForm" class="mt-6 sm:mt-8 space-y-4 sm:space-y-5" novalidate>
+          <div>
+            <label class="text-[10px] sm:text-[11px] font-bold tracking-widest text-gray-500 uppercase">Full Name *</label>
+            <div class="mt-1.5 sm:mt-2 relative">
+              <input id="nameInput" type="text" placeholder="e.g. Ramesh Kumar" maxlength="50" class="w-full h-[48px] sm:h-[52px] rounded-xl sm:rounded-2xl border border-gray-200 bg-white px-4 pl-10 sm:pl-11 text-[14px] sm:text-[15px] outline-none focus:border-green-700 focus:ring-4 focus:ring-green-700/10 transition" required>
+              <div class="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400"><svg width="16" height="16" class="sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+              <div id="nameCheck" class="hidden absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs">✓</div>
+            </div>
+            <p id="nameError" class="hidden mt-1.5 text-[11px] text-red-600 flex items-center gap-1"><span>⚠️</span><span id="nameErrorText"></span></p>
+            <p class="mt-1.5 text-[10px] text-gray-400">Only alphabets and spaces, no numbers/symbols • Min 2 chars</p>
+          </div>
+          <div>
+            <label class="text-[10px] sm:text-[11px] font-bold tracking-widest text-gray-500 uppercase">Phone Number * (10 digits)</label>
+            <div class="mt-1.5 sm:mt-2 relative">
+              <input id="phoneInput" type="tel" inputmode="numeric" maxlength="10" placeholder="9876543210" class="w-full h-[48px] sm:h-[52px] rounded-xl sm:rounded-2xl border border-gray-200 bg-white px-4 pl-10 sm:pl-11 text-[14px] sm:text-[15px] outline-none focus:border-green-700 focus:ring-4 focus:ring-green-700/10 transition tracking-widest" required>
+              <div class="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400"><svg width="16" height="16" class="sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+              <div id="phoneCheck" class="hidden absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs">✓</div>
+              <div id="phoneCount" class="absolute right-3 -bottom-5 text-[10px] text-gray-400"><span id="phoneDigits">0</span>/10</div>
+            </div>
+            <p id="phoneError" class="hidden mt-6 text-[11px] text-red-600 flex items-center gap-1"><span>⚠️</span><span id="phoneErrorText"></span></p>
+            <p class="mt-1.5 text-[10px] text-gray-400">Exactly 10 digits, Indian mobile (6-9 start) • No spaces/symbols</p>
+          </div>
+          <button type="submit" id="loginBtn" disabled class="w-full h-[48px] sm:h-[52px] rounded-xl sm:rounded-2xl bg-gray-300 text-white font-semibold text-[14px] sm:text-[15px] flex items-center justify-center gap-2 transition shadow-lg active:scale-[0.98] disabled:cursor-not-allowed">
+            <span id="loginBtnText">Enter Valid Details</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+          <div class="flex items-center gap-2 sm:gap-3 py-1 sm:py-2">
+            <div class="h-px flex-1 bg-gray-200"></div><span class="text-[9px] sm:text-[11px] text-gray-400 tracking-widest uppercase whitespace-nowrap">Secure • Encrypted • UPI Ready</span><div class="h-px flex-1 bg-gray-200"></div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTAL SELECTION -->
+<section id="portalPage" class="hidden">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center py-4 sm:py-8 px-2">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 border border-green-200 text-green-800 text-[10px] sm:text-xs font-bold tracking-widest">STEP 2 • CHOOSE YOUR PORTAL</div>
+      <h1 class="mt-3 sm:mt-4 font-farm text-[28px] xs:text-[32px] sm:text-[40px] lg:text-[52px] leading-[0.9] tracking-tight">Where do you want to <span class="font-bridge font-light italic text-orange-500 block sm:inline">go today?</span></h1>
+      <p class="mt-2 sm:mt-3 text-gray-500 max-w-xl mx-auto text-[13px] sm:text-[15px] px-2">One platform, two powerful experiences. Switch anytime.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-4 sm:mt-8">
+      <button id="goFarmer" class="group relative text-left rounded-[20px] sm:rounded-[28px] bg-gradient-to-br from-green-900 to-[#123512] p-[1px] overflow-hidden shadow-xl shadow-green-900/20 hover:shadow-2xl transition-all active:scale-[0.99] sm:hover:-translate-y-1">
+        <div class="rounded-[19px] sm:rounded-[27px] bg-gradient-to-br from-[#1e5a1e] to-[#0f2e0f] p-5 sm:p-7 h-full min-h-[320px] sm:min-h-[380px] flex flex-col relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-40 h-40 sm:w-64 sm:h-64 bg-white/5 rounded-full blur-3xl"></div>
+          <div class="absolute -bottom-20 -right-20 w-60 h-60 sm:w-80 sm:h-80 bg-lime-300/10 rounded-full blur-[40px]"></div>
+          <div class="relative z-10 flex-1">
+            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-white text-green-900 flex items-center justify-center shadow-lg"><svg width="22" height="22" class="sm:w-7 sm:h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 10a6 6 0 0 0-6-6H3v2a6 6 0 0 0 6 6h3z"/><path d="M12 14a6 6 0 0 0 6 6h3v-2a6 6 0 0 0-6-6h-3z"/><path d="M12 10a6 6 0 0 0 6-6h3v2a6 6 0 0 0-6 6h-3z"/><path d="M12 14a6 6 0 0 0-6 6H3v-2a6 6 0 0 0 6-6h3z"/></svg></div>
+            <h3 class="mt-4 sm:mt-6 font-farm text-[26px] sm:text-[34px] leading-none text-white">FARMER</h3>
+            <p class="font-bridge text-[15px] sm:text-[18px] text-orange-200 italic -mt-1">Be the seller</p>
+            <p class="mt-3 sm:mt-4 text-white/60 text-[12px] sm:text-[14px] leading-relaxed">List your crop with voice, get AI grading, see Mandi vs Direct payout, track instant UPI payments.</p>
+            <div class="mt-4 sm:mt-6 space-y-1.5 sm:space-y-2">
+              <div class="flex items-center gap-2 text-[11px] sm:text-[13px] text-white/80"><span class="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px]">🎙️</span> Voice Assistant Listing</div>
+              <div class="flex items-center gap-2 text-[11px] sm:text-[13px] text-white/80"><span class="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px]">🤖</span> AI Grade A/B/C + Expiry</div>
+              <div class="flex items-center gap-2 text-[11px] sm:text-[13px] text-white/80"><span class="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px]">📈</span> Live Mandi Benchmark</div>
+              <div class="flex items-center gap-2 text-[11px] sm:text-[13px] text-white/80"><span class="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px]">💸</span> Milestone UPI Payout</div>
+            </div>
+          </div>
+          <div class="relative z-10 mt-6 sm:mt-8 flex items-center gap-2 text-white font-semibold text-[14px] sm:text-base"><span>Enter Farmer Portal</span><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white text-green-900 flex items-center justify-center group-hover:translate-x-1 transition text-sm">→</div></div>
+        </div>
+      </button>
+      <button id="goBuyer" class="group relative text-left rounded-[20px] sm:rounded-[28px] bg-white border border-gray-200 p-[1px] overflow-hidden shadow-xl shadow-black/5 hover:shadow-2xl transition-all active:scale-[0.99] sm:hover:-translate-y-1">
+        <div class="rounded-[19px] sm:rounded-[27px] bg-white p-5 sm:p-7 h-full min-h-[320px] sm:min-h-[380px] flex flex-col relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-40 h-40 sm:w-64 sm:h-64 bg-orange-50 rounded-full blur-3xl"></div>
+          <div class="relative z-10 flex-1">
+            <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gray-900 text-white flex items-center justify-center shadow-lg"><svg width="22" height="22" class="sm:w-7 sm:h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div>
+            <h3 class="mt-4 sm:mt-6 font-farm text-[26px] sm:text-[34px] leading-none text-gray-900">BUYER</h3>
+            <p class="font-bridge text-[15px] sm:text-[18px] text-orange-600 italic -mt-1">Source directly</p>
+            <p class="mt-3 sm:mt-4 text-gray-500 text-[12px] sm:text-[14px] leading-relaxed">Browse AI-graded fresh produce, compare Mandi prices, order with live tracking.</p>
+            <div class="mt-4 sm:mt-6 space-y-1.5 sm:space-y-2">
+              <div class="flex items-center gap-2 text-[11px] sm:text-[13px] text-gray-700"><span class="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px]">🌾</span> Verified Farm Listings</div>
+              <div class="flex items-center gap-2 text-[11px] sm:text-[13px] text-gray-700"><span class="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px]">🧾</span> Transparent Pricing</div>
+              <div class="flex items-center gap-2 text-[11px] sm:text-[13px] text-gray-700"><span class="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px]">🚚</span> Live Order Tracking</div>
+              <div class="flex items-center gap-2 text-[11px] sm:text-[13px] text-gray-700"><span class="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px]">✅</span> Quality Verified</div>
+            </div>
+          </div>
+          <div class="relative z-10 mt-6 sm:mt-8 flex items-center gap-2 text-gray-900 font-semibold text-[14px] sm:text-base"><span>Enter Buyer Portal</span><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-900 text-white flex items-center justify-center group-hover:translate-x-1 transition text-sm">→</div></div>
+        </div>
+      </button>
+    </div>
+    <div class="mt-6 sm:mt-8 glass rounded-xl sm:rounded-2xl p-3 sm:p-4 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-[11px] sm:text-[12px] text-gray-600">
+      <span class="flex items-center gap-1.5 sm:gap-2"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500"></span> 1,247 Farmers Online</span>
+      <span class="flex items-center gap-1.5 sm:gap-2"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-orange-500"></span> Live Mandi Data</span>
+      <span class="flex items-center gap-1.5 sm:gap-2"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-500"></span> UPI Auto-Payout Active</span>
+    </div>
+  </div>
+</section>
+
+<!-- FARMER PORTAL -->
+<section id="farmerPortal" class="hidden">
+  <div class="flex flex-col xl:flex-row gap-4 sm:gap-6">
+    <div class="flex-1 space-y-4 sm:space-y-6 min-w-0">
+      <div class="glass rounded-[18px] sm:rounded-[24px] border border-white shadow-xl shadow-black/5 overflow-hidden">
+        <div class="p-4 sm:p-6 lg:p-7 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="min-w-0">
+            <h2 class="font-display font-bold text-[16px] sm:text-[20px] flex items-center gap-2"><span class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-900 text-white flex items-center justify-center text-[12px] sm:text-sm shrink-0">🎙️</span> <span class="truncate">Voice Assistant - Krishi Sahayak</span></h2>
+            <p class="text-[12px] sm:text-sm text-gray-500 mt-1 leading-snug">Say crop name only • Quantity in Kg • Price in ₹/Kg • Smart extraction</p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <span id="voiceLang" class="px-2.5 sm:px-3 py-1 rounded-full bg-gray-900 text-white text-[10px] sm:text-xs">EN-IN • Smart Extract</span>
+            <span id="listeningBadge" class="hidden px-2.5 sm:px-3 py-1 rounded-full bg-red-50 border border-red-200 text-red-600 text-[10px] sm:text-xs font-bold animate-pulse">● LISTENING</span>
+          </div>
+        </div>
+        <div class="p-4 sm:p-6 lg:p-7">
+          <div class="flex sm:grid sm:grid-cols-5 gap-2 mb-4 sm:mb-6 overflow-x-auto scrollbar-hide pb-2 sm:pb-0 -mx-1 px-1">
+            <div id="prog-crop_name" class="prog-step flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full border border-gray-200 text-[11px] sm:text-xs whitespace-nowrap shrink-0"><span class="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px]">1</span> Crop (name only)</div>
+            <div id="prog-harvest_date" class="prog-step flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full border border-gray-200 text-[11px] sm:text-xs whitespace-nowrap shrink-0"><span class="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px]">2</span> Harvest</div>
+            <div id="prog-quantity" class="prog-step flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full border border-gray-200 text-[11px] sm:text-xs whitespace-nowrap shrink-0"><span class="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px]">3</span> Qty (Kg)</div>
+            <div id="prog-price" class="prog-step flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full border border-gray-200 text-[11px] sm:text-xs whitespace-nowrap shrink-0"><span class="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px]">4</span> Price (₹/Kg)</div>
+            <div id="prog-location" class="prog-step flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full border border-gray-200 text-[11px] sm:text-xs whitespace-nowrap shrink-0"><span class="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px]">5</span> Location</div>
+          </div>
+          <div id="voiceConversation" class="bg-[#fafaf7] rounded-xl sm:rounded-2xl border border-gray-100 p-3 sm:p-4 min-h-[130px] sm:min-h-[160px] max-h-[200px] sm:max-h-[260px] overflow-y-auto space-y-2.5 sm:space-y-3">
+            <div class="flex gap-2 sm:gap-3"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-900 text-white flex items-center justify-center text-[10px] sm:text-xs shrink-0">AI</div><div class="bg-white border rounded-xl sm:rounded-2xl rounded-tl-sm px-3 sm:px-4 py-2.5 sm:py-3 text-[13px] sm:text-sm shadow-sm max-w-[85%] sm:max-w-[80%]">Namaste! Press mic and say crop name only: <b>Tomato</b> or <b>Wheat</b>. I'll extract just the crop name from any sentence!</div></div>
+          </div>
+          <div class="mt-4 sm:mt-6 flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+            <button id="micBtn" class="relative w-[64px] h-[64px] sm:w-[72px] sm:h-[72px] rounded-full bg-gray-900 text-white flex items-center justify-center shadow-xl shadow-gray-900/20 hover:bg-black transition active:scale-95 shrink-0 order-1 sm:order-none">
+              <span id="micPulse" class="hidden absolute inset-0 rounded-full bg-gray-900 mic-pulse"></span>
+              <svg id="micIcon" width="24" height="24" class="sm:w-7 sm:h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+              <div id="voiceWave" class="hidden voice-wave"><span></span><span></span><span></span><span></span><span></span></div>
+            </button>
+            <div class="flex-1 w-full min-w-0 order-2 sm:order-none">
+              <div class="flex flex-col xs:flex-row xs:items-center justify-between gap-1">
+                <span class="text-[10px] sm:text-xs font-bold tracking-widest text-gray-400 uppercase">Live Transcript → Smart Extract</span><span id="voiceStatus" class="text-[11px] sm:text-xs text-gray-500 truncate">Tap mic • Crop name auto-extracted</span>
+              </div>
+              <div id="liveTranscript" class="mt-2 min-h-[44px] sm:min-h-[48px] rounded-xl sm:rounded-2xl bg-white border border-gray-200 px-3 sm:px-4 py-2.5 sm:py-3 text-[13px] sm:text-[15px] text-gray-700 break-words">Your speech will appear here... I extract only crop name</div>
+              <div id="extractedPreview" class="hidden mt-2 p-2 rounded-xl bg-green-50 border border-green-200 text-[11px] sm:text-xs text-green-800">
+                <span class="font-bold">✨ Extracted:</span> <span id="extractedText"></span>
+              </div>
+              <div class="mt-2.5 sm:mt-3 flex flex-wrap gap-1.5 sm:gap-2">
+                <button class="voice-quick px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-green-50 border border-green-200 text-green-800 text-[11px] sm:text-xs hover:bg-green-100 active:scale-95" data-text="I am growing tomato in my farm">🍅 "I am growing tomato..." → Tomato</button>
+                <button class="voice-quick px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-yellow-50 border border-yellow-200 text-yellow-800 text-[11px] sm:text-xs hover:bg-yellow-100 active:scale-95" data-text="500 kg">⚖️ 500 kg</button>
+                <button class="voice-quick px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-orange-50 border border-orange-200 text-orange-800 text-[11px] sm:text-xs hover:bg-orange-100 active:scale-95" data-text="25 rupees per kg">💰 25 ₹/Kg</button>
+                <button id="resetVoice" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gray-100 border text-gray-600 text-[11px] sm:text-xs active:scale-95">↺ Reset</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass rounded-[18px] sm:rounded-[24px] border border-white shadow-xl shadow-black/5 p-4 sm:p-6 lg:p-7">
+        <div class="flex flex-col xs:flex-row xs:items-center justify-between gap-2">
+          <h3 class="font-display font-bold text-[15px] sm:text-lg leading-tight">Crop Details (Smart Voice Extracted)</h3><span class="text-[10px] sm:text-xs px-2 sm:px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 w-fit">Kg • ₹/Kg • Auto Extract</span>
+        </div>
+        <form id="cropForm" class="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div><label class="text-[10px] sm:text-[11px] font-bold tracking-widest text-gray-500 uppercase">Crop Name * (only name)</label><input id="f_crop_name" class="mt-1.5 sm:mt-2 w-full h-11 sm:h-12 rounded-xl border border-gray-200 px-3 sm:px-4 text-[14px] sm:text-sm outline-none focus:border-green-700 focus:ring-4 focus:ring-green-700/10" placeholder="e.g. Tomato" required><p class="mt-1 text-[10px] text-gray-400">Voice extracts only crop name from sentence</p></div>
+          <div><label class="text-[10px] sm:text-[11px] font-bold tracking-widest text-gray-500 uppercase">Harvest Date *</label><input id="f_harvest_date" type="date" class="mt-1.5 sm:mt-2 w-full h-11 sm:h-12 rounded-xl border border-gray-200 px-3 sm:px-4 text-[14px] sm:text-sm outline-none focus:border-green-700 focus:ring-4 focus:ring-green-700/10" required></div>
+          <div><label class="text-[10px] sm:text-[11px] font-bold tracking-widest text-gray-500 uppercase">Quantity * (in Kg only)</label><div class="mt-1.5 sm:mt-2 relative"><input id="f_quantity" type="number" min="1" step="1" class="w-full h-11 sm:h-12 rounded-xl border border-gray-200 px-3 sm:px-4 pr-12 text-[14px] sm:text-sm outline-none focus:border-green-700 focus:ring-4 focus:ring-green-700/10" placeholder="e.g. 500" required><span class="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-full">Kg</span></div><p class="mt-1 text-[10px] text-gray-400">Auto-converts quintal/ton → Kg</p></div>
+          <div><label class="text-[10px] sm:text-[11px] font-bold tracking-widest text-gray-500 uppercase">Expected Price * (₹/Kg only)</label><div class="mt-1.5 sm:mt-2 relative"><input id="f_price" type="number" min="1" step="0.5" class="w-full h-11 sm:h-12 rounded-xl border border-gray-200 px-3 sm:px-4 pr-14 text-[14px] sm:text-sm outline-none focus:border-green-700 focus:ring-4 focus:ring-green-700/10" placeholder="e.g. 25" required><span class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-full">₹/Kg</span></div><p class="mt-1 text-[10px] text-gray-400">Auto-converts quintal rate → per Kg</p></div>
+          <div class="sm:col-span-2"><label class="text-[10px] sm:text-[11px] font-bold tracking-widest text-gray-500 uppercase">Location *</label><input id="f_location" class="mt-1.5 sm:mt-2 w-full h-11 sm:h-12 rounded-xl border border-gray-200 px-3 sm:px-4 text-[14px] sm:text-sm outline-none focus:border-green-700 focus:ring-4 focus:ring-green-700/10" placeholder="Village, District, State" required></div>
+          <div class="sm:col-span-2">
+            <label class="text-[10px] sm:text-[11px] font-bold tracking-widest text-gray-500 uppercase">Photo of Field & Crop * (AI Grading)</label>
+            <div class="mt-2 flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <label class="flex-1 h-28 sm:h-32 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center cursor-pointer hover:border-green-600 hover:bg-green-50 transition group relative overflow-hidden">
+                <input id="f_photo" type="file" accept="image/*" class="hidden">
+                <div id="photoPlaceholder" class="text-center p-2"><div class="w-9 h-9 sm:w-10 sm:h-10 mx-auto rounded-full bg-white border shadow-sm flex items-center justify-center group-hover:scale-110 transition text-sm">📸</div><div class="mt-1.5 sm:mt-2 text-[11px] sm:text-xs text-gray-500 leading-tight">Click to upload field photo<br><span class="text-[10px] sm:text-[11px]">AI will assign Grade A/B/C + Expiry</span></div></div>
+                <img id="photoPreview" class="hidden absolute inset-0 w-full h-full object-cover rounded-xl">
+              </label>
+              <div class="w-full sm:w-[160px] shrink-0 h-[120px] sm:h-auto">
+                <div id="gradeCard" class="hidden rounded-xl p-3 sm:p-4 text-white h-full flex flex-col justify-center"><div class="text-[10px] sm:text-[11px] tracking-widest opacity-80">AI GRADE</div><div class="text-[36px] sm:text-[42px] font-farm font-extrabold leading-none" id="gradeLetter">A</div><div class="text-[11px] sm:text-xs mt-1" id="gradeDesc">Premium</div><div class="mt-2 sm:mt-3 text-[10px] sm:text-[11px] bg-white/20 rounded-full px-2 py-1 truncate" id="gradeExpiry">Expires: --</div><div class="mt-1.5 sm:mt-2 text-[9px] sm:text-[10px] opacity-80 line-clamp-2" id="gradeFreshness">Freshness 92%</div></div>
+                <div id="gradePlaceholder" class="h-full rounded-xl bg-gray-50 border border-dashed flex items-center justify-center p-3 text-center text-[10px] sm:text-[11px] text-gray-400">Upload photo<br>to see AI grade</div>
+              </div>
+            </div>
+          </div>
+          <div class="sm:col-span-2 flex flex-col sm:flex-row gap-2.5 sm:gap-3 pt-1 sm:pt-2">
+            <button type="button" id="previewGradeBtn" class="h-11 sm:h-12 px-4 sm:px-5 rounded-xl border border-gray-300 text-[13px] sm:text-sm font-semibold hover:bg-gray-50 active:scale-[0.98] order-2 sm:order-1">🤖 Preview AI Grade</button>
+            <button type="submit" class="flex-1 h-11 sm:h-12 rounded-xl bg-green-900 text-white text-[13px] sm:text-sm font-bold shadow-lg shadow-green-900/20 hover:bg-green-950 transition flex items-center justify-center gap-2 active:scale-[0.98] order-1 sm:order-2"><span>List on FARM BRIDGE (Kg/₹)</span><span>→</span></button>
+          </div>
+        </form>
+        <div id="formVoiceTranscript" class="hidden mt-3 sm:mt-4 p-2.5 sm:p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] sm:text-xs text-amber-900"><div class="font-bold">Voice Transcript Saved to DB:</div><div id="voiceTranscriptText" class="mt-1 italic break-words"></div><div id="voiceExtractedSummary" class="mt-2 p-2 bg-white rounded-lg border text-[11px]"></div></div>
+      </div>
+    </div>
+
+    <div class="w-full xl:w-[380px] space-y-4 sm:space-y-6 shrink-0">
+      <div class="rounded-[18px] sm:rounded-[24px] bg-gray-900 text-white p-4 sm:p-6 shadow-xl shadow-gray-900/20 overflow-hidden relative">
+        <div class="absolute top-0 right-0 w-48 h-48 sm:w-64 sm:h-64 bg-gradient-to-br from-orange-500/20 to-green-500/20 rounded-full blur-3xl"></div>
+        <div class="relative z-10">
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="font-display font-bold flex items-center gap-2 text-[14px] sm:text-base"><span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/10 flex items-center justify-center text-[11px] sm:text-xs">📊</span> <span class="truncate">Live Mandi Benchmark</span></h3><span class="px-2 py-1 rounded-full bg-white/10 text-[8px] sm:text-[10px] tracking-widest shrink-0">LIVE • ₹/Kg</span>
+          </div>
+          <div class="mt-4 sm:mt-5">
+            <div class="grid grid-cols-2 gap-3 sm:gap-4 sm:flex sm:items-end sm:justify-between">
+              <div class="min-w-0"><div class="text-[10px] sm:text-[11px] tracking-widest opacity-60 uppercase">Nearest Mandi Price</div><div class="mt-1 flex flex-wrap items-baseline gap-1 sm:gap-2"><span class="text-[20px] sm:text-[28px] font-farm font-bold" id="mandiPrice">₹22</span><span class="text-[11px] sm:text-sm opacity-60">/Kg</span><span class="px-1.5 sm:px-2 py-0.5 rounded-full bg-white/10 text-[10px] sm:text-xs" id="mandiTrend">+2.3%</span></div><div class="text-[11px] sm:text-xs opacity-60 mt-1 truncate" id="mandiName">Azadpur Mandi, Delhi</div></div>
+              <div class="text-right min-w-0"><div class="text-[10px] sm:text-[11px] tracking-widest opacity-60 uppercase">Your Platform Net</div><div class="mt-1 flex items-baseline gap-1 sm:gap-2 justify-end"><span class="text-[20px] sm:text-[28px] font-farm font-bold text-green-300" id="platformPrice">₹26.4</span><span class="text-[11px] sm:text-sm opacity-60">/Kg</span></div><div class="text-[11px] sm:text-xs text-green-300 mt-1">↑ <span id="upliftPercent">18%</span> higher • Direct</div></div>
+            </div>
+            <div class="mt-4 sm:mt-6 space-y-2.5 sm:space-y-3">
+              <div><div class="flex justify-between text-[10px] sm:text-[11px] opacity-60"><span>Mandi</span><span id="mandiBarLabel">₹22</span></div><div class="mt-1 h-2 rounded-full bg-white/10 overflow-hidden"><div id="mandiBar" class="h-full bg-white/40 rounded-full" style="width:70%"></div></div></div>
+              <div><div class="flex justify-between text-[10px] sm:text-[11px]"><span class="text-green-300 font-bold">FARM BRIDGE</span><span class="text-green-300 font-bold" id="platformBarLabel">₹26.4</span></div><div class="mt-1 h-2.5 sm:h-3 rounded-full bg-green-500/20 overflow-hidden"><div id="platformBar" class="h-full bg-gradient-to-r from-green-400 to-emerald-300 rounded-full" style="width:85%"></div></div></div>
+            </div>
+            <div class="mt-4 sm:mt-5 rounded-xl bg-white/5 border border-white/10 p-2.5 sm:p-3 flex items-center justify-between gap-2"><div class="text-[11px] sm:text-xs min-w-0"><div class="opacity-60 text-[10px] sm:text-xs">Extra earning / Kg</div><div class="font-bold text-green-300 text-[14px] sm:text-[16px]" id="extraEarning">₹4.4</div></div><div class="text-[9px] sm:text-[11px] px-2 py-1 rounded-full bg-green-500 text-white font-bold shrink-0 text-center">YOU SAVE<br class="sm:hidden"> 15-25%</div></div>
+            <div class="mt-3 sm:mt-4 text-[10px] sm:text-[11px] opacity-50 leading-tight">Real-time comparison • Updates every 30s from eNAM & Agmarknet • ₹/Kg</div>
+          </div>
+        </div>
+      </div>
+      <div class="glass rounded-[18px] sm:rounded-[24px] border border-white shadow-xl p-4 sm:p-6">
+        <h3 class="font-display font-bold flex items-center gap-2 text-[14px] sm:text-base"><span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-[11px] sm:text-xs">💸</span> Live Milestone Payouts</h3>
+        <p class="text-[11px] sm:text-xs text-gray-500 mt-1">UPI auto-triggered on verification • ₹/Kg pricing</p>
+        <div class="mt-5 sm:mt-6 relative">
+          <div id="timelineProgress" class="absolute left-[15px] top-[8px] bottom-[8px] w-[2px] bg-gray-200"></div>
+          <div id="timelineProgressActive" class="absolute left-[15px] top-[8px] w-[2px] bg-green-600 transition-all duration-700" style="height:0%"></div>
+          <div class="space-y-5 sm:space-y-6 relative z-10">
+            <div class="timeline-step flex gap-2.5 sm:gap-3"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-600 text-white flex items-center justify-center shrink-0 shadow text-[12px] sm:text-sm">✓</div><div class="flex-1 min-w-0"><div class="font-semibold text-[13px] sm:text-sm">Order Placed</div><div class="text-[11px] sm:text-xs text-gray-500 leading-snug">Buyer confirmed • Escrow created</div><div class="mt-1 text-[10px] sm:text-[11px] px-2 py-1 rounded-full bg-green-50 border border-green-200 text-green-700 inline-flex">Completed • 10:24 AM</div></div></div>
+            <div class="timeline-step flex gap-2.5 sm:gap-3 opacity-60"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center shrink-0 text-[12px] sm:text-sm">2</div><div class="flex-1 min-w-0"><div class="font-semibold text-[13px] sm:text-sm">Produce Picked</div><div class="text-[11px] sm:text-xs text-gray-500 leading-snug">Logistics partner en route</div><div class="mt-2 h-2 rounded-full bg-gray-100 overflow-hidden"><div class="h-full bg-green-600 w-0 transition-all" id="pickProgress"></div></div></div></div>
+            <div class="timeline-step flex gap-2.5 sm:gap-3 opacity-60"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center shrink-0 text-[12px] sm:text-sm">3</div><div class="flex-1 min-w-0"><div class="font-semibold text-[13px] sm:text-sm">Quality Verified at Drop</div><div class="text-[11px] sm:text-xs text-gray-500 leading-snug">AI + manual check at collection hub</div></div></div>
+            <div class="timeline-step flex gap-2.5 sm:gap-3 opacity-60"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center shrink-0 text-[12px] sm:text-sm">4</div><div class="flex-1 min-w-0"><div class="font-semibold text-[13px] sm:text-sm">Instant UPI Payout</div><div class="text-[11px] sm:text-xs text-gray-500 leading-snug">Money in your UPI within 2.3s</div><div class="mt-2 flex items-center gap-2"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-900 flex items-center justify-center text-white text-[9px] sm:text-[10px]">UPI</div><div class="text-[10px] sm:text-[11px] text-gray-500">Auto to linked account • ₹/Kg</div></div></div></div>
+          </div>
+        </div>
+        <button id="simulateTracking" class="mt-5 sm:mt-6 w-full h-10 sm:h-11 rounded-xl bg-gray-900 text-white text-[13px] sm:text-sm font-semibold hover:bg-black transition active:scale-[0.98]">▶ Simulate Live Tracking</button>
+      </div>
+      <div class="glass rounded-[18px] sm:rounded-[24px] border border-white shadow-xl p-4 sm:p-6">
+        <h3 class="font-display font-bold text-[14px] sm:text-base">My Recent Listings (Kg • ₹/Kg)</h3>
+        <div id="myListings" class="mt-3 sm:mt-4 space-y-2.5 sm:space-y-3 max-h-[280px] sm:max-h-[300px] overflow-y-auto scrollbar-hide"><div class="text-[13px] sm:text-sm text-gray-400 text-center py-6 sm:py-8">No listings yet. Use voice to create first.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BUYER PORTAL -->
+<section id="buyerPortal" class="hidden">
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+    <div class="min-w-0"><h2 class="font-farm text-[24px] sm:text-[32px] leading-none">BUYER <span class="font-bridge font-light italic text-orange-600">Marketplace</span></h2><p class="text-[12px] sm:text-sm text-gray-500 mt-1">Direct from farm • AI graded • ₹/Kg pricing</p></div>
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 w-full lg:w-auto">
+      <input id="buyerSearch" placeholder="Search crop, location, farmer..." class="h-10 sm:h-11 flex-1 lg:w-[260px] rounded-xl border border-gray-200 bg-white px-3 sm:px-4 text-[13px] sm:text-sm outline-none focus:border-green-700">
+      <div class="flex gap-2">
+        <select id="gradeFilter" class="h-10 sm:h-11 flex-1 sm:flex-none rounded-xl border border-gray-200 bg-white px-2.5 sm:px-3 text-[13px] sm:text-sm"><option value="">All Grades</option><option value="A">Grade A</option><option value="B">Grade B</option><option value="C">Grade C</option></select>
+        <button id="refreshListings" class="h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-gray-900 text-white flex items-center justify-center shrink-0 active:scale-95">↻</button>
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5" id="buyerGrid"></div>
+  <div id="buyerEmpty" class="hidden text-center py-16 sm:py-20"><div class="w-14 h-14 sm:w-16 sm:h-16 mx-auto rounded-full bg-gray-100 flex items-center justify-center text-xl sm:text-2xl">🌾</div><div class="mt-3 sm:mt-4 font-semibold text-[14px] sm:text-base">No listings found</div><div class="text-[12px] sm:text-sm text-gray-500">Ask farmers to list via Farmer Portal</div></div>
+</section>
+
+</main>
+
+<div id="toast" class="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-[100] hidden w-[90%] sm:w-auto max-w-[90vw] sm:max-w-md">
+  <div class="glass rounded-full shadow-2xl px-4 sm:px-5 py-2.5 sm:py-3 flex items-center gap-2.5 sm:gap-3 border justify-center sm:justify-start"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-600 text-white flex items-center justify-center shrink-0 text-sm">✓</div><div class="text-[13px] sm:text-sm font-medium truncate" id="toastMsg">Success</div></div>
+</div>
+
+<script>
+const API='';let currentUser=JSON.parse(localStorage.getItem('fb_user')||'null');
+let voiceState={step:0,data:{crop_name:'',harvest_date:'',quantity:'',price:'',location:''},transcript:'',listening:false,recognition:null};
+
+// --- ENHANCED CROP LIST FOR EXTRACTION ---
+const CROP_LIST = ['tomato','potato','onion','wheat','rice','paddy','mango','banana','apple','orange','cabbage','cauliflower','brinjal','eggplant','carrot','chilli','chili','capsicum','grapes','watermelon','muskmelon','sugarcane','cotton','soybean','maize','corn','groundnut','mustard','coconut','turmeric','ginger','garlic','peas','ladyfinger','okra','spinach','cucumber'];
+
+function extractCropName(text){
+  const lower = text.toLowerCase();
+  // Direct match
+  for(let crop of CROP_LIST){
+    const regex = new RegExp(`\\b${crop}\\b`, 'i');
+    if(regex.test(lower)){
+      return crop.charAt(0).toUpperCase() + crop.slice(1);
+    }
+  }
+  // If no known crop, try to find first meaningful noun? fallback: first word that is not stop word and length>2
+  const stopWords = ['i','am','growing','my','farm','is','in','the','a','an','we','are','have','has','this','that','my','crop','name','is','growing','cultivating'];
+  const words = lower.replace(/[^a-zA-Z\s]/g,'').split(/\s+/).filter(w=>w.length>2 && !stopWords.includes(w));
+  if(words.length>0){
+    // return first word capitalized, but only if it looks like crop (no numbers)
+    return words[0].charAt(0).toUpperCase() + words[0].slice(1);
+  }
+  return null;
+}
+
+function extractQuantityInKg(text){
+  const lower = text.toLowerCase();
+  // Find number
+  const numMatch = lower.match(/(\d+(\.\d+)?)/);
+  if(!numMatch) return null;
+  let num = parseFloat(numMatch[1]);
+  if(isNaN(num)) return null;
+  // Detect unit
+  if(lower.includes('quintal') || lower.includes('qtl') || lower.includes('quital')){
+    return Math.round(num * 100); // 1 quintal = 100 kg
+  } else if(lower.includes('ton') || lower.includes('tonne')){
+    return Math.round(num * 1000);
+  } else if(lower.includes('kg') || lower.includes('kilo')){
+    return Math.round(num);
+  } else if(lower.includes('gram') || lower.includes('gm')){
+    return Math.round(num / 1000);
+  } else {
+    // Assume kg if no unit
+    return Math.round(num);
+  }
+}
+
+function extractPricePerKg(text){
+  const lower = text.toLowerCase();
+  const numMatch = lower.match(/(\d+(\.\d+)?)/);
+  if(!numMatch) return null;
+  let num = parseFloat(numMatch[1]);
+  if(isNaN(num)) return null;
+  if(lower.includes('quintal') || lower.includes('qtl')){
+    return (num / 100).toFixed(2); // convert per quintal to per kg
+  } else if(lower.includes('ton')){
+    return (num / 1000).toFixed(2);
+  } else {
+    // Assume per kg
+    return num.toString();
+  }
+}
+
+const VOICE_STEPS=[
+  {key:'crop_name',prompt:'What crop are you growing? Say only crop name like Tomato',hint:'Say just "Tomato" or "I am growing tomato" - I extract only Tomato',example:'Tomato', extractor: extractCropName},
+  {key:'harvest_date',prompt:'When was it harvested?',hint:'Say "yesterday", "2 days ago", "15 May 2026"',example:'2 days ago', extractor: null},
+  {key:'quantity',prompt:'How much quantity in Kg?',hint:'Say like "500 kg" or "5 quintal" - I auto-convert to Kg',example:'500 Kg', extractor: extractQuantityInKg},
+  {key:'price',prompt:'What price in Rupees per Kg?',hint:'Say "25 rupees per kg" or "2500 per quintal" - I auto-convert to ₹/Kg',example:'25 ₹/Kg', extractor: extractPricePerKg},
+  {key:'location',prompt:'Where is your farm located?',hint:'Say village and district, e.g. "Nashik Maharashtra"',example:'Nashik Maharashtra', extractor: null}
+];
+
+let currentPhotoBase64='';let currentGradeInfo=null;
+const loginPage=document.getElementById('loginPage');const portalPage=document.getElementById('portalPage');const farmerPortal=document.getElementById('farmerPortal');const buyerPortal=document.getElementById('buyerPortal');const userChip=document.getElementById('userChip');const logoutBtn=document.getElementById('logoutBtn');
+
+// --- LOGIN VALIDATION ---
+let nameValid=false, phoneValid=false;
+function validateName(name){
+  const trimmed = name.trim();
+  if(trimmed.length < 2) return {valid:false, msg:"Name must be at least 2 characters"};
+  if(trimmed.length > 50) return {valid:false, msg:"Name too long (max 50)"};
+  if(!/^[A-Za-z ]+$/.test(trimmed)) return {valid:false, msg:"Name should contain only alphabets and spaces, no numbers/symbols"};
+  if(/\s{2,}/.test(trimmed)) return {valid:false, msg:"Multiple spaces not allowed"};
+  if(!/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(trimmed)) return {valid:false, msg:"Enter valid name (e.g. Ramesh Kumar)"};
+  return {valid:true, msg:""};
+}
+function validatePhone(phone){
+  const digits = phone.replace(/\D/g,'');
+  if(digits.length===0) return {valid:false, msg:"Phone required"};
+  if(!/^\d+$/.test(phone)) return {valid:false, msg:"Only digits allowed, exactly 10"};
+  if(digits.length !== 10) return {valid:false, msg:`Phone must be exactly 10 digits (you entered ${digits.length})`};
+  if(!/^[6-9]\d{9}$/.test(digits)) return {valid:false, msg:"Invalid Indian mobile - should start with 6-9"};
+  return {valid:true, msg:"", digits};
+}
+function updateLoginButton(){
+  const btn=document.getElementById('loginBtn');
+  const txt=document.getElementById('loginBtnText');
+  if(nameValid && phoneValid){
+    btn.disabled=false;
+    btn.classList.remove('bg-gray-300');
+    btn.classList.add('bg-gray-900','hover:bg-black');
+    txt.textContent='Continue to FARM BRIDGE';
+  } else {
+    btn.disabled=true;
+    btn.classList.add('bg-gray-300');
+    btn.classList.remove('bg-gray-900','hover:bg-black');
+    txt.textContent='Enter Valid Details';
+  }
+}
+
+function init(){
+  if(currentUser){showUser(currentUser);showPortalSelect();}
+  setupSpeech();bindEvents();loadMyListings();loadBuyerListings();setInterval(updateMandiWidget,30000);
+  // login live validation
+  const nameInput=document.getElementById('nameInput');
+  const phoneInput=document.getElementById('phoneInput');
+  nameInput.addEventListener('input',()=>{
+    const val=nameInput.value;
+    // prevent numbers/symbols typing
+    const filtered = val.replace(/[^A-Za-z ]/g,'');
+    if(val!==filtered){nameInput.value=filtered;}
+    const res=validateName(nameInput.value);
+    const errEl=document.getElementById('nameError');
+    const errText=document.getElementById('nameErrorText');
+    const check=document.getElementById('nameCheck');
+    if(nameInput.value.trim().length===0){
+      nameInput.classList.remove('input-error','input-success');
+      errEl.classList.add('hidden');check.classList.add('hidden');nameValid=false;
+    } else if(!res.valid){
+      nameInput.classList.add('input-error');nameInput.classList.remove('input-success');
+      errText.textContent=res.msg;errEl.classList.remove('hidden');check.classList.add('hidden');nameValid=false;
+    } else {
+      nameInput.classList.remove('input-error');nameInput.classList.add('input-success');
+      errEl.classList.add('hidden');check.classList.remove('hidden');nameValid=true;
+    }
+    updateLoginButton();
+  });
+  phoneInput.addEventListener('input',()=>{
+    let val=phoneInput.value.replace(/\D/g,'').slice(0,10);
+    phoneInput.value=val;
+    document.getElementById('phoneDigits').textContent=val.length;
+    const res=validatePhone(val);
+    const errEl=document.getElementById('phoneError');
+    const errText=document.getElementById('phoneErrorText');
+    const check=document.getElementById('phoneCheck');
+    if(val.length===0){
+      phoneInput.classList.remove('input-error','input-success');
+      errEl.classList.add('hidden');check.classList.add('hidden');phoneValid=false;
+    } else if(!res.valid){
+      phoneInput.classList.add('input-error');phoneInput.classList.remove('input-success');
+      errText.textContent=res.msg;errEl.classList.remove('hidden');check.classList.add('hidden');phoneValid=false;
+    } else {
+      phoneInput.classList.remove('input-error');phoneInput.classList.add('input-success');
+      errEl.classList.add('hidden');check.classList.remove('hidden');phoneValid=true;
+    }
+    updateLoginButton();
+  });
+}
+function showUser(user){document.getElementById('userNameDisplay').textContent=user.name;document.getElementById('userPhoneDisplay').textContent=user.phone;document.getElementById('userInitial').textContent=user.name.charAt(0).toUpperCase();userChip.classList.remove('hidden');userChip.classList.add('flex');logoutBtn.classList.remove('hidden');}
+function showLogin(){loginPage.classList.remove('hidden');portalPage.classList.add('hidden');farmerPortal.classList.add('hidden');buyerPortal.classList.add('hidden');window.scrollTo(0,0);}
+function showPortalSelect(){loginPage.classList.add('hidden');portalPage.classList.remove('hidden');farmerPortal.classList.add('hidden');buyerPortal.classList.add('hidden');window.scrollTo(0,0);}
+function showFarmer(){loginPage.classList.add('hidden');portalPage.classList.add('hidden');farmerPortal.classList.remove('hidden');buyerPortal.classList.add('hidden');updateMandiWidget();window.scrollTo(0,0);}
+function showBuyer(){loginPage.classList.add('hidden');portalPage.classList.add('hidden');farmerPortal.classList.add('hidden');buyerPortal.classList.remove('hidden');loadBuyerListings();window.scrollTo(0,0);}
+function bindEvents(){
+  document.getElementById('loginForm').addEventListener('submit',async(e)=>{
+    e.preventDefault();
+    const name=document.getElementById('nameInput').value.trim();
+    const phone=document.getElementById('phoneInput').value.trim();
+    const nameRes=validateName(name);
+    const phoneRes=validatePhone(phone);
+    if(!nameRes.valid){toast('❌ '+nameRes.msg);return;}
+    if(!phoneRes.valid){toast('❌ '+phoneRes.msg);return;}
+    try{
+      const res=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name, phone: phoneRes.digits})});
+      const data=await res.json();
+      if(data.success || res.ok){
+        currentUser={name, phone: phoneRes.digits};
+        localStorage.setItem('fb_user',JSON.stringify(currentUser));
+        showUser(currentUser);showPortalSelect();toast(`Welcome ${name}! Choose portal`);
+      } else {
+        toast('❌ '+ (data.error||'Login failed'));
+      }
+    }catch(err){
+      currentUser={name, phone: phoneRes.digits};
+      localStorage.setItem('fb_user',JSON.stringify(currentUser));
+      showUser(currentUser);showPortalSelect();toast(`Welcome ${name}! (offline)`);
+    }
+  });
+  document.getElementById('goFarmer').addEventListener('click',showFarmer);document.getElementById('goBuyer').addEventListener('click',showBuyer);
+  logoutBtn.addEventListener('click',()=>{localStorage.removeItem('fb_user');currentUser=null;userChip.classList.add('hidden');userChip.classList.remove('flex');logoutBtn.classList.add('hidden');showLogin();});
+  document.getElementById('micBtn').addEventListener('click',toggleListening);document.getElementById('resetVoice').addEventListener('click',resetVoice);
+  document.querySelectorAll('.voice-quick').forEach(b=>{b.addEventListener('click',()=>{const txt=b.dataset.text||b.textContent;if(txt)handleVoiceResult(txt);});});
+  document.getElementById('f_photo').addEventListener('change',handlePhoto);document.getElementById('previewGradeBtn').addEventListener('click',previewGrade);
+  document.getElementById('cropForm').addEventListener('submit',submitListing);
+  document.getElementById('buyerSearch').addEventListener('input',filterBuyer);document.getElementById('gradeFilter').addEventListener('change',filterBuyer);document.getElementById('refreshListings').addEventListener('click',loadBuyerListings);
+  document.getElementById('simulateTracking').addEventListener('click',simulateTracking);
+  // Extra validation for farmer quantity and price - only numbers
+  document.getElementById('f_quantity').addEventListener('input', (e)=>{
+    let v = e.target.value;
+    if(v<0) e.target.value = 0;
+  });
+  document.getElementById('f_price').addEventListener('input', (e)=>{
+    let v = e.target.value;
+    if(v<0) e.target.value = 0;
+  });
+}
+function setupSpeech(){
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SpeechRecognition){document.getElementById('voiceStatus').textContent='Voice not supported. Use Chrome/Edge or quick buttons.';return;}
+  const rec=new SpeechRecognition();rec.continuous=false;rec.interimResults=true;rec.lang='en-IN';
+  rec.onstart=()=>{voiceState.listening=true;document.getElementById('listeningBadge').classList.remove('hidden');document.getElementById('micPulse').classList.remove('hidden');document.getElementById('voiceWave').classList.remove('hidden');document.getElementById('micIcon').classList.add('hidden');document.getElementById('voiceStatus').textContent='Listening... Speak now';};
+  rec.onend=()=>{voiceState.listening=false;document.getElementById('listeningBadge').classList.add('hidden');document.getElementById('micPulse').classList.add('hidden');document.getElementById('voiceWave').classList.add('hidden');document.getElementById('micIcon').classList.remove('hidden');document.getElementById('voiceStatus').textContent='Tap mic to continue';};
+  rec.onresult=(event)=>{let interim='';let final='';for(let i=event.resultIndex;i<event.results.length;i++){const t=event.results[i][0].transcript;if(event.results[i].isFinal)final+=t;else interim+=t;}const display=final||interim;document.getElementById('liveTranscript').textContent=display||'...';if(final){handleVoiceResult(final);}};
+  rec.onerror=(e)=>{console.error('Speech error',e);document.getElementById('voiceStatus').textContent='Error: '+e.error+' - try again';voiceState.listening=false;};
+  voiceState.recognition=rec;
+}
+function toggleListening(){if(!voiceState.recognition){toast('Voice not supported. Use quick buttons or type.');return;}if(voiceState.listening){voiceState.recognition.stop();}else{try{voiceState.recognition.start();}catch(e){console.log(e);}}}
+function addMessage(role,text){const conv=document.getElementById('voiceConversation');const div=document.createElement('div');div.className='flex gap-2 sm:gap-3';if(role==='ai'){div.innerHTML=`<div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-900 text-white flex items-center justify-center text-[10px] sm:text-xs shrink-0">AI</div><div class="bg-white border rounded-xl sm:rounded-2xl rounded-tl-sm px-3 sm:px-4 py-2.5 sm:py-3 text-[13px] sm:text-sm shadow-sm max-w-[85%] sm:max-w-[80%]">${text}</div>`;}else{div.innerHTML=`<div class="flex-1 flex justify-end"><div class="bg-gray-900 text-white rounded-xl sm:rounded-2xl rounded-tr-sm px-3 sm:px-4 py-2.5 sm:py-3 text-[13px] sm:text-sm max-w-[85%] sm:max-w-[80%] break-words">${text}</div></div><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-200 flex items-center justify-center text-[10px] sm:text-xs shrink-0">You</div>`;}conv.appendChild(div);conv.scrollTop=conv.scrollHeight;}
+
+function handleVoiceResult(transcript){
+  transcript=transcript.trim();if(!transcript)return;
+  voiceState.transcript+=' '+transcript;
+  addMessage('user',transcript);
+
+  const step=VOICE_STEPS[voiceState.step];
+  if(!step){
+    addMessage('ai','All details captured! Now please upload photo of field and crop for AI grading.');
+    return;
+  }
+  const key=step.key;
+  let rawValue=transcript;
+  let extractedValue=null;
+  let displayValue=transcript;
+
+  // Use extractor if available
+  if(step.extractor){
+    extractedValue = step.extractor(transcript);
+    if(extractedValue){
+      displayValue = extractedValue;
+      // Show extraction preview
+      document.getElementById('extractedPreview').classList.remove('hidden');
+      document.getElementById('extractedText').textContent = `Heard: "${transcript}" → Extracted: "${extractedValue}" ${key==='quantity'?'Kg': key==='price'?'₹/Kg':''}`;
+    }
+  }
+
+  let valueToSave = extractedValue !== null ? extractedValue : rawValue;
+
+  // Special handling per key
+  if(key==='crop_name'){
+    if(!extractedValue){
+      // try to extract again, if still null, ask to repeat
+      addMessage('ai',`I couldn't find crop name in "${transcript}". Please say only crop name like <b>Tomato</b> or <b>Wheat</b>. <br><span class="text-[11px] opacity-70">I extract just the crop name, not whole sentence</span>`);
+      speakText(`I missed crop name. Please say only crop name like Tomato`);
+      return;
+    }
+    valueToSave = extractedValue; // only crop name
+  } else if(key==='quantity'){
+    if(extractedValue===null){
+      addMessage('ai',`I couldn't extract quantity in Kg from "${transcript}". Say like "500 kg" or "5 quintal" - I will convert to Kg.`);
+      speakText(`Please say quantity in Kg`);
+      return;
+    }
+    valueToSave = extractedValue; // already in Kg
+  } else if(key==='price'){
+    if(extractedValue===null){
+      addMessage('ai',`I couldn't extract price per Kg from "${transcript}". Say like "25 rupees per kg" or "2500 per quintal".`);
+      speakText(`Please say price per Kg`);
+      return;
+    }
+    valueToSave = extractedValue;
+  } else if(key==='harvest_date'){
+    valueToSave = parseDateFromSpeech(transcript);
+  }
+
+  if(!valueToSave || valueToSave.toString().length<1){
+    addMessage('ai',`I missed that. ${step.prompt} <br><span class="text-[11px] opacity-70">${step.hint}</span>`);
+    speakText(`I missed that. ${step.prompt}`);
+    return;
+  }
+
+  voiceState.data[key]=valueToSave;
+  const inputEl=document.getElementById(`f_${key}`);
+  if(inputEl){inputEl.value=valueToSave;}
+  updateProg(key,true);
+  document.getElementById('liveTranscript').textContent=`✓ ${key.replace('_',' ')}: ${valueToSave} ${key==='quantity'?'Kg':key==='price'?'₹/Kg':''} (from: "${transcript}")`;
+
+  voiceState.step++;
+  if(voiceState.step<VOICE_STEPS.length){
+    const next=VOICE_STEPS[voiceState.step];
+    setTimeout(()=>{
+      addMessage('ai',`${next.prompt}<br><span class="text-[11px] opacity-70">${next.hint}</span>`);
+      speakText(next.prompt);
+    },600);
+  } else {
+    setTimeout(()=>{
+      addMessage('ai','Perfect! All voice details captured with smart extraction. <b>Crop name only, Qty in Kg, Price in ₹/Kg</b>. Now upload photo for AI grading, then List.');
+      speakText('All details captured. Please upload photo.');
+      updateMandiWidget();
+      // Show summary
+      document.getElementById('voiceExtractedSummary').innerHTML = `
+        <b>Smart Extracted Summary:</b><br>
+        🥬 Crop: <b>${voiceState.data.crop_name}</b> (only name extracted)<br>
+        ⚖️ Quantity: <b>${voiceState.data.quantity} Kg</b> (converted to Kg)<br>
+        💰 Price: <b>₹${voiceState.data.price}/Kg</b> (converted to per Kg)<br>
+        📅 Harvest: ${voiceState.data.harvest_date}<br>
+        📍 Location: ${voiceState.data.location}
+      `;
+    },600);
+  }
+  document.getElementById('voiceTranscriptText').textContent=voiceState.transcript;
+  document.getElementById('formVoiceTranscript').classList.remove('hidden');
+}
+
+function parseDateFromSpeech(text){text=text.toLowerCase();const now=new Date();if(text.includes('today'))return now.toISOString().split('T')[0];if(text.includes('yesterday')){const d=new Date(now);d.setDate(d.getDate()-1);return d.toISOString().split('T')[0];}const m=text.match(/(\d+)\s*days?\s*ago/);if(m){const d=new Date(now);d.setDate(d.getDate()-parseInt(m[1]));return d.toISOString().split('T')[0];}const tryDate=new Date(text);if(!isNaN(tryDate))return tryDate.toISOString().split('T')[0];return text;}
+function updateProg(key,done){const el=document.getElementById(`prog-${key}`);if(!el)return;if(done){el.classList.add('bg-green-50','border-green-300','text-green-800');el.innerHTML=`<span class="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-green-600 text-white flex items-center justify-center text-[10px]">✓</span> ${key.replace('_',' ')} ${key==='quantity'?'(Kg)':key==='price'?'(₹/Kg)':''}`;}}
+function resetVoice(){
+  voiceState.step=0;voiceState.data={crop_name:'',harvest_date:'',quantity:'',price:'',location:''};voiceState.transcript='';
+  document.getElementById('voiceConversation').innerHTML=`<div class="flex gap-2 sm:gap-3"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-900 text-white flex items-center justify-center text-[10px] sm:text-xs shrink-0">AI</div><div class="bg-white border rounded-xl sm:rounded-2xl rounded-tl-sm px-3 sm:px-4 py-2.5 sm:py-3 text-[13px] sm:text-sm shadow-sm max-w-[85%]">Reset done! Say crop name only: <b>Tomato</b> or <b>Wheat</b></div></div>`;
+  document.querySelectorAll('.prog-step').forEach((el,i)=>{
+    const labels = ['Crop (name only)','Harvest','Qty (Kg)','Price (₹/Kg)','Location'];
+    el.className='prog-step flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full border border-gray-200 text-[11px] sm:text-xs whitespace-nowrap shrink-0';
+    el.innerHTML=`<span class="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px]">${i+1}</span> ${labels[i]}`;
+  });
+  ['f_crop_name','f_harvest_date','f_quantity','f_price','f_location'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('formVoiceTranscript').classList.add('hidden');
+  document.getElementById('extractedPreview').classList.add('hidden');
+  document.getElementById('liveTranscript').textContent='Your speech will appear here... I extract only crop name';
+}
+function handlePhoto(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=(ev)=>{currentPhotoBase64=ev.target.result;const preview=document.getElementById('photoPreview');preview.src=currentPhotoBase64;preview.classList.remove('hidden');document.getElementById('photoPlaceholder').classList.add('hidden');previewGrade();};reader.readAsDataURL(file);}
+async function previewGrade(){const crop=document.getElementById('f_crop_name').value;const harvest=document.getElementById('f_harvest_date').value;if(!crop||!harvest){toast('Enter crop name & harvest date first');return;}try{const res=await fetch('/api/grade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({crop_name:crop,harvest_date:harvest,photo:currentPhotoBase64})});const data=await res.json();if(data.grade){showGrade(data);currentGradeInfo=data;}}catch(err){const shelf={tomato:7,potato:45,onion:60,wheat:180}[crop.toLowerCase()]||14;const harvestDate=new Date(harvest);const daysSince=Math.floor((new Date()-harvestDate)/86400000);const remaining=Math.max(0,shelf-daysSince);const freshness=Math.max(0,Math.min(100,Math.floor((remaining/shelf)*100)));let grade='A';if(freshness<70)grade='B';if(freshness<35)grade='C';const expiry=new Date(harvestDate);expiry.setDate(expiry.getDate()+shelf);showGrade({grade,grade_desc:grade==='A'?'Premium - Export Quality':grade==='B'?'Good - Local Market':'Average - Quick Sale',expiry_display:expiry.toLocaleDateString(),freshness_score:freshness,shelf_life:shelf,remaining_days:remaining,grade_color:grade==='A'?'#16a34a':grade==='B'?'#eab308':'#ef4444'});}}
+function showGrade(info){const card=document.getElementById('gradeCard');const ph=document.getElementById('gradePlaceholder');card.classList.remove('hidden');ph.classList.add('hidden');card.className='rounded-xl p-3 sm:p-4 text-white h-full flex flex-col justify-center shadow-lg';if(info.grade==='A')card.classList.add('grade-a');else if(info.grade==='B')card.classList.add('grade-b');else card.classList.add('grade-c');document.getElementById('gradeLetter').textContent=info.grade;document.getElementById('gradeDesc').textContent=info.grade_desc||info.grade;document.getElementById('gradeExpiry').textContent=`Expires: ${info.expiry_display||info.expiry_date}`;document.getElementById('gradeFreshness').textContent=`Freshness ${info.freshness_score}% • ${info.remaining_days} days left • Shelf ${info.shelf_life}d`;}
+async function updateMandiWidget(){const crop=document.getElementById('f_crop_name').value||voiceState.data.crop_name||'tomato';const location=document.getElementById('f_location').value||voiceState.data.location||'';try{const res=await fetch(`/api/mandi-price?crop=${encodeURIComponent(crop)}&location=${encodeURIComponent(location)}`);const data=await res.json();document.getElementById('mandiPrice').textContent=`₹${data.mandi_price}`;document.getElementById('mandiName').textContent=data.mandi_name;document.getElementById('mandiTrend').textContent=data.mandi_trend;document.getElementById('platformPrice').textContent=`₹${data.platform_price}`;document.getElementById('upliftPercent').textContent=`${data.uplift_percent}%`;document.getElementById('extraEarning').textContent=`₹${data.extra_earning_per_quintal}`;document.getElementById('mandiBarLabel').textContent=`₹${data.mandi_price}`;document.getElementById('platformBarLabel').textContent=`₹${data.platform_price}`;const max=Math.max(data.mandi_price,data.platform_price)*1.2;document.getElementById('mandiBar').style.width=`${(data.mandi_price/max)*100}%`;document.getElementById('platformBar').style.width=`${(data.platform_price/max)*100}%`;}catch(e){console.log('Mandi fetch error',e);}}
+async function submitListing(e){
+  e.preventDefault();if(!currentUser){toast('Login first');return;}
+  const qty = document.getElementById('f_quantity').value;
+  const price = document.getElementById('f_price').value;
+  // Validate Kg and ₹/Kg
+  if(isNaN(qty) || qty<=0){toast('Quantity must be in Kg, positive number');return;}
+  if(isNaN(price) || price<=0){toast('Price must be in ₹/Kg, positive number');return;}
+  const payload={farmer_name:currentUser.name,phone:currentUser.phone,crop_name:document.getElementById('f_crop_name').value,harvest_date:document.getElementById('f_harvest_date').value,quantity:qty,price:price,location:document.getElementById('f_location').value,photo:currentPhotoBase64,voice_transcript:voiceState.transcript||'Manual entry'};
+  for(let k in payload)if(!payload[k]&&k!=='photo'){toast(`Fill ${k}`);return;}if(!currentPhotoBase64){toast('Please upload photo for AI grading');return;}
+  const btn=e.target.querySelector('button[type=submit]');const old=btn.innerHTML;btn.innerHTML='⏳ Listing...';btn.disabled=true;
+  try{const res=await fetch('/api/listings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await res.json();if(data.success){toast(`Listed! ${payload.quantity}Kg @ ₹${payload.price}/Kg • Grade ${data.grade_info.grade}`);loadMyListings();loadBuyerListings();document.getElementById('cropForm').reset();document.getElementById('photoPreview').classList.add('hidden');document.getElementById('photoPlaceholder').classList.remove('hidden');document.getElementById('gradeCard').classList.add('hidden');document.getElementById('gradePlaceholder').classList.remove('hidden');resetVoice();currentPhotoBase64='';}else{toast('Error: '+(data.error||'failed'));}}catch(err){console.error(err);toast('Listed locally (offline mode)');let local=JSON.parse(localStorage.getItem('fb_listings')||'[]');local.unshift({...payload,id:Date.now(),grade:currentGradeInfo?.grade||'A',expiry_date:currentGradeInfo?.expiry_date||'',freshness_score:currentGradeInfo?.freshness_score||85,mandi_price:22,platform_price:payload.price,mandi_name:'Local Mandi',status:'Order Placed',created_at:new Date().toISOString()});localStorage.setItem('fb_listings',JSON.stringify(local));loadMyListings();}finally{btn.innerHTML=old;btn.disabled=false;}
+}
+async function loadMyListings(){
+  const container=document.getElementById('myListings');
+  try{const res=await fetch('/api/listings');const data=await res.json();let filtered=data;if(currentUser)filtered=data.filter(l=>l.phone===currentUser.phone||l.farmer_name===currentUser.name);if(filtered.length===0){container.innerHTML=`<div class="text-[13px] sm:text-sm text-gray-400 text-center py-6 sm:py-8">No listings yet. Use voice to create first.</div>`;return;}container.innerHTML=filtered.slice(0,5).map(l=>`<div class="flex gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-xl bg-white border shadow-sm"><div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gray-100 overflow-hidden shrink-0">${l.photo?`<img src="${l.photo}" class="w-full h-full object-cover">`:'🌾'}</div><div class="flex-1 min-w-0"><div class="flex items-center gap-1.5 sm:gap-2"><span class="font-semibold text-[13px] sm:text-sm truncate">${l.crop_name}</span><span class="px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold text-white ${l.grade==='A'?'bg-green-600':l.grade==='B'?'bg-yellow-500':'bg-red-500'}">${l.grade}</span></div><div class="text-[11px] sm:text-xs text-gray-500 truncate">${l.quantity}Kg • ₹${l.platform_price}/Kg • ${l.location}</div><div class="text-[11px] sm:text-xs font-bold">₹${l.platform_price}/Kg • Exp: ${l.expiry_date}</div></div></div>`).join('');}catch(e){let local=JSON.parse(localStorage.getItem('fb_listings')||'[]');if(local.length===0){container.innerHTML=`<div class="text-[13px] sm:text-sm text-gray-400 text-center py-6 sm:py-8">No listings yet.</div>`;return;}container.innerHTML=local.slice(0,5).map(l=>`<div class="flex gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-xl bg-white border shadow-sm"><div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gray-100 overflow-hidden shrink-0">${l.photo?`<img src="${l.photo}" class="w-full h-full object-cover">`:'🌾'}</div><div class="flex-1 min-w-0"><div class="font-semibold text-[13px] sm:text-sm truncate">${l.crop_name} <span class="px-1.5 py-0.5 rounded-full text-[9px] bg-green-600 text-white">${l.grade}</span></div><div class="text-[11px] sm:text-xs text-gray-500 truncate">${l.quantity}Kg • ₹${l.price}/Kg</div></div></div>`).join('');}
+}
+async function loadBuyerListings(){
+  const grid=document.getElementById('buyerGrid');const empty=document.getElementById('buyerEmpty');
+  grid.innerHTML=`<div class="col-span-full py-16 sm:py-20 text-center"><div class="inline-block w-7 h-7 sm:w-8 sm:h-8 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin"></div><div class="mt-3 text-[13px] sm:text-sm text-gray-500">Loading fresh produce...</div></div>`;
+  try{const res=await fetch('/api/listings');let data=await res.json();let local=JSON.parse(localStorage.getItem('fb_listings')||'[]');data=[...local,...data];const seen=new Set();data=data.filter(l=>{if(seen.has(l.id))return false;seen.add(l.id);return true;});if(data.length===0){grid.innerHTML='';empty.classList.remove('hidden');return;}empty.classList.add('hidden');renderBuyer(data);window._allListings=data;}catch(e){let local=JSON.parse(localStorage.getItem('fb_listings')||'[]');if(local.length===0){grid.innerHTML='';empty.classList.remove('hidden');return;}empty.classList.add('hidden');renderBuyer(local);window._allListings=local;}
+}
+function renderBuyer(listings){
+  const grid=document.getElementById('buyerGrid');
+  grid.innerHTML=listings.map(l=>`
+    <div class="group rounded-[16px] sm:rounded-[20px] bg-white border border-gray-200 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all active:scale-[0.99]">
+      <div class="relative h-40 sm:h-48 bg-gray-50 overflow-hidden">
+        ${l.photo?`<img src="${l.photo}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">`:`<div class="w-full h-full flex items-center justify-center text-4xl sm:text-5xl">🌾</div>`}
+        <div class="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 flex gap-1.5 sm:gap-2"><span class="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold text-white shadow ${l.grade==='A'?'grade-a':l.grade==='B'?'grade-b':'grade-c'}">Grade ${l.grade||'A'}</span><span class="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs bg-white/90 backdrop-blur border font-medium">${l.freshness_score||85}% Fresh</span></div>
+        <div class="absolute top-2.5 sm:top-3 right-2.5 sm:right-3 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-gray-900 text-white text-[9px] sm:text-[11px] font-bold">Exp: ${l.expiry_date||'--'}</div>
+        <div class="absolute bottom-0 left-0 right-0 h-16 sm:h-20 bg-gradient-to-t from-black/60 to-transparent"></div>
+        <div class="absolute bottom-2.5 sm:bottom-3 left-2.5 sm:left-3 right-2.5 sm:right-3 flex justify-between items-end text-white"><div class="min-w-0"><div class="font-farm text-[16px] sm:text-xl leading-none truncate">${l.crop_name}</div><div class="text-[11px] sm:text-xs opacity-80 truncate">${l.location||''}</div></div><div class="text-right shrink-0 ml-2"><div class="text-[9px] sm:text-[11px] opacity-70">Price</div><div class="font-bold text-[14px] sm:text-lg">₹${l.platform_price}/Kg</div></div></div>
+      </div>
+      <div class="p-3 sm:p-4">
+        <div class="flex items-center justify-between gap-2"><div class="flex items-center gap-2 min-w-0"><div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-green-100 flex items-center justify-center text-[10px] sm:text-xs shrink-0">👨‍🌾</div><div class="min-w-0"><div class="text-[13px] sm:text-sm font-semibold leading-none truncate">${l.farmer_name||'Farmer'}</div><div class="text-[10px] sm:text-[11px] text-gray-500 truncate">${l.quantity}Kg • ₹${l.platform_price}/Kg</div></div></div><div class="text-right shrink-0"><div class="text-[10px] sm:text-[11px] text-gray-500">Mandi: ₹${l.mandi_price}/Kg</div><div class="text-[11px] sm:text-xs font-bold text-green-600">+${Math.round(((l.platform_price-l.mandi_price)/l.mandi_price)*100)||18}% more</div></div></div>
+        <div class="mt-2.5 sm:mt-3 grid grid-cols-3 gap-1.5 sm:gap-2 text-[10px] sm:text-[11px]"><div class="rounded-lg sm:rounded-xl bg-gray-50 p-1.5 sm:p-2 text-center"><div class="text-gray-500 text-[9px] sm:text-[11px]">Harvest</div><div class="font-semibold truncate text-[10px] sm:text-[11px]">${l.harvest_date||'--'}</div></div><div class="rounded-lg sm:rounded-xl bg-gray-50 p-1.5 sm:p-2 text-center"><div class="text-gray-500 text-[9px] sm:text-[11px]">Qty</div><div class="font-semibold text-[10px] sm:text-[11px]">${l.quantity} Kg</div></div><div class="rounded-lg sm:rounded-xl bg-green-50 p-1.5 sm:p-2 text-center"><div class="text-green-700 text-[9px] sm:text-[11px]">Status</div><div class="font-semibold text-green-800 truncate text-[10px] sm:text-[11px]">${l.status||'Order Placed'}</div></div></div>
+        <button onclick="placeOrder(${l.id})" class="mt-3 sm:mt-4 w-full h-10 sm:h-11 rounded-xl bg-gray-900 text-white text-[13px] sm:text-sm font-bold hover:bg-black transition flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.98]">🛒 Buy ${l.quantity}Kg • ₹${l.platform_price}/Kg <span>→</span></button>
+        <div class="mt-2 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] text-gray-500 truncate"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 shrink-0"></span> <span class="truncate">${l.mandi_name||'Verified APMC'} • Crop: ${l.crop_name} • ${l.quantity}Kg</span></div>
+      </div>
+    </div>`).join('');
+}
+function filterBuyer(){const q=document.getElementById('buyerSearch').value.toLowerCase();const grade=document.getElementById('gradeFilter').value;let data=window._allListings||[];let filtered=data.filter(l=>{const matchQ=!q||`${l.crop_name} ${l.location} ${l.farmer_name}`.toLowerCase().includes(q);const matchG=!grade||l.grade===grade;return matchQ&&matchG;});if(filtered.length===0){document.getElementById('buyerGrid').innerHTML=`<div class="col-span-full text-center py-12 text-gray-500 text-sm">No match for "${q}"</div>`;}else{renderBuyer(filtered);}}
+async function placeOrder(id){toast('Order Placed! Tracking started...');const steps=['Order Placed','Produce Picked','Quality Verified at Drop','Instant UPI Payout'];let idx=0;const interval=setInterval(async()=>{idx++;if(idx>=steps.length){clearInterval(interval);toast('✅ UPI Payout Successful! ₹ credited');return;}try{await fetch(`/api/listings/${id}/status`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:steps[idx]})});}catch{}toast(`→ ${steps[idx]}`);loadBuyerListings();},2500);}
+function simulateTracking(){const steps=document.querySelectorAll('.timeline-step');const activeLine=document.getElementById('timelineProgressActive');let current=0;const interval=setInterval(()=>{if(current>=steps.length){clearInterval(interval);toast('💸 UPI Payout Completed!');return;}steps[current].classList.remove('opacity-60');const circle=steps[current].querySelector('div:first-child');circle.classList.remove('bg-white','border-2','border-gray-300');circle.classList.add('bg-green-600','text-white');circle.innerHTML='✓';const progress=((current+1)/steps.length)*100;activeLine.style.height=`${progress}%`;const pick=document.getElementById('pickProgress');if(pick)pick.style.width=`${progress}%`;current++;},1200);}
+function speakText(text){if('speechSynthesis' in window){const utter=new SpeechSynthesisUtterance(text);utter.lang='en-IN';utter.rate=0.95;speechSynthesis.speak(utter);}}
+function toast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),3500);}
+init();
+</script>
+</body>
+</html>
