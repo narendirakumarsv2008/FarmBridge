@@ -106,7 +106,7 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
           <span class="font-farm font-extrabold text-xl text-green-900">FARM</span><span class="font-bridge font-light text-2xl text-orange-500 italic -ml-1">BRIDGE</span>
           <span class="ml-2 px-2 py-0.5 rounded-full bg-green-900 text-white text-[8px] font-bold">DIRECT</span>
         </div>
-        <h2 class="font-display text-[22px] sm:text-[28px] font-bold tracking-tight text-gray-900 leading-tight">Welcome back, AnnaData 🙏</h2>
+        <h2 class="font-display text-[22px] sm:text-[28px] font-bold tracking-tight text-gray-900 leading-tight">Welcome 🙏</h2>
         <p class="text-gray-500 mt-1.5 sm:mt-2 text-[13px] sm:text-sm">Enter your details to access Farmer & Buyer portals.</p>
         <form id="loginForm" class="mt-6 sm:mt-8 space-y-4 sm:space-y-5" novalidate>
           <div>
@@ -326,20 +326,397 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
 </section>
 
 <!-- BUYER PORTAL -->
-<section id="buyerPortal" class="hidden">
-  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
-    <div class="min-w-0"><h2 class="font-farm text-[24px] sm:text-[32px] leading-none">BUYER <span class="font-bridge font-light italic text-orange-600">Marketplace</span></h2><p class="text-[12px] sm:text-sm text-gray-500 mt-1">Direct from farm • AI graded • ₹/Kg pricing</p></div>
-    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2 w-full lg:w-auto">
-      <input id="buyerSearch" placeholder="Search crop, location, farmer..." class="h-10 sm:h-11 flex-1 lg:w-[260px] rounded-xl border border-gray-200 bg-white px-3 sm:px-4 text-[13px] sm:text-sm outline-none focus:border-green-700">
-      <div class="flex gap-2">
-        <select id="gradeFilter" class="h-10 sm:h-11 flex-1 sm:flex-none rounded-xl border border-gray-200 bg-white px-2.5 sm:px-3 text-[13px] sm:text-sm"><option value="">All Grades</option><option value="A">Grade A</option><option value="B">Grade B</option><option value="C">Grade C</option></select>
-        <button id="refreshListings" class="h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-gray-900 text-white flex items-center justify-center shrink-0 active:scale-95">↻</button>
+<!-- ============ BUYER ONBOARDING (details) ============ -->
+<section id="buyerOnboard" class="hidden">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center py-4 sm:py-6 px-2">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-800 text-[10px] sm:text-xs font-bold tracking-widest">BUYER SETUP • STEP 1 OF 2</div>
+      <h1 class="mt-3 font-farm text-[26px] sm:text-[38px] leading-[0.95] tracking-tight">Tell us where to <span class="font-bridge font-light italic text-orange-500">deliver.</span></h1>
+      <p class="mt-2 text-gray-500 text-[13px] sm:text-[15px]">Your name & phone are already taken from your login.</p>
+    </div>
+
+    <div class="glass rounded-[20px] sm:rounded-[28px] shadow-xl border border-white p-5 sm:p-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div>
+          <label class="text-[10px] font-bold tracking-widest text-gray-500 uppercase">Full Name (from login)</label>
+          <div class="mt-1.5 relative">
+            <input id="bo_name" type="text" readonly class="w-full h-[48px] rounded-xl border border-gray-200 bg-gray-50 px-4 pr-10 text-[14px] text-gray-700 font-semibold cursor-not-allowed">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-bold">AUTO</span>
+          </div>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold tracking-widest text-gray-500 uppercase">Phone (from login)</label>
+          <div class="mt-1.5 relative">
+            <input id="bo_phone" type="text" readonly class="w-full h-[48px] rounded-xl border border-gray-200 bg-gray-50 px-4 pr-10 text-[14px] text-gray-700 font-semibold tracking-wider cursor-not-allowed">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-bold">AUTO</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <label class="text-[10px] font-bold tracking-widest text-gray-500 uppercase">Email Address *</label>
+        <input id="bo_email" type="email" placeholder="you@example.com" class="mt-1.5 w-full h-[48px] rounded-xl border border-gray-200 bg-white px-4 text-[14px] outline-none focus:border-green-700 focus:ring-4 focus:ring-green-700/10 transition">
+        <p id="bo_emailErr" class="hidden mt-1.5 text-[11px] text-red-600">⚠️ Enter a valid email address</p>
+      </div>
+
+      <div class="mt-4">
+        <div class="flex items-center justify-between">
+          <label class="text-[10px] font-bold tracking-widest text-gray-500 uppercase">Home / Delivery Address *</label>
+          <button type="button" id="bo_locBtn" class="text-[11px] font-bold text-green-700 flex items-center gap-1 hover:underline">📍 Use my current location</button>
+        </div>
+        <textarea id="bo_address" rows="3" placeholder="Flat / House no, Building, Street, Area" class="mt-1.5 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-[14px] outline-none focus:border-green-700 focus:ring-4 focus:ring-green-700/10 transition resize-none"></textarea>
+        <p id="bo_addrErr" class="hidden mt-1.5 text-[11px] text-red-600">⚠️ Address must be at least 8 characters</p>
+        <div id="bo_coords" class="hidden mt-2 text-[11px] text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2"></div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
+        <div>
+          <label class="text-[10px] font-bold tracking-widest text-gray-500 uppercase">Landmark</label>
+          <input id="bo_landmark" type="text" placeholder="Near ..." class="mt-1.5 w-full h-[46px] rounded-xl border border-gray-200 bg-white px-3 text-[14px] outline-none focus:border-green-700">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold tracking-widest text-gray-500 uppercase">City</label>
+          <input id="bo_city" type="text" placeholder="City" class="mt-1.5 w-full h-[46px] rounded-xl border border-gray-200 bg-white px-3 text-[14px] outline-none focus:border-green-700">
+        </div>
+        <div class="col-span-2 sm:col-span-1">
+          <label class="text-[10px] font-bold tracking-widest text-gray-500 uppercase">Pincode</label>
+          <input id="bo_pincode" type="text" inputmode="numeric" maxlength="6" placeholder="695001" class="mt-1.5 w-full h-[46px] rounded-xl border border-gray-200 bg-white px-3 text-[14px] outline-none focus:border-green-700 tracking-wider">
+        </div>
+      </div>
+
+      <button id="bo_next" class="mt-6 w-full h-[52px] rounded-2xl bg-gray-900 text-white font-bold text-[15px] flex items-center justify-center gap-2 hover:bg-black transition active:scale-[0.98]">
+        Continue to Buyer Type <span>→</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BUYER TYPE SELECTION ============ -->
+<section id="buyerTypePage" class="hidden">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center py-4 sm:py-8 px-2">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 border border-green-200 text-green-800 text-[10px] sm:text-xs font-bold tracking-widest">BUYER SETUP • STEP 2 OF 2</div>
+      <h1 class="mt-3 sm:mt-4 font-farm text-[26px] sm:text-[40px] leading-[0.92] tracking-tight">How do you <span class="font-bridge font-light italic text-orange-500">buy?</span></h1>
+      <p class="mt-2 text-gray-500 text-[13px] sm:text-[15px] max-w-lg mx-auto">Pick the profile that fits you. Each one unlocks a different portal.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+      <button data-btype="Individual" class="btype-card group text-left rounded-[22px] bg-white border-2 border-gray-200 p-5 sm:p-6 shadow-lg hover:shadow-2xl hover:-translate-y-1 hover:border-green-700 transition-all active:scale-[0.99]">
+        <div class="w-12 h-12 rounded-2xl bg-green-100 text-green-800 flex items-center justify-center text-2xl">🧺</div>
+        <h3 class="mt-4 font-farm text-[24px] leading-none text-gray-900">INDIVIDUAL</h3>
+        <p class="font-bridge italic text-orange-600 text-[15px] -mt-0.5">Shop for your home</p>
+        <p class="mt-3 text-gray-500 text-[13px] leading-relaxed">Quick-commerce style shopping. Add to cart, pay, get farm-fresh delivery in minutes.</p>
+        <div class="mt-4 space-y-1.5 text-[12px] text-gray-700">
+          <div class="flex gap-2"><span>⚡</span> 15-min style express cart</div>
+          <div class="flex gap-2"><span>🏷️</span> Live daily prices & grades</div>
+          <div class="flex gap-2"><span>🚚</span> Live delivery tracking</div>
+        </div>
+        <div class="mt-5 flex items-center gap-2 font-bold text-[14px] text-green-800">Choose Individual <span class="group-hover:translate-x-1 transition">→</span></div>
+      </button>
+
+      <button data-btype="Community" class="btype-card group text-left rounded-[22px] bg-white border-2 border-gray-200 p-5 sm:p-6 shadow-lg hover:shadow-2xl hover:-translate-y-1 hover:border-orange-500 transition-all active:scale-[0.99]">
+        <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-700 flex items-center justify-center text-2xl">🏘️</div>
+        <h3 class="mt-4 font-farm text-[24px] leading-none text-gray-900">COMMUNITY</h3>
+        <p class="font-bridge italic text-orange-600 text-[15px] -mt-0.5">Buy together, pay less</p>
+        <p class="mt-3 text-gray-500 text-[13px] leading-relaxed">Apartments & housing societies pool demand to hit batch thresholds and unlock wholesale rates.</p>
+        <div class="mt-4 space-y-1.5 text-[12px] text-gray-700">
+          <div class="flex gap-2"><span>👥</span> Pool-Buy widget</div>
+          <div class="flex gap-2"><span>📉</span> Auto price drop as volume grows</div>
+          <div class="flex gap-2"><span>⏳</span> Countdown to unlock</div>
+        </div>
+        <div class="mt-5 flex items-center gap-2 font-bold text-[14px] text-orange-700">Choose Community <span class="group-hover:translate-x-1 transition">→</span></div>
+      </button>
+
+      <button data-btype="HoReCa" class="btype-card group text-left rounded-[22px] bg-gradient-to-br from-[#1e5a1e] to-[#0f2e0f] border-2 border-green-900 p-5 sm:p-6 shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all active:scale-[0.99] relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-40 h-40 bg-lime-300/10 rounded-full blur-2xl"></div>
+        <div class="relative z-10">
+          <div class="w-12 h-12 rounded-2xl bg-white text-green-900 flex items-center justify-center text-2xl">🍽️</div>
+          <h3 class="mt-4 font-farm text-[24px] leading-none text-white">HoReCa</h3>
+          <p class="font-bridge italic text-orange-200 text-[15px] -mt-0.5">Hotels • Restaurants • Cafés</p>
+          <p class="mt-3 text-white/60 text-[13px] leading-relaxed">Recurring subscriptions and calendar-based automated procurement for your kitchen.</p>
+          <div class="mt-4 space-y-1.5 text-[12px] text-white/80">
+            <div class="flex gap-2"><span>🗓️</span> Calendar scheduled ordering</div>
+            <div class="flex gap-2"><span>🔁</span> Recurring subscriptions</div>
+            <div class="flex gap-2"><span>🧾</span> Contract pricing & invoices</div>
+          </div>
+          <div class="mt-5 flex items-center gap-2 font-bold text-[14px] text-white">Choose HoReCa <span class="group-hover:translate-x-1 transition">→</span></div>
+        </div>
+      </button>
+    </div>
+
+    <div class="mt-5 text-center">
+      <label class="inline-flex items-center gap-2 text-[12px] text-gray-600">
+        <span>Organisation / Society name (for Community & HoReCa):</span>
+      </label>
+      <input id="bo_org" type="text" placeholder="e.g. Green Meadows Apartments / Cafe Coast" class="mt-2 mx-auto block w-full max-w-md h-[46px] rounded-xl border border-gray-200 bg-white px-4 text-[14px] text-center outline-none focus:border-green-700">
+    </div>
+  </div>
+</section>
+
+<!-- ============ INDIVIDUAL PORTAL (Blinkit/Zepto style) ============ -->
+<section id="individualPortal" class="hidden">
+  <!-- top bar -->
+  <div class="sticky top-[60px] sm:top-[72px] z-40 -mx-3 sm:-mx-6 lg:-mx-8 px-3 sm:px-6 lg:px-8 py-2.5 bg-white/90 backdrop-blur border-b border-gray-100">
+    <div class="flex items-center gap-2 sm:gap-3">
+      <button class="backToTypes h-10 w-10 rounded-xl border border-gray-200 bg-white flex items-center justify-center shrink-0 active:scale-95">←</button>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-1.5 text-[11px] text-gray-500">
+          <span class="text-green-700 font-bold">⚡ Delivery in <span id="ind_eta">14</span> min</span>
+        </div>
+        <div class="text-[12px] font-semibold text-gray-900 truncate" id="ind_addr">Home address</div>
+      </div>
+      <button id="ind_cartBtn" class="relative h-10 px-3 sm:px-4 rounded-xl bg-green-800 text-white font-bold text-[13px] flex items-center gap-2 shrink-0 active:scale-95">
+        🛒 <span class="hidden xs:inline">Cart</span>
+        <span id="ind_cartCount" class="min-w-[20px] h-5 px-1 rounded-full bg-orange-500 text-white text-[11px] flex items-center justify-center">0</span>
+      </button>
+    </div>
+    <div class="mt-2 flex gap-2">
+      <input id="ind_search" placeholder="Search for tomato, rice, mango..." class="h-10 flex-1 rounded-xl border border-gray-200 bg-gray-50 px-3 text-[13px] outline-none focus:border-green-700 focus:bg-white">
+      <select id="ind_grade" class="h-10 rounded-xl border border-gray-200 bg-white px-2 text-[13px]">
+        <option value="">All Grades</option><option value="A">Grade A</option><option value="B">Grade B</option><option value="C">Grade C</option>
+      </select>
+      <select id="ind_sort" class="h-10 rounded-xl border border-gray-200 bg-white px-2 text-[13px]">
+        <option value="fresh">Freshest</option><option value="low">Price ↓</option><option value="high">Price ↑</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- live banner -->
+  <div class="mt-3 rounded-2xl bg-gradient-to-r from-green-900 to-[#123512] text-white p-3 sm:p-4 flex items-center justify-between gap-3 overflow-hidden relative">
+    <div class="absolute -right-8 -top-8 w-32 h-32 bg-lime-300/10 rounded-full blur-2xl"></div>
+    <div class="relative z-10 min-w-0">
+      <div class="text-[10px] tracking-widest opacity-70 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-lime-300 animate-pulse"></span> LIVE FROM FARMER DATABASE</div>
+      <div class="mt-1 font-farm text-[18px] sm:text-[22px] leading-none">Prices & stock refresh <span class="font-bridge italic font-light text-orange-300">daily</span></div>
+    </div>
+    <div class="relative z-10 text-right shrink-0">
+      <div class="text-[10px] opacity-70">Updated</div>
+      <div class="text-[13px] font-bold" id="ind_updated">just now</div>
+    </div>
+  </div>
+
+  <div class="mt-4 flex gap-2 overflow-x-auto scrollbar-hide pb-1" id="ind_cats"></div>
+
+  <div class="mt-3 grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4" id="ind_grid"></div>
+  <div id="ind_empty" class="hidden text-center py-16"><div class="w-16 h-16 mx-auto rounded-full bg-gray-100 flex items-center justify-center text-2xl">🌾</div><div class="mt-3 font-semibold">No produce available</div><div class="text-[13px] text-gray-500">Farmers haven't listed crops yet.</div></div>
+
+  <!-- my orders -->
+  <div class="mt-8">
+    <h3 class="font-farm text-[22px]">My <span class="font-bridge italic font-light text-orange-600">Orders</span></h3>
+    <div id="ind_orders" class="mt-3 space-y-3"></div>
+  </div>
+</section>
+
+<!-- ============ COMMUNITY PORTAL ============ -->
+<section id="communityPortal" class="hidden">
+  <div class="flex items-center gap-3 mb-4">
+    <button class="backToTypes h-10 w-10 rounded-xl border border-gray-200 bg-white flex items-center justify-center shrink-0 active:scale-95">←</button>
+    <div class="min-w-0 flex-1">
+      <h2 class="font-farm text-[24px] sm:text-[32px] leading-none">COMMUNITY <span class="font-bridge font-light italic text-orange-600">Pool-Buy</span></h2>
+      <p class="text-[12px] sm:text-sm text-gray-500 mt-0.5" id="com_org">Pool demand • Unlock wholesale price</p>
+    </div>
+    <button id="com_cartBtn" class="relative h-10 px-4 rounded-xl bg-orange-600 text-white font-bold text-[13px] flex items-center gap-2 shrink-0 active:scale-95">
+      🛒 <span id="com_cartCount" class="min-w-[20px] h-5 px-1 rounded-full bg-white text-orange-700 text-[11px] flex items-center justify-center">0</span>
+    </button>
+  </div>
+
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mb-5">
+    <div class="rounded-2xl bg-white border p-3"><div class="text-[10px] tracking-widest text-gray-400">ACTIVE POOLS</div><div class="font-farm text-[24px] text-gray-900" id="com_s1">0</div></div>
+    <div class="rounded-2xl bg-white border p-3"><div class="text-[10px] tracking-widest text-gray-400">POOLED VOLUME</div><div class="font-farm text-[24px] text-green-800" id="com_s2">0 Kg</div></div>
+    <div class="rounded-2xl bg-white border p-3"><div class="text-[10px] tracking-widest text-gray-400">MEMBERS</div><div class="font-farm text-[24px] text-orange-600" id="com_s3">0</div></div>
+    <div class="rounded-2xl bg-white border p-3"><div class="text-[10px] tracking-widest text-gray-400">AVG SAVING</div><div class="font-farm text-[24px] text-green-700" id="com_s4">0%</div></div>
+  </div>
+
+  <div class="rounded-2xl bg-amber-50 border border-amber-200 p-3 sm:p-4 mb-5 text-[12px] sm:text-[13px] text-amber-900">
+    <span class="font-bold">How pooling works:</span> as the collective order volume rises, the price per Kg automatically drops for <em>everyone</em> in the pool — 4% at 25%, 8% at 50%, 12% at 75% and full <b>18% wholesale</b> when the batch threshold is reached before the timer ends.
+  </div>
+
+  <div class="space-y-4" id="com_pools"></div>
+  <div id="com_empty" class="hidden text-center py-16"><div class="w-16 h-16 mx-auto rounded-full bg-gray-100 flex items-center justify-center text-2xl">🏘️</div><div class="mt-3 font-semibold">No active pools</div><div class="text-[13px] text-gray-500">Pools open when farmers list fresh batches.</div></div>
+</section>
+
+<!-- ============ HoReCa PORTAL ============ -->
+<section id="horecaPortal" class="hidden">
+  <div class="flex items-center gap-3 mb-4">
+    <button class="backToTypes h-10 w-10 rounded-xl border border-gray-200 bg-white flex items-center justify-center shrink-0 active:scale-95">←</button>
+    <div class="min-w-0 flex-1">
+      <h2 class="font-farm text-[24px] sm:text-[32px] leading-none">HoReCa <span class="font-bridge font-light italic text-orange-600">Procurement</span></h2>
+      <p class="text-[12px] sm:text-sm text-gray-500 mt-0.5" id="hor_org">Recurring subscriptions & scheduled ordering</p>
+    </div>
+  </div>
+
+  <div class="flex gap-2 mb-4 overflow-x-auto scrollbar-hide">
+    <button data-htab="plan" class="htab h-10 px-4 rounded-xl bg-green-800 text-white text-[13px] font-bold whitespace-nowrap">＋ New Subscription</button>
+    <button data-htab="calendar" class="htab h-10 px-4 rounded-xl bg-white border border-gray-200 text-[13px] font-bold whitespace-nowrap">🗓️ Delivery Calendar</button>
+    <button data-htab="subs" class="htab h-10 px-4 rounded-xl bg-white border border-gray-200 text-[13px] font-bold whitespace-nowrap">🔁 Active Plans</button>
+  </div>
+
+  <!-- Plan builder -->
+  <div id="hview_plan" class="hview">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="lg:col-span-2 glass rounded-[20px] border border-white shadow-lg p-4 sm:p-6">
+        <h3 class="font-display font-bold text-[16px]">Build a recurring procurement plan</h3>
+        <p class="text-[12px] text-gray-500 mt-0.5">Pick produce from live farmer stock, set frequency and delivery days.</p>
+
+        <label class="mt-4 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">Produce *</label>
+        <select id="hor_crop" class="mt-1.5 w-full h-[48px] rounded-xl border border-gray-200 bg-white px-3 text-[14px] outline-none focus:border-green-700"></select>
+
+        <div class="grid grid-cols-2 gap-3 mt-4">
+          <div>
+            <label class="text-[10px] font-bold tracking-widest text-gray-500 uppercase">Qty per delivery (Kg) *</label>
+            <input id="hor_qty" type="number" min="1" value="25" class="mt-1.5 w-full h-[48px] rounded-xl border border-gray-200 bg-white px-3 text-[14px] outline-none focus:border-green-700">
+          </div>
+          <div>
+            <label class="text-[10px] font-bold tracking-widest text-gray-500 uppercase">Contract price ₹/Kg</label>
+            <input id="hor_price" type="number" readonly class="mt-1.5 w-full h-[48px] rounded-xl border border-gray-200 bg-gray-50 px-3 text-[14px] font-bold text-green-800">
+          </div>
+        </div>
+
+        <label class="mt-4 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">Frequency *</label>
+        <div class="mt-1.5 flex flex-wrap gap-2" id="hor_freq">
+          <button data-freq="Daily" class="freq-btn h-10 px-4 rounded-xl border-2 border-green-700 bg-green-50 text-green-800 text-[13px] font-bold">Daily</button>
+          <button data-freq="Alternate Days" class="freq-btn h-10 px-4 rounded-xl border border-gray-200 bg-white text-[13px] font-bold">Alternate Days</button>
+          <button data-freq="Weekly" class="freq-btn h-10 px-4 rounded-xl border border-gray-200 bg-white text-[13px] font-bold">Weekly</button>
+          <button data-freq="Monthly" class="freq-btn h-10 px-4 rounded-xl border border-gray-200 bg-white text-[13px] font-bold">Monthly</button>
+        </div>
+
+        <div id="hor_daysWrap" class="mt-4 hidden">
+          <label class="block text-[10px] font-bold tracking-widest text-gray-500 uppercase">Delivery days *</label>
+          <div class="mt-1.5 flex flex-wrap gap-2" id="hor_days"></div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+          <div>
+            <label class="text-[10px] font-bold tracking-widest text-gray-500 uppercase">Time slot</label>
+            <select id="hor_slot" class="mt-1.5 w-full h-[48px] rounded-xl border border-gray-200 bg-white px-2 text-[13px]">
+              <option>5:00 AM - 7:00 AM</option><option selected>6:00 AM - 8:00 AM</option>
+              <option>9:00 AM - 11:00 AM</option><option>4:00 PM - 6:00 PM</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] font-bold tracking-widest text-gray-500 uppercase">Start date</label>
+            <input id="hor_start" type="date" class="mt-1.5 w-full h-[48px] rounded-xl border border-gray-200 bg-white px-3 text-[13px]">
+          </div>
+          <div>
+            <label class="text-[10px] font-bold tracking-widest text-gray-500 uppercase">End date (optional)</label>
+            <input id="hor_end" type="date" class="mt-1.5 w-full h-[48px] rounded-xl border border-gray-200 bg-white px-3 text-[13px]">
+          </div>
+        </div>
+
+        <button id="hor_create" class="mt-5 w-full h-[52px] rounded-2xl bg-gray-900 text-white font-bold text-[15px] hover:bg-black transition active:scale-[0.98]">🔁 Activate Subscription</button>
+      </div>
+
+      <div class="glass rounded-[20px] border border-white shadow-lg p-4 sm:p-6 h-fit">
+        <div class="text-[10px] tracking-widest text-gray-400">PLAN PREVIEW</div>
+        <div id="hor_preview" class="mt-2 space-y-2 text-[13px]"></div>
+        <div class="mt-4 rounded-xl bg-green-50 border border-green-200 p-3">
+          <div class="text-[11px] text-green-800 font-bold">HoReCa contract benefits</div>
+          <ul class="mt-1.5 space-y-1 text-[11px] text-green-900/80">
+            <li>• 7% below retail on every recurring order</li>
+            <li>• Priority morning dispatch slots</li>
+            <li>• Auto GST invoice each cycle</li>
+            <li>• Pause / skip any delivery, no penalty</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5" id="buyerGrid"></div>
-  <div id="buyerEmpty" class="hidden text-center py-16 sm:py-20"><div class="w-14 h-14 sm:w-16 sm:h-16 mx-auto rounded-full bg-gray-100 flex items-center justify-center text-xl sm:text-2xl">🌾</div><div class="mt-3 sm:mt-4 font-semibold text-[14px] sm:text-base">No listings found</div><div class="text-[12px] sm:text-sm text-gray-500">Ask farmers to list via Farmer Portal</div></div>
+
+  <!-- Calendar -->
+  <div id="hview_calendar" class="hview hidden">
+    <div class="glass rounded-[20px] border border-white shadow-lg p-4 sm:p-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 class="font-display font-bold text-[16px]" id="hor_calTitle">Delivery Calendar</h3>
+          <p class="text-[12px] text-gray-500">Auto-generated from your active subscriptions</p>
+        </div>
+        <div class="flex gap-2">
+          <button id="hor_prevM" class="h-9 w-9 rounded-lg border bg-white active:scale-95">‹</button>
+          <button id="hor_nextM" class="h-9 w-9 rounded-lg border bg-white active:scale-95">›</button>
+        </div>
+      </div>
+      <div class="grid grid-cols-3 sm:grid-cols-3 gap-2.5 mt-4">
+        <div class="rounded-xl bg-gray-50 border p-2.5"><div class="text-[9px] tracking-widest text-gray-400">DELIVERIES</div><div class="font-farm text-[20px]" id="hor_k1">0</div></div>
+        <div class="rounded-xl bg-gray-50 border p-2.5"><div class="text-[9px] tracking-widest text-gray-400">TOTAL VOLUME</div><div class="font-farm text-[20px] text-green-800" id="hor_k2">0 Kg</div></div>
+        <div class="rounded-xl bg-gray-50 border p-2.5"><div class="text-[9px] tracking-widest text-gray-400">EST. SPEND</div><div class="font-farm text-[20px] text-orange-600" id="hor_k3">₹0</div></div>
+      </div>
+      <div class="grid grid-cols-7 gap-1 mt-5 text-center text-[10px] font-bold text-gray-400 tracking-widest">
+        <div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div><div>SUN</div>
+      </div>
+      <div class="grid grid-cols-7 gap-1 mt-1" id="hor_calGrid"></div>
+      <div id="hor_dayDetail" class="hidden mt-4 rounded-xl border bg-white p-3"></div>
+    </div>
+  </div>
+
+  <!-- Active plans -->
+  <div id="hview_subs" class="hview hidden">
+    <div class="space-y-3" id="hor_subList"></div>
+    <div id="hor_subEmpty" class="hidden text-center py-16"><div class="w-16 h-16 mx-auto rounded-full bg-gray-100 flex items-center justify-center text-2xl">🔁</div><div class="mt-3 font-semibold">No subscriptions yet</div><div class="text-[13px] text-gray-500">Create one from the New Subscription tab.</div></div>
+  </div>
 </section>
+
+<!-- ============ CART DRAWER ============ -->
+<div id="cartDrawer" class="fixed inset-0 z-[90] hidden">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" id="cartBackdrop"></div>
+  <div class="absolute right-0 top-0 bottom-0 w-full sm:w-[420px] bg-white shadow-2xl flex flex-col">
+    <div class="p-4 border-b flex items-center justify-between shrink-0">
+      <div><div class="font-farm text-[22px] leading-none">Your Cart</div><div class="text-[11px] text-gray-500" id="cart_sub">0 items</div></div>
+      <button id="cartClose" class="h-9 w-9 rounded-full bg-gray-100 flex items-center justify-center">✕</button>
+    </div>
+    <div class="flex-1 overflow-y-auto p-4 space-y-3" id="cart_items"></div>
+    <div class="border-t p-4 shrink-0 bg-gray-50" id="cart_footer"></div>
+  </div>
+</div>
+
+<!-- ============ CHECKOUT MODAL ============ -->
+<div id="checkoutModal" class="fixed inset-0 z-[95] hidden">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" id="coBackdrop"></div>
+  <div class="absolute inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center p-0 sm:p-4">
+    <div class="bg-white rounded-t-[24px] sm:rounded-[24px] w-full sm:max-w-md max-h-[92vh] overflow-y-auto shadow-2xl">
+      <div class="p-5">
+        <div class="flex items-center justify-between">
+          <div class="font-farm text-[22px]">Checkout</div>
+          <button id="coClose" class="h-9 w-9 rounded-full bg-gray-100 flex items-center justify-center">✕</button>
+        </div>
+        <div class="mt-4 rounded-xl border bg-gray-50 p-3">
+          <div class="text-[10px] tracking-widest text-gray-400">DELIVER TO</div>
+          <div class="text-[13px] font-semibold mt-0.5" id="co_name"></div>
+          <div class="text-[12px] text-gray-600" id="co_addr"></div>
+        </div>
+        <div class="mt-4">
+          <div class="text-[10px] tracking-widest text-gray-400 mb-2">PAYMENT METHOD</div>
+          <div class="space-y-2" id="co_pay">
+            <label class="flex items-center gap-3 p-3 rounded-xl border-2 border-green-700 bg-green-50 cursor-pointer"><input type="radio" name="pm" value="UPI" checked class="accent-green-700"><span class="text-[14px] font-semibold">UPI / GPay / PhonePe</span><span class="ml-auto text-[10px] px-2 py-0.5 rounded bg-green-700 text-white font-bold">INSTANT</span></label>
+            <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer"><input type="radio" name="pm" value="Card" class="accent-green-700"><span class="text-[14px] font-semibold">Credit / Debit Card</span></label>
+            <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer"><input type="radio" name="pm" value="Netbanking" class="accent-green-700"><span class="text-[14px] font-semibold">Net Banking</span></label>
+            <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer"><input type="radio" name="pm" value="COD" class="accent-green-700"><span class="text-[14px] font-semibold">Cash on Delivery</span></label>
+          </div>
+        </div>
+        <div class="mt-4 rounded-xl border p-3 space-y-1.5 text-[13px]" id="co_summary"></div>
+        <button id="co_pay_btn" class="mt-4 w-full h-[52px] rounded-2xl bg-green-800 text-white font-bold text-[15px] active:scale-[0.98]">Pay & Place Order</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ORDER TRACKING MODAL ============ -->
+<div id="trackModal" class="fixed inset-0 z-[96] hidden">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" id="trBackdrop"></div>
+  <div class="absolute inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center p-0 sm:p-4">
+    <div class="bg-white rounded-t-[24px] sm:rounded-[24px] w-full sm:max-w-md max-h-[92vh] overflow-y-auto shadow-2xl">
+      <div class="p-5" id="track_body"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ POOL JOIN MODAL ============ -->
+<div id="poolModal" class="fixed inset-0 z-[95] hidden">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" id="pmBackdrop"></div>
+  <div class="absolute inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center p-0 sm:p-4">
+    <div class="bg-white rounded-t-[24px] sm:rounded-[24px] w-full sm:max-w-md shadow-2xl">
+      <div class="p-5" id="pool_body"></div>
+    </div>
+  </div>
+</div>
 
 </main>
 
@@ -420,7 +797,7 @@ const VOICE_STEPS=[
 ];
 
 let currentPhotoBase64='';let currentGradeInfo=null;
-const loginPage=document.getElementById('loginPage');const portalPage=document.getElementById('portalPage');const farmerPortal=document.getElementById('farmerPortal');const buyerPortal=document.getElementById('buyerPortal');const userChip=document.getElementById('userChip');const logoutBtn=document.getElementById('logoutBtn');
+const loginPage=document.getElementById('loginPage');const portalPage=document.getElementById('portalPage');const farmerPortal=document.getElementById('farmerPortal');const userChip=document.getElementById('userChip');const logoutBtn=document.getElementById('logoutBtn');
 
 // --- LOGIN VALIDATION ---
 let nameValid=false, phoneValid=false;
@@ -459,7 +836,7 @@ function updateLoginButton(){
 
 function init(){
   if(currentUser){showUser(currentUser);showPortalSelect();}
-  setupSpeech();bindEvents();loadMyListings();loadBuyerListings();setInterval(updateMandiWidget,30000);
+  setupSpeech();bindEvents();bindBuyerEvents();loadMyListings();setInterval(updateMandiWidget,30000);
   // login live validation
   const nameInput=document.getElementById('nameInput');
   const phoneInput=document.getElementById('phoneInput');
@@ -506,10 +883,10 @@ function init(){
   });
 }
 function showUser(user){document.getElementById('userNameDisplay').textContent=user.name;document.getElementById('userPhoneDisplay').textContent=user.phone;document.getElementById('userInitial').textContent=user.name.charAt(0).toUpperCase();userChip.classList.remove('hidden');userChip.classList.add('flex');logoutBtn.classList.remove('hidden');}
-function showLogin(){loginPage.classList.remove('hidden');portalPage.classList.add('hidden');farmerPortal.classList.add('hidden');buyerPortal.classList.add('hidden');window.scrollTo(0,0);}
-function showPortalSelect(){loginPage.classList.add('hidden');portalPage.classList.remove('hidden');farmerPortal.classList.add('hidden');buyerPortal.classList.add('hidden');window.scrollTo(0,0);}
-function showFarmer(){loginPage.classList.add('hidden');portalPage.classList.add('hidden');farmerPortal.classList.remove('hidden');buyerPortal.classList.add('hidden');updateMandiWidget();window.scrollTo(0,0);}
-function showBuyer(){loginPage.classList.add('hidden');portalPage.classList.add('hidden');farmerPortal.classList.add('hidden');buyerPortal.classList.remove('hidden');loadBuyerListings();window.scrollTo(0,0);}
+function showLogin(){loginPage.classList.remove('hidden');portalPage.classList.add('hidden');farmerPortal.classList.add('hidden');hideAllBuyer();window.scrollTo(0,0);}
+function showPortalSelect(){loginPage.classList.add('hidden');portalPage.classList.remove('hidden');farmerPortal.classList.add('hidden');hideAllBuyer();window.scrollTo(0,0);}
+function showFarmer(){loginPage.classList.add('hidden');portalPage.classList.add('hidden');farmerPortal.classList.remove('hidden');hideAllBuyer();updateMandiWidget();window.scrollTo(0,0);}
+function showBuyer(){showBuyerFlow();}
 function bindEvents(){
   document.getElementById('loginForm').addEventListener('submit',async(e)=>{
     e.preventDefault();
@@ -536,12 +913,11 @@ function bindEvents(){
     }
   });
   document.getElementById('goFarmer').addEventListener('click',showFarmer);document.getElementById('goBuyer').addEventListener('click',showBuyer);
-  logoutBtn.addEventListener('click',()=>{localStorage.removeItem('fb_user');currentUser=null;userChip.classList.add('hidden');userChip.classList.remove('flex');logoutBtn.classList.add('hidden');showLogin();});
+  logoutBtn.addEventListener('click',()=>{localStorage.removeItem('fb_user');localStorage.removeItem('fb_buyer');localStorage.removeItem('fb_cart');currentUser=null;buyerProfile=null;CART=[];userChip.classList.add('hidden');userChip.classList.remove('flex');logoutBtn.classList.add('hidden');showLogin();});
   document.getElementById('micBtn').addEventListener('click',toggleListening);document.getElementById('resetVoice').addEventListener('click',resetVoice);
   document.querySelectorAll('.voice-quick').forEach(b=>{b.addEventListener('click',()=>{const txt=b.dataset.text||b.textContent;if(txt)handleVoiceResult(txt);});});
   document.getElementById('f_photo').addEventListener('change',handlePhoto);document.getElementById('previewGradeBtn').addEventListener('click',previewGrade);
   document.getElementById('cropForm').addEventListener('submit',submitListing);
-  document.getElementById('buyerSearch').addEventListener('input',filterBuyer);document.getElementById('gradeFilter').addEventListener('change',filterBuyer);document.getElementById('refreshListings').addEventListener('click',loadBuyerListings);
   document.getElementById('simulateTracking').addEventListener('click',simulateTracking);
   // Extra validation for farmer quantity and price - only numbers
   document.getElementById('f_quantity').addEventListener('input', (e)=>{
@@ -689,38 +1065,717 @@ async function submitListing(e){
   const payload={farmer_name:currentUser.name,phone:currentUser.phone,crop_name:document.getElementById('f_crop_name').value,harvest_date:document.getElementById('f_harvest_date').value,quantity:qty,price:price,location:document.getElementById('f_location').value,photo:currentPhotoBase64,voice_transcript:voiceState.transcript||'Manual entry'};
   for(let k in payload)if(!payload[k]&&k!=='photo'){toast(`Fill ${k}`);return;}if(!currentPhotoBase64){toast('Please upload photo for AI grading');return;}
   const btn=e.target.querySelector('button[type=submit]');const old=btn.innerHTML;btn.innerHTML='⏳ Listing...';btn.disabled=true;
-  try{const res=await fetch('/api/listings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await res.json();if(data.success){toast(`Listed! ${payload.quantity}Kg @ ₹${payload.price}/Kg • Grade ${data.grade_info.grade}`);loadMyListings();loadBuyerListings();document.getElementById('cropForm').reset();document.getElementById('photoPreview').classList.add('hidden');document.getElementById('photoPlaceholder').classList.remove('hidden');document.getElementById('gradeCard').classList.add('hidden');document.getElementById('gradePlaceholder').classList.remove('hidden');resetVoice();currentPhotoBase64='';}else{toast('Error: '+(data.error||'failed'));}}catch(err){console.error(err);toast('Listed locally (offline mode)');let local=JSON.parse(localStorage.getItem('fb_listings')||'[]');local.unshift({...payload,id:Date.now(),grade:currentGradeInfo?.grade||'A',expiry_date:currentGradeInfo?.expiry_date||'',freshness_score:currentGradeInfo?.freshness_score||85,mandi_price:22,platform_price:payload.price,mandi_name:'Local Mandi',status:'Order Placed',created_at:new Date().toISOString()});localStorage.setItem('fb_listings',JSON.stringify(local));loadMyListings();}finally{btn.innerHTML=old;btn.disabled=false;}
+  try{const res=await fetch('/api/listings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await res.json();if(data.success){toast(`Listed! ${payload.quantity}Kg @ ₹${payload.price}/Kg • Grade ${data.grade_info.grade}`);loadMyListings();document.getElementById('cropForm').reset();document.getElementById('photoPreview').classList.add('hidden');document.getElementById('photoPlaceholder').classList.remove('hidden');document.getElementById('gradeCard').classList.add('hidden');document.getElementById('gradePlaceholder').classList.remove('hidden');resetVoice();currentPhotoBase64='';}else{toast('Error: '+(data.error||'failed'));}}catch(err){console.error(err);toast('Listed locally (offline mode)');let local=JSON.parse(localStorage.getItem('fb_listings')||'[]');local.unshift({...payload,id:Date.now(),grade:currentGradeInfo?.grade||'A',expiry_date:currentGradeInfo?.expiry_date||'',freshness_score:currentGradeInfo?.freshness_score||85,mandi_price:22,platform_price:payload.price,mandi_name:'Local Mandi',status:'Order Placed',created_at:new Date().toISOString()});localStorage.setItem('fb_listings',JSON.stringify(local));loadMyListings();}finally{btn.innerHTML=old;btn.disabled=false;}
 }
 async function loadMyListings(){
   const container=document.getElementById('myListings');
   try{const res=await fetch('/api/listings');const data=await res.json();let filtered=data;if(currentUser)filtered=data.filter(l=>l.phone===currentUser.phone||l.farmer_name===currentUser.name);if(filtered.length===0){container.innerHTML=`<div class="text-[13px] sm:text-sm text-gray-400 text-center py-6 sm:py-8">No listings yet. Use voice to create first.</div>`;return;}container.innerHTML=filtered.slice(0,5).map(l=>`<div class="flex gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-xl bg-white border shadow-sm"><div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gray-100 overflow-hidden shrink-0">${l.photo?`<img src="${l.photo}" class="w-full h-full object-cover">`:'🌾'}</div><div class="flex-1 min-w-0"><div class="flex items-center gap-1.5 sm:gap-2"><span class="font-semibold text-[13px] sm:text-sm truncate">${l.crop_name}</span><span class="px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold text-white ${l.grade==='A'?'bg-green-600':l.grade==='B'?'bg-yellow-500':'bg-red-500'}">${l.grade}</span></div><div class="text-[11px] sm:text-xs text-gray-500 truncate">${l.quantity}Kg • ₹${l.platform_price}/Kg • ${l.location}</div><div class="text-[11px] sm:text-xs font-bold">₹${l.platform_price}/Kg • Exp: ${l.expiry_date}</div></div></div>`).join('');}catch(e){let local=JSON.parse(localStorage.getItem('fb_listings')||'[]');if(local.length===0){container.innerHTML=`<div class="text-[13px] sm:text-sm text-gray-400 text-center py-6 sm:py-8">No listings yet.</div>`;return;}container.innerHTML=local.slice(0,5).map(l=>`<div class="flex gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-xl bg-white border shadow-sm"><div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gray-100 overflow-hidden shrink-0">${l.photo?`<img src="${l.photo}" class="w-full h-full object-cover">`:'🌾'}</div><div class="flex-1 min-w-0"><div class="font-semibold text-[13px] sm:text-sm truncate">${l.crop_name} <span class="px-1.5 py-0.5 rounded-full text-[9px] bg-green-600 text-white">${l.grade}</span></div><div class="text-[11px] sm:text-xs text-gray-500 truncate">${l.quantity}Kg • ₹${l.price}/Kg</div></div></div>`).join('');}
 }
-async function loadBuyerListings(){
-  const grid=document.getElementById('buyerGrid');const empty=document.getElementById('buyerEmpty');
-  grid.innerHTML=`<div class="col-span-full py-16 sm:py-20 text-center"><div class="inline-block w-7 h-7 sm:w-8 sm:h-8 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin"></div><div class="mt-3 text-[13px] sm:text-sm text-gray-500">Loading fresh produce...</div></div>`;
-  try{const res=await fetch('/api/listings');let data=await res.json();let local=JSON.parse(localStorage.getItem('fb_listings')||'[]');data=[...local,...data];const seen=new Set();data=data.filter(l=>{if(seen.has(l.id))return false;seen.add(l.id);return true;});if(data.length===0){grid.innerHTML='';empty.classList.remove('hidden');return;}empty.classList.add('hidden');renderBuyer(data);window._allListings=data;}catch(e){let local=JSON.parse(localStorage.getItem('fb_listings')||'[]');if(local.length===0){grid.innerHTML='';empty.classList.remove('hidden');return;}empty.classList.add('hidden');renderBuyer(local);window._allListings=local;}
+/* ==================================================================
+   BUYER PORTAL ENGINE — onboarding, Individual, Community, HoReCa
+   ================================================================== */
+let buyerProfile=JSON.parse(localStorage.getItem('fb_buyer')||'null');
+let CART=JSON.parse(localStorage.getItem('fb_cart')||'[]');
+let MARKET=[];let POOLS=[];let ACTIVE_CAT='All';let CART_CTX='individual';
+let calMonth=new Date().getMonth();let calYear=new Date().getFullYear();let CAL_DATA={};
+let horFreq='Daily';let horDays=[];
+const WD=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const CROP_EMOJI={tomato:'🍅',potato:'🥔',onion:'🧅',wheat:'🌾',rice:'🍚',paddy:'🌾',mango:'🥭',banana:'🍌',apple:'🍎',orange:'🍊',cabbage:'🥬',cauliflower:'🥦',brinjal:'🍆',eggplant:'🍆',carrot:'🥕',chilli:'🌶️',chili:'🌶️',capsicum:'🫑',grapes:'🍇',watermelon:'🍉',muskmelon:'🍈',corn:'🌽',maize:'🌽',garlic:'🧄',ginger:'🫚',peas:'🫛',okra:'🌿',ladyfinger:'🌿',spinach:'🥬',cucumber:'🥒',coconut:'🥥',groundnut:'🥜',turmeric:'🟡',cotton:'🤍',soybean:'🫘',sugarcane:'🎋',mustard:'🌼'};
+function cropIcon(n){return CROP_EMOJI[(n||'').toLowerCase().trim()]||'🌾';}
+function money(n){return '₹'+Number(n||0).toFixed(2).replace(/\.00$/,'');}
+function gradeBg(g){return g==='A'?'bg-green-600':g==='B'?'bg-yellow-500':'bg-red-500';}
+
+/* ---------- navigation ---------- */
+function hideAllBuyer(){['buyerOnboard','buyerTypePage','individualPortal','communityPortal','horecaPortal'].forEach(id=>document.getElementById(id).classList.add('hidden'));}
+function showBuyerFlow(){
+  loginPage.classList.add('hidden');portalPage.classList.add('hidden');farmerPortal.classList.add('hidden');
+  hideAllBuyer();
+  if(buyerProfile&&buyerProfile.buyer_type){routeBuyerType(buyerProfile.buyer_type);}
+  else{prefillOnboard();document.getElementById('buyerOnboard').classList.remove('hidden');}
+  window.scrollTo(0,0);
 }
-function renderBuyer(listings){
-  const grid=document.getElementById('buyerGrid');
-  grid.innerHTML=listings.map(l=>`
-    <div class="group rounded-[16px] sm:rounded-[20px] bg-white border border-gray-200 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all active:scale-[0.99]">
-      <div class="relative h-40 sm:h-48 bg-gray-50 overflow-hidden">
-        ${l.photo?`<img src="${l.photo}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">`:`<div class="w-full h-full flex items-center justify-center text-4xl sm:text-5xl">🌾</div>`}
-        <div class="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 flex gap-1.5 sm:gap-2"><span class="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold text-white shadow ${l.grade==='A'?'grade-a':l.grade==='B'?'grade-b':'grade-c'}">Grade ${l.grade||'A'}</span><span class="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs bg-white/90 backdrop-blur border font-medium">${l.freshness_score||85}% Fresh</span></div>
-        <div class="absolute top-2.5 sm:top-3 right-2.5 sm:right-3 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-gray-900 text-white text-[9px] sm:text-[11px] font-bold">Exp: ${l.expiry_date||'--'}</div>
-        <div class="absolute bottom-0 left-0 right-0 h-16 sm:h-20 bg-gradient-to-t from-black/60 to-transparent"></div>
-        <div class="absolute bottom-2.5 sm:bottom-3 left-2.5 sm:left-3 right-2.5 sm:right-3 flex justify-between items-end text-white"><div class="min-w-0"><div class="font-farm text-[16px] sm:text-xl leading-none truncate">${l.crop_name}</div><div class="text-[11px] sm:text-xs opacity-80 truncate">${l.location||''}</div></div><div class="text-right shrink-0 ml-2"><div class="text-[9px] sm:text-[11px] opacity-70">Price</div><div class="font-bold text-[14px] sm:text-lg">₹${l.platform_price}/Kg</div></div></div>
+function routeBuyerType(t){
+  hideAllBuyer();
+  if(t==='Individual'){document.getElementById('individualPortal').classList.remove('hidden');CART_CTX='individual';initIndividual();}
+  else if(t==='Community'){document.getElementById('communityPortal').classList.remove('hidden');CART_CTX='community';initCommunity();}
+  else{document.getElementById('horecaPortal').classList.remove('hidden');initHoReCa();}
+  window.scrollTo(0,0);
+}
+function prefillOnboard(){
+  const u=currentUser||{};
+  document.getElementById('bo_name').value=u.name||'';
+  document.getElementById('bo_phone').value=u.phone||'';
+  if(buyerProfile){
+    document.getElementById('bo_email').value=buyerProfile.email||'';
+    document.getElementById('bo_address').value=buyerProfile.address||'';
+    document.getElementById('bo_landmark').value=buyerProfile.landmark||'';
+    document.getElementById('bo_city').value=buyerProfile.city||'';
+    document.getElementById('bo_pincode').value=buyerProfile.pincode||'';
+  }
+}
+
+/* ---------- onboarding ---------- */
+let pickedCoords={lat:null,lng:null};
+function bindOnboarding(){
+  document.getElementById('bo_locBtn').addEventListener('click',()=>{
+    if(!navigator.geolocation){toast('Location not supported on this device');return;}
+    toast('📍 Fetching your location...');
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      pickedCoords={lat:+pos.coords.latitude.toFixed(6),lng:+pos.coords.longitude.toFixed(6)};
+      const box=document.getElementById('bo_coords');
+      box.classList.remove('hidden');
+      box.innerHTML=`📍 Location captured: <b>${pickedCoords.lat}, ${pickedCoords.lng}</b> &nbsp;·&nbsp; <a class="underline" target="_blank" href="https://www.google.com/maps?q=${pickedCoords.lat},${pickedCoords.lng}">view on map</a>`;
+      try{
+        const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pickedCoords.lat}&lon=${pickedCoords.lng}`);
+        const j=await r.json();
+        if(j.display_name){
+          const a=document.getElementById('bo_address');
+          if(!a.value.trim())a.value=j.display_name;
+          const ad=j.address||{};
+          if(ad.postcode&&!document.getElementById('bo_pincode').value)document.getElementById('bo_pincode').value=ad.postcode;
+          const city=ad.city||ad.town||ad.village||ad.state_district;
+          if(city&&!document.getElementById('bo_city').value)document.getElementById('bo_city').value=city;
+        }
+      }catch(e){}
+      toast('✅ Location added to address');
+    },()=>toast('❌ Could not get location. Please type your address.'),{enableHighAccuracy:true,timeout:10000});
+  });
+
+  document.getElementById('bo_next').addEventListener('click',()=>{
+    const email=document.getElementById('bo_email').value.trim();
+    const addr=document.getElementById('bo_address').value.trim();
+    const eOk=/^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$/.test(email);
+    document.getElementById('bo_emailErr').classList.toggle('hidden',eOk);
+    document.getElementById('bo_addrErr').classList.toggle('hidden',addr.length>=8);
+    if(!eOk){toast('❌ Enter a valid email address');return;}
+    if(addr.length<8){toast('❌ Enter your full home address');return;}
+    document.getElementById('buyerOnboard').classList.add('hidden');
+    document.getElementById('buyerTypePage').classList.remove('hidden');
+    window.scrollTo(0,0);
+  });
+
+  document.querySelectorAll('.btype-card').forEach(card=>{
+    card.addEventListener('click',async()=>{
+      const type=card.dataset.btype;
+      const payload={
+        name:document.getElementById('bo_name').value.trim(),
+        phone:document.getElementById('bo_phone').value.trim(),
+        email:document.getElementById('bo_email').value.trim(),
+        address:document.getElementById('bo_address').value.trim(),
+        landmark:document.getElementById('bo_landmark').value.trim(),
+        city:document.getElementById('bo_city').value.trim(),
+        pincode:document.getElementById('bo_pincode').value.trim(),
+        latitude:pickedCoords.lat,longitude:pickedCoords.lng,
+        buyer_type:type,org_name:document.getElementById('bo_org').value.trim()
+      };
+      if((type==='Community'||type==='HoReCa')&&!payload.org_name){
+        toast('❌ Enter your society / business name below');
+        document.getElementById('bo_org').focus();return;
+      }
+      try{
+        const r=await fetch('/api/buyer/profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        const d=await r.json();
+        if(!r.ok){toast('❌ '+(d.error||'Could not save'));return;}
+      }catch(e){}
+      buyerProfile=payload;
+      localStorage.setItem('fb_buyer',JSON.stringify(buyerProfile));
+      toast(`✅ ${type} profile ready!`);
+      routeBuyerType(type);
+    });
+  });
+
+  document.querySelectorAll('.backToTypes').forEach(b=>b.addEventListener('click',()=>{
+    hideAllBuyer();document.getElementById('buyerTypePage').classList.remove('hidden');window.scrollTo(0,0);
+  }));
+}
+
+/* ---------- INDIVIDUAL: market ---------- */
+async function initIndividual(){
+  const p=buyerProfile||{};
+  document.getElementById('ind_addr').textContent=(p.address||'').slice(0,60)||'Set your address';
+  await loadMarket();
+  updateCartUI();
+  loadOrders();
+}
+async function loadMarket(){
+  const grid=document.getElementById('ind_grid');
+  grid.innerHTML=`<div class="col-span-full py-16 text-center"><div class="inline-block w-8 h-8 border-4 border-gray-200 border-t-green-800 rounded-full animate-spin"></div><div class="mt-3 text-[13px] text-gray-500">Loading live farm stock...</div></div>`;
+  try{
+    const r=await fetch('/api/market');const d=await r.json();
+    MARKET=d.items||[];
+    document.getElementById('ind_updated').textContent=new Date(d.updated_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  }catch(e){MARKET=[];}
+  renderCats();renderMarket();
+}
+function renderCats(){
+  const cats=['All',...new Set(MARKET.map(m=>m.crop_name))].slice(0,14);
+  document.getElementById('ind_cats').innerHTML=cats.map(c=>`
+    <button data-cat="${c}" class="cat-chip h-9 px-3.5 rounded-full text-[12px] font-bold whitespace-nowrap border shrink-0 ${c===ACTIVE_CAT?'bg-green-800 text-white border-green-800':'bg-white border-gray-200 text-gray-700'}">
+      ${c==='All'?'🛒 All':cropIcon(c)+' '+c}</button>`).join('');
+  document.querySelectorAll('.cat-chip').forEach(b=>b.addEventListener('click',()=>{ACTIVE_CAT=b.dataset.cat;renderCats();renderMarket();}));
+}
+function renderMarket(){
+  const q=(document.getElementById('ind_search').value||'').toLowerCase();
+  const g=document.getElementById('ind_grade').value;
+  const sort=document.getElementById('ind_sort').value;
+  let items=MARKET.filter(m=>{
+    const mq=!q||`${m.crop_name} ${m.location} ${m.farmer_name}`.toLowerCase().includes(q);
+    const mg=!g||m.grade===g;
+    const mc=ACTIVE_CAT==='All'||m.crop_name===ACTIVE_CAT;
+    return mq&&mg&&mc;
+  });
+  if(sort==='low')items.sort((a,b)=>a.live_price-b.live_price);
+  else if(sort==='high')items.sort((a,b)=>b.live_price-a.live_price);
+  else items.sort((a,b)=>a.harvest_age_days-b.harvest_age_days);
+
+  const grid=document.getElementById('ind_grid');const empty=document.getElementById('ind_empty');
+  if(!items.length){grid.innerHTML='';empty.classList.remove('hidden');return;}
+  empty.classList.add('hidden');
+  grid.innerHTML=items.map(m=>{
+    const inCart=CART.find(c=>c.listing_id===m.id);
+    const low=m.stock_pct<25;
+    const up=m.price_change_pct>0;
+    return `
+    <div class="rounded-2xl bg-white border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition flex flex-col">
+      <div class="relative h-[110px] sm:h-[130px] bg-gradient-to-br from-green-50 to-orange-50 flex items-center justify-center overflow-hidden">
+        ${m.photo?`<img src="${m.photo}" class="w-full h-full object-cover">`:`<span class="text-[44px]">${cropIcon(m.crop_name)}</span>`}
+        <span class="absolute top-2 left-2 px-1.5 py-0.5 rounded-md text-[9px] font-bold text-white ${gradeBg(m.grade)}">GRADE ${m.grade}</span>
+        ${low?`<span class="absolute top-2 right-2 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-red-600 text-white animate-pulse">LOW STOCK</span>`:''}
+        <span class="absolute bottom-2 left-2 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-black/70 text-white">⏱ ${m.freshness_label}</span>
       </div>
-      <div class="p-3 sm:p-4">
-        <div class="flex items-center justify-between gap-2"><div class="flex items-center gap-2 min-w-0"><div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-green-100 flex items-center justify-center text-[10px] sm:text-xs shrink-0">👨‍🌾</div><div class="min-w-0"><div class="text-[13px] sm:text-sm font-semibold leading-none truncate">${l.farmer_name||'Farmer'}</div><div class="text-[10px] sm:text-[11px] text-gray-500 truncate">${l.quantity}Kg • ₹${l.platform_price}/Kg</div></div></div><div class="text-right shrink-0"><div class="text-[10px] sm:text-[11px] text-gray-500">Mandi: ₹${l.mandi_price}/Kg</div><div class="text-[11px] sm:text-xs font-bold text-green-600">+${Math.round(((l.platform_price-l.mandi_price)/l.mandi_price)*100)||18}% more</div></div></div>
-        <div class="mt-2.5 sm:mt-3 grid grid-cols-3 gap-1.5 sm:gap-2 text-[10px] sm:text-[11px]"><div class="rounded-lg sm:rounded-xl bg-gray-50 p-1.5 sm:p-2 text-center"><div class="text-gray-500 text-[9px] sm:text-[11px]">Harvest</div><div class="font-semibold truncate text-[10px] sm:text-[11px]">${l.harvest_date||'--'}</div></div><div class="rounded-lg sm:rounded-xl bg-gray-50 p-1.5 sm:p-2 text-center"><div class="text-gray-500 text-[9px] sm:text-[11px]">Qty</div><div class="font-semibold text-[10px] sm:text-[11px]">${l.quantity} Kg</div></div><div class="rounded-lg sm:rounded-xl bg-green-50 p-1.5 sm:p-2 text-center"><div class="text-green-700 text-[9px] sm:text-[11px]">Status</div><div class="font-semibold text-green-800 truncate text-[10px] sm:text-[11px]">${l.status||'Order Placed'}</div></div></div>
-        <button onclick="placeOrder(${l.id})" class="mt-3 sm:mt-4 w-full h-10 sm:h-11 rounded-xl bg-gray-900 text-white text-[13px] sm:text-sm font-bold hover:bg-black transition flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.98]">🛒 Buy ${l.quantity}Kg • ₹${l.platform_price}/Kg <span>→</span></button>
-        <div class="mt-2 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] text-gray-500 truncate"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 shrink-0"></span> <span class="truncate">${l.mandi_name||'Verified APMC'} • Crop: ${l.crop_name} • ${l.quantity}Kg</span></div>
+      <div class="p-2.5 sm:p-3 flex-1 flex flex-col">
+        <div class="font-bold text-[13px] sm:text-[14px] leading-tight truncate">${cropIcon(m.crop_name)} ${m.crop_name}</div>
+        <div class="text-[10px] text-gray-500 truncate mt-0.5">👨‍🌾 ${m.farmer_name||'Farmer'} • ${m.location||'India'}</div>
+        <div class="mt-1 flex items-center gap-1 text-[10px]">
+          <span class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-600">${m.available_kg} Kg left</span>
+          <span class="px-1.5 py-0.5 rounded ${up?'bg-red-50 text-red-600':'bg-green-50 text-green-700'} font-bold">${up?'▲':'▼'} ${Math.abs(m.price_change_pct)}%</span>
+        </div>
+        <div class="mt-1.5 h-1 rounded-full bg-gray-100 overflow-hidden"><div class="h-full ${low?'bg-red-500':'bg-green-600'}" style="width:${m.stock_pct}%"></div></div>
+        <div class="mt-2 flex items-end justify-between gap-1">
+          <div class="min-w-0">
+            <div class="font-farm text-[17px] sm:text-[19px] leading-none text-gray-900">${money(m.live_price)}<span class="text-[10px] font-sans text-gray-400">/Kg</span></div>
+            ${m.mandi_price?`<div class="text-[9px] text-gray-400 line-through">Mandi ${money(m.mandi_price)}</div>`:''}
+          </div>
+          ${m.savings_vs_mandi>0?`<span class="text-[9px] px-1 py-0.5 rounded bg-green-100 text-green-700 font-bold shrink-0">SAVE ${money(m.savings_vs_mandi)}</span>`:''}
+        </div>
+        ${inCart?`
+          <div class="mt-2 h-9 rounded-xl bg-green-800 text-white flex items-center justify-between px-1 shrink-0">
+            <button onclick="changeQty(${m.id},-1)" class="w-8 h-8 rounded-lg hover:bg-white/20 text-[18px] leading-none">−</button>
+            <span class="text-[13px] font-bold">${inCart.qty} Kg</span>
+            <button onclick="changeQty(${m.id},1)" class="w-8 h-8 rounded-lg hover:bg-white/20 text-[16px] leading-none">+</button>
+          </div>`:`
+          <button onclick="addToCart(${m.id})" class="mt-2 h-9 w-full rounded-xl border-2 border-green-800 text-green-800 font-bold text-[13px] hover:bg-green-800 hover:text-white transition active:scale-95">ADD</button>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- cart ---------- */
+function saveCart(){localStorage.setItem('fb_cart',JSON.stringify(CART));updateCartUI();}
+function addToCart(id){
+  const m=MARKET.find(x=>x.id===id);if(!m)return;
+  CART.push({listing_id:m.id,crop_name:m.crop_name,price:m.live_price,qty:1,photo:m.photo,grade:m.grade,max:m.available_kg,farmer_name:m.farmer_name});
+  saveCart();renderMarket();toast(`✅ ${m.crop_name} added to cart`);
+}
+function changeQty(id,delta){
+  const i=CART.findIndex(c=>c.listing_id===id);if(i<0)return;
+  CART[i].qty+=delta;
+  if(CART[i].qty<=0)CART.splice(i,1);
+  else if(CART[i].qty>CART[i].max){CART[i].qty=CART[i].max;toast('Only '+CART[i].max+' Kg available');}
+  saveCart();renderMarket();renderCartItems();
+}
+function cartTotals(){
+  const sub=CART.reduce((s,c)=>s+c.price*c.qty,0);
+  const del=sub>=500||sub===0?0:25;
+  return {sub:+sub.toFixed(2),del,total:+(sub+del).toFixed(2),count:CART.reduce((s,c)=>s+c.qty,0)};
+}
+function updateCartUI(){
+  const t=cartTotals();
+  ['ind_cartCount','com_cartCount'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=CART.length;});
+}
+function openCart(){document.getElementById('cartDrawer').classList.remove('hidden');renderCartItems();}
+function closeCart(){document.getElementById('cartDrawer').classList.add('hidden');}
+function renderCartItems(){
+  const box=document.getElementById('cart_items');const foot=document.getElementById('cart_footer');
+  const t=cartTotals();
+  document.getElementById('cart_sub').textContent=`${CART.length} item${CART.length!==1?'s':''} • ${t.count} Kg`;
+  if(!CART.length){
+    box.innerHTML=`<div class="text-center py-20"><div class="text-4xl">🛒</div><div class="mt-3 font-semibold">Your cart is empty</div><div class="text-[13px] text-gray-500">Add fresh produce to get started</div></div>`;
+    foot.innerHTML='';return;
+  }
+  box.innerHTML=CART.map(c=>`
+    <div class="flex gap-3 items-center p-2 rounded-xl border bg-white">
+      <div class="w-12 h-12 rounded-lg bg-green-50 overflow-hidden flex items-center justify-center shrink-0">
+        ${c.photo?`<img src="${c.photo}" class="w-full h-full object-cover">`:`<span class="text-xl">${cropIcon(c.crop_name)}</span>`}
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="font-semibold text-[13px] truncate">${c.crop_name} <span class="px-1 rounded text-[9px] text-white ${gradeBg(c.grade)}">${c.grade}</span></div>
+        <div class="text-[11px] text-gray-500">${money(c.price)}/Kg × ${c.qty} Kg</div>
+      </div>
+      <div class="text-right shrink-0">
+        <div class="font-bold text-[13px]">${money(c.price*c.qty)}</div>
+        <div class="mt-1 flex items-center gap-1 justify-end">
+          <button onclick="changeQty(${c.listing_id},-1)" class="w-6 h-6 rounded bg-gray-100 text-[14px] leading-none">−</button>
+          <button onclick="changeQty(${c.listing_id},1)" class="w-6 h-6 rounded bg-gray-100 text-[13px] leading-none">+</button>
+        </div>
       </div>
     </div>`).join('');
+  foot.innerHTML=`
+    <div class="space-y-1 text-[13px]">
+      <div class="flex justify-between"><span class="text-gray-500">Item total</span><span>${money(t.sub)}</span></div>
+      <div class="flex justify-between"><span class="text-gray-500">Delivery</span><span>${t.del?money(t.del):'<b class="text-green-700">FREE</b>'}</span></div>
+      ${t.del?`<div class="text-[11px] text-orange-600">Add ${money(500-t.sub)} more for free delivery</div>`:''}
+      <div class="flex justify-between font-bold text-[15px] pt-1.5 border-t mt-1.5"><span>To Pay</span><span>${money(t.total)}</span></div>
+    </div>
+    <button onclick="openCheckout()" class="mt-3 w-full h-12 rounded-2xl bg-green-800 text-white font-bold active:scale-[0.98]">Proceed to Checkout →</button>`;
 }
-function filterBuyer(){const q=document.getElementById('buyerSearch').value.toLowerCase();const grade=document.getElementById('gradeFilter').value;let data=window._allListings||[];let filtered=data.filter(l=>{const matchQ=!q||`${l.crop_name} ${l.location} ${l.farmer_name}`.toLowerCase().includes(q);const matchG=!grade||l.grade===grade;return matchQ&&matchG;});if(filtered.length===0){document.getElementById('buyerGrid').innerHTML=`<div class="col-span-full text-center py-12 text-gray-500 text-sm">No match for "${q}"</div>`;}else{renderBuyer(filtered);}}
-async function placeOrder(id){toast('Order Placed! Tracking started...');const steps=['Order Placed','Produce Picked','Quality Verified at Drop','Instant UPI Payout'];let idx=0;const interval=setInterval(async()=>{idx++;if(idx>=steps.length){clearInterval(interval);toast('✅ UPI Payout Successful! ₹ credited');return;}try{await fetch(`/api/listings/${id}/status`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:steps[idx]})});}catch{}toast(`→ ${steps[idx]}`);loadBuyerListings();},2500);}
+
+/* ---------- checkout & payment ---------- */
+function openCheckout(){
+  if(!CART.length){toast('Cart is empty');return;}
+  const p=buyerProfile||{};
+  document.getElementById('co_name').textContent=`${p.name||''} • ${p.phone||''}`;
+  document.getElementById('co_addr').textContent=p.address||'';
+  const t=cartTotals();
+  document.getElementById('co_summary').innerHTML=`
+    <div class="flex justify-between"><span class="text-gray-500">Item total (${t.count} Kg)</span><span>${money(t.sub)}</span></div>
+    <div class="flex justify-between"><span class="text-gray-500">Delivery fee</span><span>${t.del?money(t.del):'FREE'}</span></div>
+    <div class="flex justify-between font-bold text-[15px] pt-1.5 border-t"><span>Total</span><span>${money(t.total)}</span></div>`;
+  closeCart();
+  document.getElementById('checkoutModal').classList.remove('hidden');
+}
+function closeCheckout(){document.getElementById('checkoutModal').classList.add('hidden');}
+async function payNow(){
+  const btn=document.getElementById('co_pay_btn');
+  const pm=document.querySelector('input[name="pm"]:checked').value;
+  btn.disabled=true;btn.innerHTML=`<span class="inline-block w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>`;
+  await new Promise(r=>setTimeout(r,1400));
+  const p=buyerProfile||{};
+  try{
+    const res=await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({items:CART,buyer_phone:p.phone,buyer_name:p.name,buyer_type:p.buyer_type,
+        address:p.address,payment_method:pm,source:CART_CTX})});
+    const d=await res.json();
+    if(!res.ok){toast('❌ '+(d.error||'Order failed'));btn.disabled=false;btn.textContent='Pay & Place Order';return;}
+    CART=[];saveCart();
+    closeCheckout();
+    toast(`✅ Order ${d.order_code} placed!`);
+    await loadMarket();await loadOrders();
+    openTracking(d.id);
+    autoAdvance(d.id);
+  }catch(e){toast('❌ Network error');}
+  btn.disabled=false;btn.textContent='Pay & Place Order';
+}
+function autoAdvance(id){
+  let n=0;
+  const iv=setInterval(async()=>{
+    n++;if(n>4){clearInterval(iv);return;}
+    try{const r=await fetch(`/api/orders/${id}/advance`,{method:'PUT'});const d=await r.json();
+      await loadOrders();
+      if(!document.getElementById('trackModal').classList.contains('hidden'))openTracking(id);
+      if(d.status==='Delivered'){clearInterval(iv);toast('📦 Order delivered!');}
+    }catch(e){clearInterval(iv);}
+  },4000);
+}
+async function loadOrders(){
+  const p=buyerProfile||{};if(!p.phone)return;
+  try{
+    const r=await fetch('/api/orders?phone='+p.phone);const orders=await r.json();
+    window._orders=orders;
+    const box=document.getElementById('ind_orders');if(!box)return;
+    if(!orders.length){box.innerHTML=`<div class="text-[13px] text-gray-400 text-center py-8 rounded-2xl border border-dashed">No orders yet. Your first farm-fresh box is a tap away 🌾</div>`;return;}
+    box.innerHTML=orders.slice(0,6).map(o=>{
+      const pct=(o.step_index/(o.flow.length-1))*100;
+      const done=o.status==='Delivered';
+      return `<div class="rounded-2xl bg-white border p-3.5 shadow-sm">
+        <div class="flex items-start justify-between gap-2">
+          <div class="min-w-0">
+            <div class="font-bold text-[13px]">#${o.order_code}</div>
+            <div class="text-[11px] text-gray-500 truncate">${o.items.map(i=>i.crop_name+' '+i.qty+'Kg').join(' • ')}</div>
+          </div>
+          <div class="text-right shrink-0">
+            <div class="font-bold text-[14px]">${money(o.total)}</div>
+            <div class="text-[10px] px-1.5 py-0.5 rounded ${done?'bg-green-100 text-green-700':'bg-orange-100 text-orange-700'} font-bold">${o.status}</div>
+          </div>
+        </div>
+        <div class="mt-2.5 h-1.5 rounded-full bg-gray-100 overflow-hidden"><div class="h-full bg-green-600 transition-all duration-700" style="width:${pct}%"></div></div>
+        <div class="mt-2 flex items-center justify-between">
+          <span class="text-[10px] text-gray-500">${done?'Delivered':'ETA '+o.eta_minutes+' min'} • ${o.payment_method}</span>
+          <button onclick="openTracking(${o.id})" class="text-[11px] font-bold text-green-800 underline">Track order</button>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){}
+}
+function openTracking(id){
+  const o=(window._orders||[]).find(x=>x.id===id);if(!o)return;
+  const icons=['🧾','👨‍🌾','📦','🛵','✅'];
+  document.getElementById('track_body').innerHTML=`
+    <div class="flex items-center justify-between">
+      <div><div class="font-farm text-[22px] leading-none">Track Order</div><div class="text-[11px] text-gray-500 mt-0.5">#${o.order_code}</div></div>
+      <button onclick="document.getElementById('trackModal').classList.add('hidden')" class="h-9 w-9 rounded-full bg-gray-100 flex items-center justify-center">✕</button>
+    </div>
+    <div class="mt-4 rounded-2xl bg-gradient-to-r from-green-900 to-[#123512] text-white p-4">
+      <div class="text-[11px] opacity-70">${o.status==='Delivered'?'DELIVERED':'ARRIVING IN'}</div>
+      <div class="font-farm text-[30px] leading-none mt-0.5">${o.status==='Delivered'?'Enjoy! 🌾':o.eta_minutes+' min'}</div>
+      <div class="text-[11px] opacity-70 mt-1 truncate">${o.address||''}</div>
+    </div>
+    <div class="mt-4 space-y-0">
+      ${o.flow.map((s,i)=>{
+        const done=i<=o.step_index;
+        return `<div class="flex gap-3 ${i<o.flow.length-1?'pb-4':''} relative">
+          ${i<o.flow.length-1?`<div class="absolute left-[15px] top-8 bottom-0 w-[2px] ${i<o.step_index?'bg-green-600':'bg-gray-200'}"></div>`:''}
+          <div class="w-8 h-8 rounded-full flex items-center justify-center text-[13px] shrink-0 z-10 ${done?'bg-green-600 text-white':'bg-gray-100 text-gray-400'}">${done?icons[i]:'○'}</div>
+          <div class="pt-1"><div class="text-[13px] font-semibold ${done?'text-gray-900':'text-gray-400'}">${s}</div>
+          ${i===o.step_index&&o.status!=='Delivered'?`<div class="text-[11px] text-green-700 font-bold animate-pulse">In progress...</div>`:''}</div>
+        </div>`;}).join('')}
+    </div>
+    <div class="mt-4 rounded-xl border p-3 text-[12px] space-y-1">
+      ${o.items.map(i=>`<div class="flex justify-between"><span>${cropIcon(i.crop_name)} ${i.crop_name} × ${i.qty}Kg</span><span class="font-semibold">${money(i.price*i.qty)}</span></div>`).join('')}
+      <div class="flex justify-between pt-1.5 border-t font-bold"><span>Total paid (${o.payment_method})</span><span>${money(o.total)}</span></div>
+    </div>`;
+  document.getElementById('trackModal').classList.remove('hidden');
+}
+
+/* ---------- COMMUNITY: pool-buy ---------- */
+let poolTimer=null;
+async function initCommunity(){
+  const p=buyerProfile||{};
+  document.getElementById('com_org').textContent=(p.org_name||'Your community')+' • Pool demand to unlock wholesale price';
+  await loadPools();
+  if(poolTimer)clearInterval(poolTimer);
+  poolTimer=setInterval(()=>{renderPools();},1000);
+  updateCartUI();
+}
+async function loadPools(){
+  const box=document.getElementById('com_pools');
+  box.innerHTML=`<div class="py-16 text-center"><div class="inline-block w-8 h-8 border-4 border-gray-200 border-t-orange-500 rounded-full animate-spin"></div><div class="mt-3 text-[13px] text-gray-500">Loading active pools...</div></div>`;
+  try{const r=await fetch('/api/pools');POOLS=await r.json();}catch(e){POOLS=[];}
+  renderPools();
+  document.getElementById('com_s1').textContent=POOLS.length;
+  document.getElementById('com_s2').textContent=POOLS.reduce((s,p)=>s+p.current_kg,0)+' Kg';
+  document.getElementById('com_s3').textContent=POOLS.reduce((s,p)=>s+p.members,0);
+  const avg=POOLS.length?Math.round(POOLS.reduce((s,p)=>s+p.discount_pct,0)/POOLS.length):0;
+  document.getElementById('com_s4').textContent=avg+'%';
+}
+function fmtCountdown(sec){
+  if(sec<=0)return 'Closed';
+  const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=sec%60;
+  return h>0?`${h}h ${m}m ${s}s`:`${m}m ${s}s`;
+}
+function renderPools(){
+  const box=document.getElementById('com_pools');const empty=document.getElementById('com_empty');
+  if(!POOLS.length){box.innerHTML='';empty.classList.remove('hidden');return;}
+  empty.classList.add('hidden');
+  box.innerHTML=POOLS.map(p=>{
+    if(p.seconds_left>0)p.seconds_left--;
+    const urgent=p.seconds_left<7200;
+    return `
+    <div class="rounded-[20px] bg-white border-2 ${p.unlocked?'border-green-600':'border-gray-200'} shadow-sm overflow-hidden">
+      <div class="p-4 sm:p-5">
+        <div class="flex items-start gap-3">
+          <div class="w-14 h-14 rounded-2xl bg-green-50 overflow-hidden flex items-center justify-center shrink-0">
+            ${p.photo?`<img src="${p.photo}" class="w-full h-full object-cover">`:`<span class="text-2xl">${cropIcon(p.crop_name)}</span>`}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-bold text-[16px]">${p.crop_name}</span>
+              <span class="px-1.5 py-0.5 rounded text-[9px] font-bold text-white ${gradeBg(p.grade)}">GRADE ${p.grade}</span>
+              ${p.unlocked?`<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-green-600 text-white">WHOLESALE UNLOCKED 🎉</span>`:''}
+            </div>
+            <div class="text-[11px] text-gray-500 mt-0.5 truncate">👨‍🌾 ${p.farmer_name||'Farmer'} • ${p.location||''} • ${p.members} members pooling</div>
+          </div>
+          <div class="text-right shrink-0">
+            <div class="font-farm text-[22px] leading-none text-green-800">${money(p.price_now)}</div>
+            <div class="text-[10px] text-gray-400 line-through">${money(p.base_price)}/Kg</div>
+            ${p.discount_pct?`<div class="text-[10px] font-bold text-orange-600">−${p.discount_pct}% now</div>`:''}
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <div class="flex items-end justify-between mb-1.5">
+            <div class="text-[13px] font-bold">Current Pool: <span class="text-green-800">${p.current_kg}</span>/${p.target_kg} kg</div>
+            <div class="text-[12px] font-bold ${urgent?'text-red-600 animate-pulse':'text-gray-600'}">⏳ ${fmtCountdown(p.seconds_left)} left</div>
+          </div>
+          <div class="relative h-4 rounded-full bg-gray-100 overflow-hidden">
+            <div class="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-500 flex items-center justify-end pr-1.5" style="width:${p.pct}%">
+              ${p.pct>14?`<span class="text-[9px] font-bold text-white">${p.pct}%</span>`:''}
+            </div>
+            ${p.tiers.filter(t=>t.at_pct>0&&t.at_pct<100).map(t=>`<div class="absolute top-0 bottom-0 w-[2px] bg-white/70" style="left:${t.at_pct}%"></div>`).join('')}
+          </div>
+          <div class="flex justify-between mt-1 text-[9px] text-gray-400">
+            ${p.tiers.map(t=>`<span class="${p.pct>=t.at_pct?'text-green-700 font-bold':''}">${t.at_pct}%<br>−${t.discount}%</span>`).join('')}
+          </div>
+        </div>
+
+        ${!p.unlocked?`
+          <div class="mt-3 rounded-xl bg-orange-50 border border-orange-200 p-2.5 text-[12px] text-orange-900">
+            🔓 Add just <b>${p.kg_to_next_tier} kg</b> more to unlock <b>−${p.next_tier.discount}%</b> (${p.next_tier.label}) → ${money(p.base_price*(1-p.next_tier.discount/100))}/Kg for everyone
+          </div>`:`
+          <div class="mt-3 rounded-xl bg-green-50 border border-green-200 p-2.5 text-[12px] text-green-900">
+            🎉 Batch threshold reached! Everyone in this pool now pays the full wholesale rate of <b>${money(p.price_now)}/Kg</b>.
+          </div>`}
+
+        <div class="mt-3 flex gap-2">
+          <button onclick="openPoolJoin(${p.id})" class="flex-1 h-11 rounded-xl bg-orange-600 text-white font-bold text-[13px] active:scale-[0.98]">👥 Join this Pool</button>
+          <button onclick="addPoolToCart(${p.id})" class="h-11 px-4 rounded-xl border-2 border-gray-900 text-gray-900 font-bold text-[13px] active:scale-95">Buy now</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function openPoolJoin(id){
+  const p=POOLS.find(x=>x.id===id);if(!p)return;
+  document.getElementById('pool_body').innerHTML=`
+    <div class="flex items-center justify-between">
+      <div><div class="font-farm text-[22px] leading-none">Join Pool</div><div class="text-[11px] text-gray-500 mt-0.5">${p.crop_name} • ${money(p.price_now)}/Kg now</div></div>
+      <button onclick="document.getElementById('poolModal').classList.add('hidden')" class="h-9 w-9 rounded-full bg-gray-100 flex items-center justify-center">✕</button>
+    </div>
+    <div class="mt-4">
+      <label class="text-[10px] font-bold tracking-widest text-gray-500 uppercase">Your contribution (Kg)</label>
+      <input id="pj_qty" type="number" min="1" value="50" class="mt-1.5 w-full h-[52px] rounded-xl border-2 border-gray-200 px-4 text-[18px] font-bold outline-none focus:border-orange-500">
+      <div class="mt-2 flex gap-2">${[25,50,100,200].map(v=>`<button onclick="document.getElementById('pj_qty').value=${v};poolPreview(${id})" class="flex-1 h-9 rounded-lg border text-[12px] font-bold hover:bg-gray-50">${v}kg</button>`).join('')}</div>
+    </div>
+    <div id="pj_preview" class="mt-3"></div>
+    <button onclick="confirmPoolJoin(${id})" class="mt-4 w-full h-[52px] rounded-2xl bg-orange-600 text-white font-bold active:scale-[0.98]">Confirm & Add to Pool</button>
+    <p class="mt-2 text-[10px] text-gray-400 text-center">You pay only when the pool closes. Price can only go down, never up.</p>`;
+  document.getElementById('poolModal').classList.remove('hidden');
+  poolPreview(id);
+  document.getElementById('pj_qty').addEventListener('input',()=>poolPreview(id));
+}
+function poolPreview(id){
+  const p=POOLS.find(x=>x.id===id);if(!p)return;
+  const q=Math.max(0,parseInt(document.getElementById('pj_qty').value||0));
+  const newTotal=p.current_kg+q;
+  const newPct=Math.min(100,Math.round(newTotal/p.target_kg*100));
+  let disc=0,label='Base price';
+  p.tiers.forEach(t=>{if(newPct>=t.at_pct){disc=t.discount;label=t.label;}});
+  const newPrice=+(p.base_price*(1-disc/100)).toFixed(2);
+  const saving=+((p.base_price-newPrice)*q).toFixed(2);
+  document.getElementById('pj_preview').innerHTML=`
+    <div class="rounded-xl border bg-gray-50 p-3 text-[12px] space-y-1.5">
+      <div class="flex justify-between"><span class="text-gray-500">Pool after you join</span><span class="font-bold">${newTotal}/${p.target_kg} kg (${newPct}%)</span></div>
+      <div class="flex justify-between"><span class="text-gray-500">Unlocked tier</span><span class="font-bold text-green-700">${label} ${disc?'(−'+disc+'%)':''}</span></div>
+      <div class="flex justify-between"><span class="text-gray-500">Your price</span><span class="font-bold">${money(newPrice)}/Kg</span></div>
+      <div class="flex justify-between pt-1.5 border-t"><span class="text-gray-500">Your total</span><span class="font-bold text-[14px]">${money(newPrice*q)}</span></div>
+      ${saving>0?`<div class="text-[11px] text-green-700 font-bold">You save ${money(saving)} vs base price 🎉</div>`:''}
+      ${newPct>=100&&p.pct<100?`<div class="text-[11px] text-orange-700 font-bold">⚡ Your order unlocks the full wholesale rate for the whole pool!</div>`:''}
+    </div>`;
+}
+async function confirmPoolJoin(id){
+  const p=buyerProfile||{};
+  const q=parseInt(document.getElementById('pj_qty').value||0);
+  if(q<=0){toast('Enter a valid quantity');return;}
+  try{
+    await fetch(`/api/pools/${id}/join`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({qty_kg:q,buyer_phone:p.phone,buyer_name:p.name,org_name:p.org_name})});
+    document.getElementById('poolModal').classList.add('hidden');
+    toast(`✅ ${q} Kg added to the pool!`);
+    await loadPools();
+  }catch(e){toast('❌ Could not join pool');}
+}
+function addPoolToCart(id){
+  const p=POOLS.find(x=>x.id===id);if(!p)return;
+  CART.push({listing_id:p.listing_id,crop_name:p.crop_name,price:p.price_now,qty:25,photo:p.photo,grade:p.grade,max:99999,farmer_name:p.farmer_name});
+  saveCart();toast(`✅ 25 Kg ${p.crop_name} added at pool price`);openCart();
+}
+
+/* ---------- HoReCa ---------- */
+async function initHoReCa(){
+  const p=buyerProfile||{};
+  document.getElementById('hor_org').textContent=(p.org_name||'Your business')+' • Recurring & scheduled procurement';
+  document.getElementById('hor_start').value=new Date().toISOString().slice(0,10);
+  if(!MARKET.length)await loadMarket();
+  const sel=document.getElementById('hor_crop');
+  sel.innerHTML=MARKET.length?MARKET.map(m=>`<option value="${m.id}" data-price="${m.live_price}">${cropIcon(m.crop_name)} ${m.crop_name} — ${money(m.live_price)}/Kg • Grade ${m.grade} • ${m.available_kg}Kg</option>`).join(''):`<option value="">No farmer stock yet</option>`;
+  document.getElementById('hor_days').innerHTML=WD.map(d=>`<button data-d="${d}" class="wd-btn h-10 w-12 rounded-xl border border-gray-200 bg-white text-[12px] font-bold">${d}</button>`).join('');
+  document.querySelectorAll('.wd-btn').forEach(b=>b.addEventListener('click',()=>{
+    const d=b.dataset.d;
+    if(horDays.includes(d)){horDays=horDays.filter(x=>x!==d);b.className='wd-btn h-10 w-12 rounded-xl border border-gray-200 bg-white text-[12px] font-bold';}
+    else{horDays.push(d);b.className='wd-btn h-10 w-12 rounded-xl border-2 border-green-700 bg-green-50 text-green-800 text-[12px] font-bold';}
+    horPreview();
+  }));
+  horPrice();horPreview();
+  await loadSubs();
+}
+function horPrice(){
+  const sel=document.getElementById('hor_crop');
+  const opt=sel.options[sel.selectedIndex];
+  const base=opt?parseFloat(opt.dataset.price||0):0;
+  const contract=+(base*0.93).toFixed(2);
+  document.getElementById('hor_price').value=contract;
+  return contract;
+}
+function horPreview(){
+  const sel=document.getElementById('hor_crop');
+  const opt=sel.options[sel.selectedIndex];
+  const crop=opt?opt.text.split('—')[0].trim():'—';
+  const qty=parseInt(document.getElementById('hor_qty').value||0);
+  const price=parseFloat(document.getElementById('hor_price').value||0);
+  let perMonth=horFreq==='Daily'?30:horFreq==='Alternate Days'?15:horFreq==='Weekly'?horDays.length*4.3:1;
+  const monthly=qty*price*perMonth;
+  document.getElementById('hor_preview').innerHTML=`
+    <div class="flex justify-between"><span class="text-gray-500">Produce</span><span class="font-semibold text-right">${crop}</span></div>
+    <div class="flex justify-between"><span class="text-gray-500">Per delivery</span><span class="font-semibold">${qty} Kg</span></div>
+    <div class="flex justify-between"><span class="text-gray-500">Contract rate</span><span class="font-semibold">${money(price)}/Kg</span></div>
+    <div class="flex justify-between"><span class="text-gray-500">Frequency</span><span class="font-semibold">${horFreq}</span></div>
+    ${horDays.length?`<div class="flex justify-between"><span class="text-gray-500">Days</span><span class="font-semibold">${horDays.join(', ')}</span></div>`:''}
+    <div class="flex justify-between"><span class="text-gray-500">Per delivery cost</span><span class="font-semibold">${money(qty*price)}</span></div>
+    <div class="flex justify-between pt-2 border-t font-bold text-[15px]"><span>Est. monthly</span><span class="text-green-800">${money(monthly)}</span></div>`;
+}
+function bindHoReCa(){
+  document.querySelectorAll('.htab').forEach(t=>t.addEventListener('click',()=>{
+    document.querySelectorAll('.htab').forEach(x=>x.className='htab h-10 px-4 rounded-xl bg-white border border-gray-200 text-[13px] font-bold whitespace-nowrap');
+    t.className='htab h-10 px-4 rounded-xl bg-green-800 text-white text-[13px] font-bold whitespace-nowrap';
+    document.querySelectorAll('.hview').forEach(v=>v.classList.add('hidden'));
+    document.getElementById('hview_'+t.dataset.htab).classList.remove('hidden');
+    if(t.dataset.htab==='calendar')loadCalendar();
+    if(t.dataset.htab==='subs')loadSubs();
+  }));
+  document.getElementById('hor_freq').addEventListener('click',e=>{
+    const b=e.target.closest('.freq-btn');if(!b)return;
+    horFreq=b.dataset.freq;
+    document.querySelectorAll('.freq-btn').forEach(x=>x.className='freq-btn h-10 px-4 rounded-xl border border-gray-200 bg-white text-[13px] font-bold');
+    b.className='freq-btn h-10 px-4 rounded-xl border-2 border-green-700 bg-green-50 text-green-800 text-[13px] font-bold';
+    document.getElementById('hor_daysWrap').classList.toggle('hidden',!(horFreq==='Weekly'));
+    horPreview();
+  });
+  document.getElementById('hor_crop').addEventListener('change',()=>{horPrice();horPreview();});
+  document.getElementById('hor_qty').addEventListener('input',horPreview);
+  document.getElementById('hor_create').addEventListener('click',createSub);
+  document.getElementById('hor_prevM').addEventListener('click',()=>{calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();});
+  document.getElementById('hor_nextM').addEventListener('click',()=>{calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();});
+}
+async function createSub(){
+  const p=buyerProfile||{};
+  const sel=document.getElementById('hor_crop');
+  const opt=sel.options[sel.selectedIndex];
+  if(!opt||!opt.value){toast('❌ No produce available to subscribe');return;}
+  const crop=opt.text.split('—')[0].replace(/[^\w\s]/g,'').trim();
+  const qty=parseInt(document.getElementById('hor_qty').value||0);
+  if(qty<=0){toast('❌ Enter quantity in Kg');return;}
+  if(horFreq==='Weekly'&&!horDays.length){toast('❌ Pick at least one delivery day');return;}
+  const btn=document.getElementById('hor_create');btn.disabled=true;btn.textContent='Activating...';
+  try{
+    const r=await fetch('/api/subscriptions',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({buyer_phone:p.phone,buyer_name:p.name,org_name:p.org_name,crop_name:crop,
+        listing_id:parseInt(opt.value),qty_kg:qty,price_per_kg:parseFloat(document.getElementById('hor_price').value||0),
+        frequency:horFreq,weekdays:horDays,time_slot:document.getElementById('hor_slot').value,
+        start_date:document.getElementById('hor_start').value,end_date:document.getElementById('hor_end').value})});
+    const d=await r.json();
+    if(!r.ok){toast('❌ '+(d.error||'Failed'));}
+    else{toast('✅ Subscription activated!');await loadSubs();
+      document.querySelector('[data-htab="calendar"]').click();}
+  }catch(e){toast('❌ Network error');}
+  btn.disabled=false;btn.textContent='🔁 Activate Subscription';
+}
+async function loadSubs(){
+  const p=buyerProfile||{};if(!p.phone)return;
+  try{
+    const r=await fetch('/api/subscriptions?phone='+p.phone);const subs=await r.json();
+    const box=document.getElementById('hor_subList');const empty=document.getElementById('hor_subEmpty');
+    if(!subs.length){box.innerHTML='';empty.classList.remove('hidden');return;}
+    empty.classList.add('hidden');
+    box.innerHTML=subs.map(s=>`
+      <div class="rounded-2xl bg-white border p-4 shadow-sm ${s.active?'':'opacity-60'}">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <div class="font-bold text-[15px]">${cropIcon(s.crop_name)} ${s.crop_name}
+              <span class="ml-1 px-2 py-0.5 rounded-full text-[9px] font-bold ${s.active?'bg-green-100 text-green-700':'bg-gray-200 text-gray-600'}">${s.active?'ACTIVE':'PAUSED'}</span>
+            </div>
+            <div class="text-[12px] text-gray-500 mt-0.5">${s.qty_kg} Kg • ${money(s.price_per_kg)}/Kg • ${s.frequency}${s.weekdays.length?' ('+s.weekdays.join(', ')+')':''}</div>
+            <div class="text-[11px] text-gray-400 mt-0.5">🕐 ${s.time_slot} • from ${s.start_date}</div>
+          </div>
+          <div class="text-right shrink-0">
+            <div class="font-farm text-[18px] text-green-800">${money(s.qty_kg*s.price_per_kg)}</div>
+            <div class="text-[10px] text-gray-400">per delivery</div>
+          </div>
+        </div>
+        <div class="mt-3 flex gap-2">
+          <button onclick="toggleSub(${s.id},${s.active?0:1})" class="flex-1 h-9 rounded-lg border text-[12px] font-bold hover:bg-gray-50">${s.active?'⏸ Pause':'▶ Resume'}</button>
+          <button onclick="delSub(${s.id})" class="h-9 px-4 rounded-lg border border-red-200 text-red-600 text-[12px] font-bold hover:bg-red-50">Cancel</button>
+        </div>
+      </div>`).join('');
+  }catch(e){}
+}
+async function toggleSub(id,active){
+  await fetch('/api/subscriptions/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({active})});
+  toast(active?'▶ Subscription resumed':'⏸ Subscription paused');loadSubs();
+}
+async function delSub(id){
+  if(!confirm('Cancel this subscription?'))return;
+  await fetch('/api/subscriptions/'+id,{method:'DELETE'});
+  toast('Subscription cancelled');loadSubs();
+}
+async function loadCalendar(){
+  const p=buyerProfile||{};if(!p.phone)return;
+  try{
+    const r=await fetch('/api/subscriptions/calendar?days=90&phone='+p.phone);
+    const d=await r.json();CAL_DATA=d.schedule||{};
+    renderCalendar();
+  }catch(e){}
+}
+function renderCalendar(){
+  const first=new Date(calYear,calMonth,1);
+  const monthName=first.toLocaleString('default',{month:'long',year:'numeric'});
+  document.getElementById('hor_calTitle').textContent='Delivery Calendar — '+monthName;
+  let startDow=(first.getDay()+6)%7;
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const todayStr=new Date().toISOString().slice(0,10);
+  let cells='';
+  for(let i=0;i<startDow;i++)cells+=`<div class="aspect-square"></div>`;
+  let mk=0,mkg=0,mamt=0;
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const evs=CAL_DATA[ds]||[];
+    if(evs.length){mk+=evs.length;evs.forEach(e=>{mkg+=e.qty_kg;mamt+=e.amount;});}
+    const isToday=ds===todayStr;
+    cells+=`<div onclick="showDay('${ds}')" class="aspect-square rounded-lg border ${evs.length?'bg-green-50 border-green-300 cursor-pointer hover:bg-green-100':'bg-white border-gray-100'} ${isToday?'ring-2 ring-orange-500':''} p-1 flex flex-col items-center justify-center relative">
+      <span class="text-[11px] ${evs.length?'font-bold text-green-900':'text-gray-400'}">${d}</span>
+      ${evs.length?`<span class="text-[8px] font-bold text-green-700">${evs.length}×</span><span class="absolute bottom-0.5 w-1 h-1 rounded-full bg-green-600"></span>`:''}
+    </div>`;
+  }
+  document.getElementById('hor_calGrid').innerHTML=cells;
+  document.getElementById('hor_k1').textContent=mk;
+  document.getElementById('hor_k2').textContent=mkg+' Kg';
+  document.getElementById('hor_k3').textContent=money(mamt);
+}
+function showDay(ds){
+  const evs=CAL_DATA[ds]||[];const box=document.getElementById('hor_dayDetail');
+  if(!evs.length){box.classList.add('hidden');return;}
+  box.classList.remove('hidden');
+  const total=evs.reduce((s,e)=>s+e.amount,0);
+  box.innerHTML=`<div class="font-bold text-[13px]">📦 Scheduled deliveries • ${new Date(ds).toDateString()}</div>
+    <div class="mt-2 space-y-1.5">${evs.map(e=>`
+      <div class="flex items-center justify-between text-[12px] p-2 rounded-lg bg-gray-50">
+        <span>${cropIcon(e.crop_name)} <b>${e.crop_name}</b> ${e.qty_kg}Kg <span class="text-gray-400">• ${e.time_slot}</span></span>
+        <span class="font-bold">${money(e.amount)}</span>
+      </div>`).join('')}</div>
+    <div class="mt-2 pt-2 border-t flex justify-between text-[13px] font-bold"><span>Day total</span><span class="text-green-800">${money(total)}</span></div>`;
+}
+
+/* ---------- buyer event bindings ---------- */
+function bindBuyerEvents(){
+  bindOnboarding();bindHoReCa();
+  ['ind_search','ind_grade','ind_sort'].forEach(id=>{
+    const e=document.getElementById(id);
+    e.addEventListener(id==='ind_search'?'input':'change',renderMarket);
+  });
+  document.getElementById('ind_cartBtn').addEventListener('click',()=>{CART_CTX='individual';openCart();});
+  document.getElementById('com_cartBtn').addEventListener('click',()=>{CART_CTX='community';openCart();});
+  document.getElementById('cartClose').addEventListener('click',closeCart);
+  document.getElementById('cartBackdrop').addEventListener('click',closeCart);
+  document.getElementById('coClose').addEventListener('click',closeCheckout);
+  document.getElementById('coBackdrop').addEventListener('click',closeCheckout);
+  document.getElementById('co_pay_btn').addEventListener('click',payNow);
+  document.getElementById('trBackdrop').addEventListener('click',()=>document.getElementById('trackModal').classList.add('hidden'));
+  document.getElementById('pmBackdrop').addEventListener('click',()=>document.getElementById('poolModal').classList.add('hidden'));
+  document.getElementById('co_pay').addEventListener('change',e=>{
+    document.querySelectorAll('#co_pay label').forEach(l=>l.className='flex items-center gap-3 p-3 rounded-xl border cursor-pointer');
+    e.target.closest('label').className='flex items-center gap-3 p-3 rounded-xl border-2 border-green-700 bg-green-50 cursor-pointer';
+  });
+  updateCartUI();
+}
 function simulateTracking(){const steps=document.querySelectorAll('.timeline-step');const activeLine=document.getElementById('timelineProgressActive');let current=0;const interval=setInterval(()=>{if(current>=steps.length){clearInterval(interval);toast('💸 UPI Payout Completed!');return;}steps[current].classList.remove('opacity-60');const circle=steps[current].querySelector('div:first-child');circle.classList.remove('bg-white','border-2','border-gray-300');circle.classList.add('bg-green-600','text-white');circle.innerHTML='✓';const progress=((current+1)/steps.length)*100;activeLine.style.height=`${progress}%`;const pick=document.getElementById('pickProgress');if(pick)pick.style.width=`${progress}%`;current++;},1200);}
 function speakText(text){if('speechSynthesis' in window){const utter=new SpeechSynthesisUtterance(text);utter.lang='en-IN';utter.rate=0.95;speechSynthesis.speak(utter);}}
 function toast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),3500);}

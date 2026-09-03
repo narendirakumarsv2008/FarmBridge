@@ -59,10 +59,43 @@
 - Buyer order triggers auto-progression
 
 ### 5. Buyer Portal
-- Marketplace grid of all farmer listings
-- Filters by crop, grade
-- Shows AI grade, expiry, Mandi vs Platform price, farmer info
-- Place Order → triggers status updates & UPI payout simulation
+
+#### Onboarding
+- **Name & phone auto-filled** from the login session (read-only, marked AUTO)
+- Asks for **email address** + **home/delivery address**
+- **"Use my current location"** button — browser geolocation + OpenStreetMap reverse
+  geocoding auto-fills address, city and pincode (no API key needed)
+- Then asks for buyer type: **Individual / Community / HoReCa** → routes to that portal
+- Profile saved to `buyers` table, remembered on next visit
+
+#### 5a. Individual Portal (Blinkit/Zepto style)
+- Live product grid from the **saved farmer database**
+- **Daily live updates** of qty & price (`/api/market` — stable per-day drift so prices
+  move once a day), photos, A/B/C grades, harvest timestamp ("Harvested yesterday")
+- Stock bar + LOW STOCK badge, ▲▼ price change, mandi price strikethrough & savings
+- Category chips, search, grade filter, sort by fresh/price
+- **Cart** drawer with qty steppers, free delivery above ₹500
+- **Checkout** with UPI / Card / Netbanking / COD
+- **Live delivery tracking**: Order Placed → Farmer Confirmed → Harvest Packed →
+  Out for Delivery → Delivered (auto-advances, ETA countdown)
+- Stock is decremented on the farmer listing when an order is placed
+
+#### 5b. Community Portal (Pool-Buy)
+- **Pool-Buy widget** for apartments, housing societies & restaurants
+- `Current Pool: 320/500 kg — 18 hrs left to unlock wholesale price` with live countdown
+- **Automatic price drops as collective volume grows**:
+  25% → −4%, 50% → −8%, 75% → −12%, 100% → **−18% full wholesale**
+- Tier markers on the progress bar, "add X kg more to unlock −Y%" nudge
+- Join modal previews your new price, total and saving *before* confirming
+- Price can only go down; everyone in the pool gets the unlocked rate
+
+#### 5c. HoReCa Portal (Recurring & Scheduled Procurement)
+- **New Subscription** builder: produce from live stock, qty/delivery, contract rate
+  (7% below retail), frequency (Daily / Alternate Days / Weekly / Monthly),
+  weekday picker, time slot, start & end date, live monthly cost preview
+- **Delivery Calendar**: month grid auto-generated from active subscriptions,
+  month navigation, per-day breakdown, KPIs for deliveries / volume / est. spend
+- **Active Plans**: pause, resume or cancel any subscription (calendar updates live)
 
 ## 🛠 Tech Stack
 - **Frontend**: HTML5, TailwindCSS CDN, Vanilla JS, Web Speech API, Google Fonts
@@ -93,6 +126,20 @@ FarmBridge/
 - Voice wave animation, mic pulse
 - Responsive, mobile-friendly
 - No build step needed
+
+## 🔌 Buyer API Endpoints
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET/POST | `/api/buyer/profile` | Buyer details (email, address, geo, type) |
+| GET | `/api/market` | Live crops from farmer DB (daily qty/price) |
+| POST/GET | `/api/orders` | Create / list orders |
+| PUT | `/api/orders/<id>/advance` | Advance delivery status |
+| GET | `/api/pools` | Active community pools + live tier pricing |
+| POST | `/api/pools/<id>/join` | Add volume to a pool |
+| GET/POST | `/api/subscriptions` | HoReCa recurring plans |
+| PUT/DELETE | `/api/subscriptions/<id>` | Pause / resume / cancel |
+| GET | `/api/subscriptions/calendar` | Expanded delivery schedule |
 
 ## 🔮 Future
 - Integrate real eNAM API, UPI AutoPay, LLM for better voice parsing (Whisper), image disease detection.

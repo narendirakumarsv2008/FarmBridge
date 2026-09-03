@@ -76,6 +76,86 @@ def init_db():
         role TEXT,
         created_at TEXT
     )''')
+    c.execute('''CREATE TABLE IF NOT EXISTS buyers (
+        phone TEXT PRIMARY KEY,
+        name TEXT,
+        email TEXT,
+        address TEXT,
+        landmark TEXT,
+        city TEXT,
+        pincode TEXT,
+        latitude REAL,
+        longitude REAL,
+        buyer_type TEXT,
+        org_name TEXT,
+        created_at TEXT,
+        updated_at TEXT
+    )''')
+    c.execute('''CREATE TABLE IF NOT EXISTS orders (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        order_code TEXT,
+        buyer_phone TEXT,
+        buyer_name TEXT,
+        buyer_type TEXT,
+        items TEXT,
+        subtotal REAL,
+        delivery_fee REAL,
+        discount REAL,
+        total REAL,
+        payment_method TEXT,
+        payment_status TEXT,
+        status TEXT,
+        address TEXT,
+        eta_minutes INTEGER,
+        source TEXT,
+        created_at TEXT
+    )''')
+    c.execute('''CREATE TABLE IF NOT EXISTS pools (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        crop_name TEXT,
+        listing_id INTEGER,
+        photo TEXT,
+        grade TEXT,
+        base_price REAL,
+        target_kg INTEGER,
+        seeded_kg INTEGER,
+        ends_at TEXT,
+        location TEXT,
+        farmer_name TEXT,
+        status TEXT,
+        created_at TEXT
+    )''')
+    c.execute('''CREATE TABLE IF NOT EXISTS pool_joins (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        pool_id INTEGER,
+        buyer_phone TEXT,
+        buyer_name TEXT,
+        org_name TEXT,
+        qty_kg INTEGER,
+        joined_at TEXT
+    )''')
+    c.execute('''CREATE TABLE IF NOT EXISTS subscriptions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        buyer_phone TEXT,
+        buyer_name TEXT,
+        org_name TEXT,
+        crop_name TEXT,
+        listing_id INTEGER,
+        qty_kg INTEGER,
+        price_per_kg REAL,
+        frequency TEXT,
+        weekdays TEXT,
+        time_slot TEXT,
+        start_date TEXT,
+        end_date TEXT,
+        active INTEGER DEFAULT 1,
+        created_at TEXT
+    )''')
+    # additive column for stock tracking on existing DBs
+    try:
+        c.execute('ALTER TABLE listings ADD COLUMN sold_kg INTEGER DEFAULT 0')
+    except Exception:
+        pass
     conn.commit()
     conn.close()
 
@@ -471,6 +551,508 @@ def stats():
         'farmers_connected': total * 3 + 1247,
         'avg_uplift': '18.7%'
     })
+
+
+# ==========================================================
+#  BUYER PORTAL  —  profile, market, cart/orders,
+#                   community pool-buy, HoReCa subscriptions
+# ==========================================================
+
+POOL_TIERS = [
+    (0,   0,  'Base price'),
+    (25,  4,  'Early pool bonus'),
+    (50,  8,  'Half batch unlocked'),
+    (75,  12, 'Bulk rate unlocked'),
+    (100, 18, 'Full wholesale price'),
+]
+
+DELIVERY_FEE = 25
+FREE_DELIVERY_ABOVE = 500
+
+
+def _row_to_dict(r):
+    return {k: r[k] for k in r.keys()}
+
+
+def _daily_seed(key):
+    """Stable pseudo-random per (key, day) so prices move once a day."""
+    today = datetime.now().strftime('%Y-%m-%d')
+    return random.Random(f'{key}-{today}')
+
+
+def live_price_for(listing):
+    """Daily-updating live price derived from the farmer's listed price."""
+    base = float(listing.get('platform_price') or listing.get('price') or 0)
+    rnd = _daily_seed(f"price-{listing.get('id')}")
+    drift = rnd.uniform(-0.06, 0.08)
+    live = round(max(1.0, base * (1 + drift)), 2)
+    return live, round((live - base) / base * 100, 1) if base else 0.0
+
+
+def available_kg(listing):
+    """Remaining stock = listed qty - sold, with a daily demand nibble."""
+    try:
+        total = int(re.sub(r'\D', '', str(listing.get('quantity') or '0')) or 0)
+    except Exception:
+        total = 0
+    sold = int(listing.get('sold_kg') or 0)
+    rnd = _daily_seed(f"demand-{listing.get('id')}")
+    nibble = int(total * rnd.uniform(0.02, 0.18))
+    return max(0, total - sold - nibble), total
+
+
+def enrich_listing(l):
+    live, change = live_price_for(l)
+    avail, total = available_kg(l)
+    harvest = l.get('harvest_date') or ''
+    try:
+        hd = datetime.strptime(harvest, '%Y-%m-%d')
+        age_days = (datetime.now() - hd).days
+        harvest_display = hd.strftime('%d %b %Y')
+    except Exception:
+        age_days = 0
+        harvest_display = harvest
+    if age_days <= 0:
+        freshness_label = 'Harvested today'
+    elif age_days == 1:
+        freshness_label = 'Harvested yesterday'
+    else:
+        freshness_label = f'Harvested {age_days} days ago'
+    mandi = float(l.get('mandi_price') or 0)
+    l.update({
+        'live_price': live,
+        'price_change_pct': change,
+        'available_kg': avail,
+        'total_kg': total,
+        'stock_pct': round((avail / total) * 100) if total else 0,
+        'harvest_display': harvest_display,
+        'harvest_age_days': age_days,
+        'freshness_label': freshness_label,
+        'mandi_price': mandi,
+        'savings_vs_mandi': round(mandi - live, 2) if mandi else 0,
+        'unit': 'Kg',
+    })
+    return l
+
+
+@app.route('/api/buyer/profile', methods=['GET'])
+def get_buyer_profile():
+    phone = request.args.get('phone', '').strip()
+    if not phone:
+        return jsonify({'error': 'phone required'}), 400
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute('SELECT * FROM buyers WHERE phone=?', (phone,))
+    row = c.fetchone()
+    conn.close()
+    if not row:
+        return jsonify({'found': False})
+    return jsonify({'found': True, 'profile': _row_to_dict(row)})
+
+
+@app.route('/api/buyer/profile', methods=['POST'])
+def save_buyer_profile():
+    data = request.json or {}
+    name = (data.get('name') or '').strip()
+    phone = re.sub(r'\D', '', data.get('phone') or '')
+    email = (data.get('email') or '').strip()
+    address = (data.get('address') or '').strip()
+    buyer_type = (data.get('buyer_type') or '').strip()
+
+    if not name or not phone:
+        return jsonify({'error': 'Name and phone come from login and are required'}), 400
+    ok, msg, digits = validate_phone(phone)
+    if not ok:
+        return jsonify({'error': f'Invalid phone: {msg}'}), 400
+    if not re.match(r'^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$', email):
+        return jsonify({'error': 'Enter a valid email address'}), 400
+    if len(address) < 8:
+        return jsonify({'error': 'Home address must be at least 8 characters'}), 400
+    if buyer_type not in ('Individual', 'Community', 'HoReCa'):
+        return jsonify({'error': 'Choose Individual, Community or HoReCa'}), 400
+
+    now = datetime.now().isoformat()
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("""INSERT INTO buyers
+        (phone,name,email,address,landmark,city,pincode,latitude,longitude,buyer_type,org_name,created_at,updated_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+        ON CONFLICT(phone) DO UPDATE SET
+          name=excluded.name, email=excluded.email, address=excluded.address,
+          landmark=excluded.landmark, city=excluded.city, pincode=excluded.pincode,
+          latitude=excluded.latitude, longitude=excluded.longitude,
+          buyer_type=excluded.buyer_type, org_name=excluded.org_name, updated_at=excluded.updated_at""",
+        (digits, name, email, address, data.get('landmark', ''), data.get('city', ''),
+         data.get('pincode', ''), data.get('latitude'), data.get('longitude'),
+         buyer_type, data.get('org_name', ''), now, now))
+    conn.commit()
+    conn.close()
+    return jsonify({'success': True, 'profile': {
+        'phone': digits, 'name': name, 'email': email, 'address': address,
+        'buyer_type': buyer_type, 'org_name': data.get('org_name', '')
+    }})
+
+
+@app.route('/api/market', methods=['GET'])
+def market():
+    """All crops from the saved farmer database with live qty/price."""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute('SELECT * FROM listings ORDER BY created_at DESC')
+    rows = [_row_to_dict(r) for r in c.fetchall()]
+    conn.close()
+    items = [enrich_listing(l) for l in rows]
+    items = [i for i in items if i['available_kg'] > 0]
+    return jsonify({
+        'items': items,
+        'count': len(items),
+        'updated_at': datetime.now().isoformat(),
+        'next_price_refresh': (datetime.now().replace(hour=0, minute=0, second=0) + timedelta(days=1)).isoformat()
+    })
+
+
+@app.route('/api/orders', methods=['POST'])
+def create_order():
+    data = request.json or {}
+    items = data.get('items') or []
+    phone = re.sub(r'\D', '', data.get('buyer_phone') or '')
+    if not items:
+        return jsonify({'error': 'Cart is empty'}), 400
+    if not phone:
+        return jsonify({'error': 'Buyer phone required'}), 400
+
+    subtotal = 0.0
+    for it in items:
+        subtotal += float(it.get('price', 0)) * float(it.get('qty', 0))
+    subtotal = round(subtotal, 2)
+    discount = round(float(data.get('discount') or 0), 2)
+    delivery = 0 if subtotal >= FREE_DELIVERY_ABOVE else DELIVERY_FEE
+    total = round(subtotal - discount + delivery, 2)
+
+    order_code = 'FB' + datetime.now().strftime('%y%m%d') + str(random.randint(1000, 9999))
+    eta = random.randint(12, 25)
+    now = datetime.now().isoformat()
+
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("""INSERT INTO orders
+        (order_code,buyer_phone,buyer_name,buyer_type,items,subtotal,delivery_fee,discount,total,
+         payment_method,payment_status,status,address,eta_minutes,source,created_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+        (order_code, phone, data.get('buyer_name', ''), data.get('buyer_type', 'Individual'),
+         json.dumps(items), subtotal, delivery, discount, total,
+         data.get('payment_method', 'UPI'),
+         'Paid' if data.get('payment_method') != 'COD' else 'Pay on delivery',
+         'Order Placed', data.get('address', ''), eta,
+         data.get('source', 'individual'), now))
+    oid = c.lastrowid
+    # decrement farmer stock
+    for it in items:
+        if it.get('listing_id'):
+            c.execute('UPDATE listings SET sold_kg = COALESCE(sold_kg,0) + ? WHERE id=?',
+                      (int(it.get('qty', 0)), int(it['listing_id'])))
+    conn.commit()
+    conn.close()
+
+    return jsonify({'success': True, 'id': oid, 'order_code': order_code,
+                    'subtotal': subtotal, 'delivery_fee': delivery, 'discount': discount,
+                    'total': total, 'eta_minutes': eta, 'status': 'Order Placed'})
+
+
+ORDER_FLOW = ['Order Placed', 'Farmer Confirmed', 'Harvest Packed',
+              'Out for Delivery', 'Delivered']
+
+
+@app.route('/api/orders', methods=['GET'])
+def list_orders():
+    phone = request.args.get('phone', '').strip()
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    if phone:
+        c.execute('SELECT * FROM orders WHERE buyer_phone=? ORDER BY id DESC', (phone,))
+    else:
+        c.execute('SELECT * FROM orders ORDER BY id DESC')
+    rows = []
+    for r in c.fetchall():
+        d = _row_to_dict(r)
+        try:
+            d['items'] = json.loads(d['items'])
+        except Exception:
+            d['items'] = []
+        d['flow'] = ORDER_FLOW
+        d['step_index'] = ORDER_FLOW.index(d['status']) if d['status'] in ORDER_FLOW else 0
+        rows.append(d)
+    conn.close()
+    return jsonify(rows)
+
+
+@app.route('/api/orders/<int:order_id>/advance', methods=['PUT'])
+def advance_order(order_id):
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute('SELECT status FROM orders WHERE id=?', (order_id,))
+    row = c.fetchone()
+    if not row:
+        conn.close()
+        return jsonify({'error': 'Order not found'}), 404
+    cur = row['status']
+    idx = ORDER_FLOW.index(cur) if cur in ORDER_FLOW else 0
+    nxt = ORDER_FLOW[min(idx + 1, len(ORDER_FLOW) - 1)]
+    c.execute('UPDATE orders SET status=? WHERE id=?', (nxt, order_id))
+    conn.commit()
+    conn.close()
+    return jsonify({'success': True, 'status': nxt,
+                    'step_index': ORDER_FLOW.index(nxt), 'flow': ORDER_FLOW})
+
+
+# ----------------------- COMMUNITY POOL-BUY -----------------------
+
+def pool_discount(pct_filled):
+    disc, label = 0, 'Base price'
+    for threshold, d, lbl in POOL_TIERS:
+        if pct_filled >= threshold:
+            disc, label = d, lbl
+    return disc, label
+
+
+def next_tier(pct_filled):
+    for threshold, d, lbl in POOL_TIERS:
+        if pct_filled < threshold:
+            return {'at_pct': threshold, 'discount': d, 'label': lbl}
+    return None
+
+
+def seed_pools_if_needed():
+    """Create a live pool for the freshest listings so the widget always has data."""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute("SELECT COUNT(*) FROM pools WHERE status='open'")
+    if c.fetchone()[0] >= 3:
+        conn.close()
+        return
+    c.execute('SELECT * FROM listings ORDER BY created_at DESC LIMIT 6')
+    listings = [_row_to_dict(r) for r in c.fetchall()]
+    for l in listings:
+        c.execute("SELECT COUNT(*) FROM pools WHERE listing_id=? AND status='open'", (l['id'],))
+        if c.fetchone()[0]:
+            continue
+        rnd = _daily_seed(f"pool-{l['id']}")
+        target = rnd.choice([300, 500, 750, 1000])
+        seeded = int(target * rnd.uniform(0.25, 0.72))
+        ends = datetime.now() + timedelta(hours=rnd.randint(6, 36))
+        c.execute("""INSERT INTO pools
+            (crop_name,listing_id,photo,grade,base_price,target_kg,seeded_kg,ends_at,location,farmer_name,status,created_at)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
+            (l['crop_name'], l['id'], l.get('photo', ''), l.get('grade', 'A'),
+             float(l.get('platform_price') or l.get('price') or 20), target, seeded,
+             ends.isoformat(), l.get('location', ''), l.get('farmer_name', ''),
+             'open', datetime.now().isoformat()))
+    conn.commit()
+    conn.close()
+
+
+@app.route('/api/pools', methods=['GET'])
+def get_pools():
+    seed_pools_if_needed()
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute("SELECT * FROM pools WHERE status='open' ORDER BY id DESC")
+    pools = [_row_to_dict(r) for r in c.fetchall()]
+    out = []
+    for p in pools:
+        c.execute('SELECT COALESCE(SUM(qty_kg),0) FROM pool_joins WHERE pool_id=?', (p['id'],))
+        joined = c.fetchone()[0] or 0
+        c.execute('SELECT COUNT(DISTINCT buyer_phone) FROM pool_joins WHERE pool_id=?', (p['id'],))
+        members = c.fetchone()[0] or 0
+        current = int(p['seeded_kg']) + int(joined)
+        pct = min(100, round(current / p['target_kg'] * 100)) if p['target_kg'] else 0
+        disc, label = pool_discount(pct)
+        base = float(p['base_price'])
+        price_now = round(base * (1 - disc / 100), 2)
+        try:
+            ends = datetime.fromisoformat(p['ends_at'])
+        except Exception:
+            ends = datetime.now() + timedelta(hours=12)
+        secs_left = max(0, int((ends - datetime.now()).total_seconds()))
+        nt = next_tier(pct)
+        kg_to_next = 0
+        if nt:
+            kg_to_next = max(0, int(p['target_kg'] * nt['at_pct'] / 100) - current)
+        p.update({
+            'current_kg': current, 'members': members + 3, 'pct': pct,
+            'discount_pct': disc, 'tier_label': label,
+            'price_now': price_now, 'base_price': base,
+            'seconds_left': secs_left, 'hours_left': round(secs_left / 3600, 1),
+            'unlocked': pct >= 100, 'next_tier': nt, 'kg_to_next_tier': kg_to_next,
+            'tiers': [{'at_pct': t[0], 'discount': t[1], 'label': t[2],
+                       'price': round(base * (1 - t[1] / 100), 2)} for t in POOL_TIERS],
+        })
+        out.append(p)
+    conn.close()
+    return jsonify(out)
+
+
+@app.route('/api/pools/<int:pool_id>/join', methods=['POST'])
+def join_pool(pool_id):
+    data = request.json or {}
+    qty = int(data.get('qty_kg') or 0)
+    if qty <= 0:
+        return jsonify({'error': 'Enter quantity in Kg to pool'}), 400
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("""INSERT INTO pool_joins (pool_id,buyer_phone,buyer_name,org_name,qty_kg,joined_at)
+                 VALUES (?,?,?,?,?,?)""",
+              (pool_id, re.sub(r'\D', '', data.get('buyer_phone') or ''),
+               data.get('buyer_name', ''), data.get('org_name', ''), qty,
+               datetime.now().isoformat()))
+    conn.commit()
+    conn.close()
+    return jsonify({'success': True})
+
+
+# ----------------------- HoReCa SUBSCRIPTIONS -----------------------
+
+@app.route('/api/subscriptions', methods=['POST'])
+def create_subscription():
+    data = request.json or {}
+    phone = re.sub(r'\D', '', data.get('buyer_phone') or '')
+    crop = (data.get('crop_name') or '').strip()
+    qty = int(data.get('qty_kg') or 0)
+    freq = data.get('frequency') or 'Weekly'
+    weekdays = data.get('weekdays') or []
+    if not phone or not crop or qty <= 0:
+        return jsonify({'error': 'Crop, quantity (Kg) and buyer are required'}), 400
+    if freq in ('Weekly', 'Custom') and not weekdays:
+        return jsonify({'error': 'Pick at least one delivery day'}), 400
+
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("""INSERT INTO subscriptions
+        (buyer_phone,buyer_name,org_name,crop_name,listing_id,qty_kg,price_per_kg,frequency,
+         weekdays,time_slot,start_date,end_date,active,created_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+        (phone, data.get('buyer_name', ''), data.get('org_name', ''), crop,
+         data.get('listing_id'), qty, float(data.get('price_per_kg') or 0), freq,
+         json.dumps(weekdays), data.get('time_slot', '6:00 AM - 8:00 AM'),
+         data.get('start_date') or datetime.now().strftime('%Y-%m-%d'),
+         data.get('end_date', ''), 1, datetime.now().isoformat()))
+    sid = c.lastrowid
+    conn.commit()
+    conn.close()
+    return jsonify({'success': True, 'id': sid})
+
+
+@app.route('/api/subscriptions', methods=['GET'])
+def list_subscriptions():
+    phone = request.args.get('phone', '').strip()
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    if phone:
+        c.execute('SELECT * FROM subscriptions WHERE buyer_phone=? ORDER BY id DESC', (phone,))
+    else:
+        c.execute('SELECT * FROM subscriptions ORDER BY id DESC')
+    subs = []
+    for r in c.fetchall():
+        d = _row_to_dict(r)
+        try:
+            d['weekdays'] = json.loads(d['weekdays'] or '[]')
+        except Exception:
+            d['weekdays'] = []
+        subs.append(d)
+    conn.close()
+    return jsonify(subs)
+
+
+@app.route('/api/subscriptions/<int:sub_id>', methods=['PUT'])
+def toggle_subscription(sub_id):
+    data = request.json or {}
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    if 'active' in data:
+        c.execute('UPDATE subscriptions SET active=? WHERE id=?',
+                  (1 if data['active'] else 0, sub_id))
+    if 'qty_kg' in data:
+        c.execute('UPDATE subscriptions SET qty_kg=? WHERE id=?',
+                  (int(data['qty_kg']), sub_id))
+    conn.commit()
+    conn.close()
+    return jsonify({'success': True})
+
+
+@app.route('/api/subscriptions/<int:sub_id>', methods=['DELETE'])
+def delete_subscription(sub_id):
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute('DELETE FROM subscriptions WHERE id=?', (sub_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({'success': True})
+
+
+WEEKDAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+
+@app.route('/api/subscriptions/calendar', methods=['GET'])
+def subscription_calendar():
+    """Expand active subscriptions into scheduled deliveries for N days."""
+    phone = request.args.get('phone', '').strip()
+    days = int(request.args.get('days') or 30)
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    if phone:
+        c.execute('SELECT * FROM subscriptions WHERE buyer_phone=? AND active=1', (phone,))
+    else:
+        c.execute('SELECT * FROM subscriptions WHERE active=1')
+    subs = [_row_to_dict(r) for r in c.fetchall()]
+    conn.close()
+
+    schedule = {}
+    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    for sub in subs:
+        try:
+            wd = json.loads(sub.get('weekdays') or '[]')
+        except Exception:
+            wd = []
+        try:
+            start = datetime.strptime(sub['start_date'], '%Y-%m-%d')
+        except Exception:
+            start = today
+        for i in range(days):
+            day = today + timedelta(days=i)
+            if day < start:
+                continue
+            name = WEEKDAY_NAMES[day.weekday()]
+            hit = False
+            if sub['frequency'] == 'Daily':
+                hit = True
+            elif sub['frequency'] in ('Weekly', 'Custom'):
+                hit = name in wd
+            elif sub['frequency'] == 'Alternate Days':
+                hit = ((day - start).days % 2) == 0
+            elif sub['frequency'] == 'Monthly':
+                hit = day.day == start.day
+            if hit:
+                key = day.strftime('%Y-%m-%d')
+                schedule.setdefault(key, []).append({
+                    'sub_id': sub['id'], 'crop_name': sub['crop_name'],
+                    'qty_kg': sub['qty_kg'], 'price_per_kg': sub['price_per_kg'],
+                    'time_slot': sub['time_slot'],
+                    'amount': round(float(sub['qty_kg']) * float(sub['price_per_kg'] or 0), 2),
+                })
+    total_kg = sum(d['qty_kg'] for v in schedule.values() for d in v)
+    total_amt = sum(d['amount'] for v in schedule.values() for d in v)
+    return jsonify({'schedule': schedule, 'days': days,
+                    'total_kg': total_kg, 'total_amount': round(total_amt, 2),
+                    'delivery_count': sum(len(v) for v in schedule.values())})
+
 
 if __name__ == '__main__':
     # index.html is now in main root, not templates
