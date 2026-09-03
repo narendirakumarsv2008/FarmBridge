@@ -39,7 +39,7 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
 <header id="appHeader" class="sticky top-0 z-50 glass border-b border-green-900/10">
   <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-[60px] sm:h-[72px]">
-      <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+      <div id="homeLogo" class="flex items-center gap-2 sm:gap-3 min-w-0 cursor-pointer" title="Go to home">
         <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-[12px] sm:rounded-[14px] bg-gradient-to-br from-green-700 to-green-900 flex items-center justify-center shadow-lg shadow-green-900/20 shrink-0">
           <svg width="20" height="20" class="sm:w-[26px] sm:h-[26px]" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         </div>
@@ -50,6 +50,10 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
         </div>
       </div>
       <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <button id="homeBtn" class="hidden items-center gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-full bg-green-800 text-white text-[12px] sm:text-[13px] font-bold hover:bg-green-900 transition active:scale-95 shrink-0" title="Back to home">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span class="hidden xs:inline">Home</span>
+        </button>
         <div id="userChip" class="hidden items-center gap-2 pl-1.5 pr-2.5 sm:pl-2 sm:pr-3 py-1 sm:py-1.5 rounded-full bg-white border shadow-sm max-w-[160px] sm:max-w-none">
           <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gradient-to-br from-orange-400 to-green-600 flex items-center justify-center text-white font-bold text-[10px] sm:text-xs shrink-0" id="userInitial">A</div>
           <div class="text-sm leading-tight min-w-0 hidden xs:block">
@@ -199,6 +203,10 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
 
 <!-- FARMER PORTAL -->
 <section id="farmerPortal" class="hidden">
+  <div class="flex items-center gap-2 mb-3 sm:mb-4">
+    <button onclick="goHome()" class="h-10 px-3.5 rounded-xl border border-gray-200 bg-white flex items-center gap-1.5 shrink-0 active:scale-95 text-[13px] font-bold text-gray-700 hover:bg-gray-50" title="Go to home">🏠 <span>Home</span></button>
+    <span class="text-[12px] text-gray-400">FARMER PORTAL</span>
+  </div>
   <div class="flex flex-col xl:flex-row gap-4 sm:gap-6">
     <div class="flex-1 space-y-4 sm:space-y-6 min-w-0">
       <div class="glass rounded-[18px] sm:rounded-[24px] border border-white shadow-xl shadow-black/5 overflow-hidden">
@@ -329,6 +337,9 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
 <!-- ============ BUYER ONBOARDING (details) ============ -->
 <section id="buyerOnboard" class="hidden">
   <div class="max-w-3xl mx-auto">
+    <div class="flex items-center gap-2 pt-1">
+      <button onclick="goHome()" class="h-10 px-3.5 rounded-xl border border-gray-200 bg-white flex items-center gap-1.5 active:scale-95 text-[13px] font-bold text-gray-700 hover:bg-gray-50" title="Go to home">🏠 <span>Home</span></button>
+    </div>
     <div class="text-center py-4 sm:py-6 px-2">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-800 text-[10px] sm:text-xs font-bold tracking-widest">BUYER SETUP • STEP 1 OF 2</div>
       <h1 class="mt-3 font-farm text-[26px] sm:text-[38px] leading-[0.95] tracking-tight">Tell us where to <span class="font-bridge font-light italic text-orange-500">deliver.</span></h1>
@@ -394,6 +405,10 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
 <!-- ============ BUYER TYPE SELECTION ============ -->
 <section id="buyerTypePage" class="hidden">
   <div class="max-w-6xl mx-auto">
+    <div class="flex items-center gap-2 pt-1">
+      <button id="btBack" class="h-10 w-10 rounded-xl border border-gray-200 bg-white flex items-center justify-center active:scale-95" title="Back to details">←</button>
+      <button onclick="goHome()" class="h-10 px-3.5 rounded-xl border border-gray-200 bg-white flex items-center gap-1.5 active:scale-95 text-[13px] font-bold text-gray-700 hover:bg-gray-50" title="Go to home">🏠 <span>Home</span></button>
+    </div>
     <div class="text-center py-4 sm:py-8 px-2">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 border border-green-200 text-green-800 text-[10px] sm:text-xs font-bold tracking-widest">BUYER SETUP • STEP 2 OF 2</div>
       <h1 class="mt-3 sm:mt-4 font-farm text-[26px] sm:text-[40px] leading-[0.92] tracking-tight">How do you <span class="font-bridge font-light italic text-orange-500">buy?</span></h1>
@@ -458,7 +473,7 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
   <!-- top bar -->
   <div class="sticky top-[60px] sm:top-[72px] z-40 -mx-3 sm:-mx-6 lg:-mx-8 px-3 sm:px-6 lg:px-8 py-2.5 bg-white/90 backdrop-blur border-b border-gray-100">
     <div class="flex items-center gap-2 sm:gap-3">
-      <button class="backToTypes h-10 w-10 rounded-xl border border-gray-200 bg-white flex items-center justify-center shrink-0 active:scale-95">←</button>
+      <button class="backToTypes h-10 w-10 rounded-xl border border-gray-200 bg-white flex items-center justify-center shrink-0 active:scale-95" title="Back to buyer type">←</button><button onclick="goHome()" class="h-10 px-3 rounded-xl border border-gray-200 bg-white flex items-center justify-center gap-1.5 shrink-0 active:scale-95 text-[12px] font-bold text-gray-700 hover:bg-gray-50" title="Go to home">🏠<span class="hidden sm:inline">Home</span></button>
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-1.5 text-[11px] text-gray-500">
           <span class="text-green-700 font-bold">⚡ Delivery in <span id="ind_eta">14</span> min</span>
@@ -478,6 +493,7 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
       <select id="ind_sort" class="h-10 rounded-xl border border-gray-200 bg-white px-2 text-[13px]">
         <option value="fresh">Freshest</option><option value="low">Price ↓</option><option value="high">Price ↑</option>
       </select>
+      <button id="ind_refresh" class="h-10 w-10 rounded-xl bg-gray-900 text-white flex items-center justify-center shrink-0 active:scale-95" title="Refresh live farm stock">↻</button>
     </div>
   </div>
 
@@ -509,7 +525,7 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
 <!-- ============ COMMUNITY PORTAL ============ -->
 <section id="communityPortal" class="hidden">
   <div class="flex items-center gap-3 mb-4">
-    <button class="backToTypes h-10 w-10 rounded-xl border border-gray-200 bg-white flex items-center justify-center shrink-0 active:scale-95">←</button>
+    <button class="backToTypes h-10 w-10 rounded-xl border border-gray-200 bg-white flex items-center justify-center shrink-0 active:scale-95" title="Back to buyer type">←</button><button onclick="goHome()" class="h-10 px-3 rounded-xl border border-gray-200 bg-white flex items-center justify-center gap-1.5 shrink-0 active:scale-95 text-[12px] font-bold text-gray-700 hover:bg-gray-50" title="Go to home">🏠<span class="hidden sm:inline">Home</span></button>
     <div class="min-w-0 flex-1">
       <h2 class="font-farm text-[24px] sm:text-[32px] leading-none">COMMUNITY <span class="font-bridge font-light italic text-orange-600">Pool-Buy</span></h2>
       <p class="text-[12px] sm:text-sm text-gray-500 mt-0.5" id="com_org">Pool demand • Unlock wholesale price</p>
@@ -537,7 +553,7 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
 <!-- ============ HoReCa PORTAL ============ -->
 <section id="horecaPortal" class="hidden">
   <div class="flex items-center gap-3 mb-4">
-    <button class="backToTypes h-10 w-10 rounded-xl border border-gray-200 bg-white flex items-center justify-center shrink-0 active:scale-95">←</button>
+    <button class="backToTypes h-10 w-10 rounded-xl border border-gray-200 bg-white flex items-center justify-center shrink-0 active:scale-95" title="Back to buyer type">←</button><button onclick="goHome()" class="h-10 px-3 rounded-xl border border-gray-200 bg-white flex items-center justify-center gap-1.5 shrink-0 active:scale-95 text-[12px] font-bold text-gray-700 hover:bg-gray-50" title="Go to home">🏠<span class="hidden sm:inline">Home</span></button>
     <div class="min-w-0 flex-1">
       <h2 class="font-farm text-[24px] sm:text-[32px] leading-none">HoReCa <span class="font-bridge font-light italic text-orange-600">Procurement</span></h2>
       <p class="text-[12px] sm:text-sm text-gray-500 mt-0.5" id="hor_org">Recurring subscriptions & scheduled ordering</p>
@@ -835,7 +851,7 @@ function updateLoginButton(){
 }
 
 function init(){
-  if(currentUser){showUser(currentUser);showPortalSelect();}
+  if(currentUser){showUser(currentUser);showPortalSelect();}else{updateHomeBtn(true);}
   setupSpeech();bindEvents();bindBuyerEvents();loadMyListings();setInterval(updateMandiWidget,30000);
   // login live validation
   const nameInput=document.getElementById('nameInput');
@@ -883,9 +899,21 @@ function init(){
   });
 }
 function showUser(user){document.getElementById('userNameDisplay').textContent=user.name;document.getElementById('userPhoneDisplay').textContent=user.phone;document.getElementById('userInitial').textContent=user.name.charAt(0).toUpperCase();userChip.classList.remove('hidden');userChip.classList.add('flex');logoutBtn.classList.remove('hidden');}
-function showLogin(){loginPage.classList.remove('hidden');portalPage.classList.add('hidden');farmerPortal.classList.add('hidden');hideAllBuyer();window.scrollTo(0,0);}
-function showPortalSelect(){loginPage.classList.add('hidden');portalPage.classList.remove('hidden');farmerPortal.classList.add('hidden');hideAllBuyer();window.scrollTo(0,0);}
-function showFarmer(){loginPage.classList.add('hidden');portalPage.classList.add('hidden');farmerPortal.classList.remove('hidden');hideAllBuyer();updateMandiWidget();window.scrollTo(0,0);}
+function updateHomeBtn(onHome){
+  const b=document.getElementById('homeBtn');
+  if(!b)return;
+  // show Home only when logged in AND not already on the portal-select home
+  if(currentUser&&!onHome){b.classList.remove('hidden');b.classList.add('flex');}
+  else{b.classList.add('hidden');b.classList.remove('flex');}
+}
+function goHome(){
+  if(!currentUser){showLogin();return;}
+  if(poolTimer){clearInterval(poolTimer);poolTimer=null;}
+  showPortalSelect();
+}
+function showLogin(){loginPage.classList.remove('hidden');portalPage.classList.add('hidden');farmerPortal.classList.add('hidden');hideAllBuyer();updateHomeBtn(true);window.scrollTo(0,0);}
+function showPortalSelect(){loginPage.classList.add('hidden');portalPage.classList.remove('hidden');farmerPortal.classList.add('hidden');hideAllBuyer();updateHomeBtn(true);window.scrollTo(0,0);}
+function showFarmer(){loginPage.classList.add('hidden');portalPage.classList.add('hidden');farmerPortal.classList.remove('hidden');hideAllBuyer();updateMandiWidget();updateHomeBtn(false);window.scrollTo(0,0);}
 function showBuyer(){showBuyerFlow();}
 function bindEvents(){
   document.getElementById('loginForm').addEventListener('submit',async(e)=>{
@@ -913,6 +941,8 @@ function bindEvents(){
     }
   });
   document.getElementById('goFarmer').addEventListener('click',showFarmer);document.getElementById('goBuyer').addEventListener('click',showBuyer);
+  document.getElementById('homeBtn').addEventListener('click',goHome);
+  document.getElementById('homeLogo').addEventListener('click',goHome);
   logoutBtn.addEventListener('click',()=>{localStorage.removeItem('fb_user');localStorage.removeItem('fb_buyer');localStorage.removeItem('fb_cart');currentUser=null;buyerProfile=null;CART=[];userChip.classList.add('hidden');userChip.classList.remove('flex');logoutBtn.classList.add('hidden');showLogin();});
   document.getElementById('micBtn').addEventListener('click',toggleListening);document.getElementById('resetVoice').addEventListener('click',resetVoice);
   document.querySelectorAll('.voice-quick').forEach(b=>{b.addEventListener('click',()=>{const txt=b.dataset.text||b.textContent;if(txt)handleVoiceResult(txt);});});
@@ -1092,14 +1122,15 @@ function showBuyerFlow(){
   hideAllBuyer();
   if(buyerProfile&&buyerProfile.buyer_type){routeBuyerType(buyerProfile.buyer_type);}
   else{prefillOnboard();document.getElementById('buyerOnboard').classList.remove('hidden');}
-  window.scrollTo(0,0);
+  updateHomeBtn(false);window.scrollTo(0,0);
 }
 function routeBuyerType(t){
+  loginPage.classList.add('hidden');portalPage.classList.add('hidden');farmerPortal.classList.add('hidden');
   hideAllBuyer();
   if(t==='Individual'){document.getElementById('individualPortal').classList.remove('hidden');CART_CTX='individual';initIndividual();}
   else if(t==='Community'){document.getElementById('communityPortal').classList.remove('hidden');CART_CTX='community';initCommunity();}
   else{document.getElementById('horecaPortal').classList.remove('hidden');initHoReCa();}
-  window.scrollTo(0,0);
+  updateHomeBtn(false);window.scrollTo(0,0);
 }
 function prefillOnboard(){
   const u=currentUser||{};
@@ -1184,6 +1215,10 @@ function bindOnboarding(){
     });
   });
 
+  const btb=document.getElementById('btBack');
+  if(btb)btb.addEventListener('click',()=>{
+    hideAllBuyer();prefillOnboard();document.getElementById('buyerOnboard').classList.remove('hidden');window.scrollTo(0,0);
+  });
   document.querySelectorAll('.backToTypes').forEach(b=>b.addEventListener('click',()=>{
     hideAllBuyer();document.getElementById('buyerTypePage').classList.remove('hidden');window.scrollTo(0,0);
   }));
@@ -1202,7 +1237,7 @@ async function loadMarket(){
   grid.innerHTML=`<div class="col-span-full py-16 text-center"><div class="inline-block w-8 h-8 border-4 border-gray-200 border-t-green-800 rounded-full animate-spin"></div><div class="mt-3 text-[13px] text-gray-500">Loading live farm stock...</div></div>`;
   try{
     const r=await fetch('/api/market');const d=await r.json();
-    MARKET=d.items||[];
+    MARKET=Array.isArray(d.items)?d.items:[];
     document.getElementById('ind_updated').textContent=new Date(d.updated_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
   }catch(e){MARKET=[];}
   renderCats();renderMarket();
@@ -1380,8 +1415,8 @@ function autoAdvance(id){
 async function loadOrders(){
   const p=buyerProfile||{};if(!p.phone)return;
   try{
-    const r=await fetch('/api/orders?phone='+p.phone);const orders=await r.json();
-    window._orders=orders;
+    const r=await fetch('/api/orders?phone='+p.phone);const j=await r.json();
+    const orders=Array.isArray(j)?j:[];window._orders=orders;
     const box=document.getElementById('ind_orders');if(!box)return;
     if(!orders.length){box.innerHTML=`<div class="text-[13px] text-gray-400 text-center py-8 rounded-2xl border border-dashed">No orders yet. Your first farm-fresh box is a tap away 🌾</div>`;return;}
     box.innerHTML=orders.slice(0,6).map(o=>{
@@ -1450,7 +1485,7 @@ async function initCommunity(){
 async function loadPools(){
   const box=document.getElementById('com_pools');
   box.innerHTML=`<div class="py-16 text-center"><div class="inline-block w-8 h-8 border-4 border-gray-200 border-t-orange-500 rounded-full animate-spin"></div><div class="mt-3 text-[13px] text-gray-500">Loading active pools...</div></div>`;
-  try{const r=await fetch('/api/pools');POOLS=await r.json();}catch(e){POOLS=[];}
+  try{const r=await fetch('/api/pools');const j=await r.json();POOLS=Array.isArray(j)?j:[];}catch(e){POOLS=[];}
   renderPools();
   document.getElementById('com_s1').textContent=POOLS.length;
   document.getElementById('com_s2').textContent=POOLS.reduce((s,p)=>s+p.current_kg,0)+' Kg';
@@ -1672,7 +1707,7 @@ async function createSub(){
 async function loadSubs(){
   const p=buyerProfile||{};if(!p.phone)return;
   try{
-    const r=await fetch('/api/subscriptions?phone='+p.phone);const subs=await r.json();
+    const r=await fetch('/api/subscriptions?phone='+p.phone);const j=await r.json();const subs=Array.isArray(j)?j:[];
     const box=document.getElementById('hor_subList');const empty=document.getElementById('hor_subEmpty');
     if(!subs.length){box.innerHTML='';empty.classList.remove('hidden');return;}
     empty.classList.add('hidden');
@@ -1761,6 +1796,16 @@ function bindBuyerEvents(){
     const e=document.getElementById(id);
     e.addEventListener(id==='ind_search'?'input':'change',renderMarket);
   });
+  document.getElementById('ind_refresh').addEventListener('click',async()=>{
+    const b=document.getElementById('ind_refresh');b.textContent='⟳';b.classList.add('animate-spin');
+    await loadMarket();b.classList.remove('animate-spin');b.textContent='↻';toast('✅ Live farm stock refreshed');
+  });
+  // keep buyer market in sync with new farmer listings
+  setInterval(()=>{
+    if(!document.getElementById('individualPortal').classList.contains('hidden')){
+      loadMarket();loadOrders();
+    }
+  },30000);
   document.getElementById('ind_cartBtn').addEventListener('click',()=>{CART_CTX='individual';openCart();});
   document.getElementById('com_cartBtn').addEventListener('click',()=>{CART_CTX='community';openCart();});
   document.getElementById('cartClose').addEventListener('click',closeCart);

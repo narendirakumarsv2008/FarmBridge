@@ -455,15 +455,15 @@ def create_listing():
         mandi_price_val = mandi_resp['price']
         mandi_name = mandi_resp['mandi']
     else:
-        mandi_price_val = round(random.uniform(18, 50), 2)
+        # Unknown crop: derive a plausible mandi benchmark from the farmer's own
+        # asking price instead of a random number, so the comparison makes sense.
+        mandi_price_val = round(float(price_per_kg) * random.uniform(1.12, 1.28), 2)
         mandi_name = f"Nearest Mandi - {data.get('location','Local')[:30]}"
 
-    # Platform price is farmer's price per kg, but ensure at least mandi + uplift if farmer price too low? Keep farmer price as is but for display use max
+    # The buyer always pays exactly what the farmer asked. The mandi figure is a
+    # benchmark shown alongside it, never something that overrides the ask.
     platform_price = float(price_per_kg)
-    # If farmer price is lower than mandi, we still show platform higher for incentive, but store farmer price
     display_platform_price = platform_price
-    if platform_price < mandi_price_val:
-        display_platform_price = round(mandi_price_val * (1 + random.uniform(0.15,0.25)), 2)
 
     quantity_str = f"{qty_kg} Kg"
 
