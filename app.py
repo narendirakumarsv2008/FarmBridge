@@ -324,14 +324,22 @@ def create_listing():
     if not valid_phone:
         return jsonify({'error': f'Invalid phone: {msg_phone}'}), 400
 
-    crop_name_raw = data.get('crop_name')
-    # Extract only crop name
-    crop_name = extract_crop_name_smart(crop_name_raw) or crop_name_raw
-    # Keep only alphabets for crop name, no numbers/symbols
-    crop_name = re.sub(r'[^A-Za-z ]', '', crop_name).strip()
+    crop_name_raw = (data.get('crop_name') or '').strip()
+    # Only use smart extraction when the farmer typed a whole sentence
+    # (e.g. voice input "I am growing tomato in my farm"). For a short,
+    # direct entry we keep exactly what was typed, otherwise multi-word
+    # crops get truncated ("Dragon Fruit" -> "Dragon") and the farmer can
+    # never find their own listing in the buyer portal.
+    cleaned = re.sub(r'[^A-Za-z ]', '', crop_name_raw).strip()
+    cleaned = re.sub(r'\s+', ' ', cleaned)
+    word_count = len(cleaned.split())
+    if word_count > 3:
+        crop_name = extract_crop_name_smart(crop_name_raw) or cleaned
+        crop_name = re.sub(r'[^A-Za-z ]', '', crop_name).strip()
+    else:
+        crop_name = cleaned
     if not crop_name:
-        return jsonify({'error': 'Invalid crop name after extraction - only crop name allowed'}), 400
-    # Capitalize
+        return jsonify({'error': 'Enter a valid crop name (letters only)'}), 400
     crop_name = crop_name.title()
 
     harvest_date_raw = data.get('harvest_date')
@@ -626,7 +634,10 @@ def market():
     rows = [_row_to_dict(r) for r in c.fetchall()]
     conn.close()
     items = [enrich_listing(l) for l in rows]
-    items = [i for i in items if i['available_kg'] > 0]
+    # Every farmer's produce stays visible. Sold-out items are flagged, not
+    # removed, so a farmer always sees their listing in the buyer portal.
+    for i in items:
+        i['sold_out'] = i['available_kg'] <= 0
     return jsonify({
         'items': items,
         'count': len(items),

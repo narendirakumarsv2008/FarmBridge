@@ -1258,7 +1258,11 @@ async function loadMarket(){
   renderCats();renderMarket();
 }
 function renderCats(){
-  const cats=['All',...new Set(MARKET.map(m=>m.crop_name))].slice(0,14);
+  const all=[...new Set(MARKET.map(m=>m.crop_name))];
+  // If the selected chip no longer exists (farmer listed something new,
+  // stock changed, etc.) fall back to All so produce is never hidden.
+  if(ACTIVE_CAT!=='All'&&!all.includes(ACTIVE_CAT))ACTIVE_CAT='All';
+  const cats=['All',...all].slice(0,14);
   document.getElementById('ind_cats').innerHTML=cats.map(c=>`
     <button data-cat="${c}" class="cat-chip h-9 px-3.5 rounded-full text-[12px] font-bold whitespace-nowrap border shrink-0 ${c===ACTIVE_CAT?'bg-green-800 text-white border-green-800':'bg-white border-gray-200 text-gray-700'}">
       ${c==='All'?'🛒 All':cropIcon(c)+' '+c}</button>`).join('');
@@ -1283,7 +1287,8 @@ function renderMarket(){
   empty.classList.add('hidden');
   grid.innerHTML=items.map(m=>{
     const inCart=CART.find(c=>c.listing_id===m.id);
-    const low=m.stock_pct<25;
+    const soldOut=m.sold_out||m.available_kg<=0;
+    const low=!soldOut&&m.stock_pct<25;
     const up=m.price_change_pct>0;
     return `
     <div class="rounded-2xl bg-white border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition flex flex-col">
@@ -1291,6 +1296,7 @@ function renderMarket(){
         ${m.photo?`<img src="${m.photo}" class="w-full h-full object-cover">`:`<span class="text-[44px]">${cropIcon(m.crop_name)}</span>`}
         <span class="absolute top-2 left-2 px-1.5 py-0.5 rounded-md text-[9px] font-bold text-white ${gradeBg(m.grade)}">GRADE ${m.grade}</span>
         ${low?`<span class="absolute top-2 right-2 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-red-600 text-white animate-pulse">LOW STOCK</span>`:''}
+        ${soldOut?`<span class="absolute inset-0 bg-white/70 flex items-center justify-center"><span class="px-2 py-1 rounded-md text-[11px] font-bold bg-gray-900 text-white">SOLD OUT</span></span>`:''}
         <span class="absolute bottom-2 left-2 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-black/70 text-white">⏱ ${m.freshness_label}</span>
       </div>
       <div class="p-2.5 sm:p-3 flex-1 flex flex-col">
@@ -1308,7 +1314,8 @@ function renderMarket(){
           </div>
           ${m.savings_vs_mandi>0?`<span class="text-[9px] px-1 py-0.5 rounded bg-green-100 text-green-700 font-bold shrink-0">SAVE ${money(m.savings_vs_mandi)}</span>`:''}
         </div>
-        ${inCart?`
+        ${soldOut?`
+          <div class="mt-2 h-9 w-full rounded-xl bg-gray-100 text-gray-400 font-bold text-[13px] flex items-center justify-center">SOLD OUT</div>`:inCart?`
           <div class="mt-2 h-9 rounded-xl bg-green-800 text-white flex items-center justify-between px-1 shrink-0">
             <button onclick="changeQty(${m.id},-1)" class="w-8 h-8 rounded-lg hover:bg-white/20 text-[18px] leading-none">−</button>
             <span class="text-[13px] font-bold">${inCart.qty} Kg</span>
