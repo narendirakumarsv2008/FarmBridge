@@ -97,10 +97,47 @@
   month navigation, per-day breakdown, KPIs for deliveries / volume / est. spend
 - **Active Plans**: pause, resume or cancel any subscription (calendar updates live)
 
+## 🗄 Database (MySQL)
+
+All farmer listings — plus buyers, orders, pools and subscriptions — are
+persisted in **MySQL**, so the Buyer Portal loads its catalogue straight from
+the shared database.
+
+### Configure
+
+```bash
+cp .env.example .env      # then edit credentials
+export DB_ENGINE=mysql
+export MYSQL_HOST=127.0.0.1 MYSQL_PORT=3306
+export MYSQL_USER=farmbridge MYSQL_PASSWORD=secret MYSQL_DB=farmbridge
+python app.py
+```
+
+The app creates the database and all seven tables on first boot — no manual
+schema step. Check which engine is live at any time:
+
+```bash
+curl localhost:5000/api/db-info
+# {"engine":"mysql","target":"127.0.0.1:3306/farmbridge","counts":{...}}
+```
+
+### Tables
+`listings` · `users` · `buyers` · `orders` · `pools` · `pool_joins` · `subscriptions`
+
+### Automatic SQLite fallback
+If MySQL is unreachable the app logs a warning and falls back to the local
+`farmbridge.db` SQLite file, so development and demos never block. Everything
+goes through `db.py`, which translates placeholders, upserts and column types
+per engine — application code is identical on both.
+
+> **Sandbox note:** `tools/mysql_test_server.py` is a dev-only MySQL
+> wire-protocol server used to verify the MySQL path where no `mysqld` can be
+> installed. Never use it in production.
+
 ## 🛠 Tech Stack
 - **Frontend**: HTML5, TailwindCSS CDN, Vanilla JS, Web Speech API, Google Fonts
-- **Backend**: Python Flask, SQLite, Pillow for image analysis
-- **Database**: `farmbridge.db` with listings & users tables
+- **Backend**: Python Flask, MySQL (PyMySQL) with SQLite fallback, Pillow for image analysis
+- **Database**: MySQL `farmbridge` (7 tables); auto-falls back to `farmbridge.db`
 
 ## 🚀 Run Locally
 
