@@ -1,0 +1,53 @@
+# Farm Bridge — Flask + MySQL, with persistent volumes.
+#
+# Run:   docker compose up --build
+# Open:  http://localhost:5000
+#
+# This stack runs MySQL for real (shared DB across devices) and serves the app
+# with Gunicorn. ENVIRONMENT=development here so the mock-OTP login works out
+# of the box for a demo; set ENVIRONMENT=production (+ a real SECRET_KEY and an
+# SMS provider) for a hardened deployment (see docs/DEPLOYMENT_GUIDE.md).
+
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root-password
+      MYSQL_DATABASE: farmbridge
+      MYSQL_USER: farmbridge
+      MYSQL_PASSWORD: farmbridge-password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot-password"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      ENVIRONMENT: development
+      DB_ENGINE: mysql
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_USER: farmbridge
+      MYSQL_PASSWORD: farmbridge-password
+      MYSQL_DB: farmbridge
+      SECRET_KEY: change-this-in-production
+      UPLOAD_FOLDER: uploads
+    ports:
+      - "5000:5000"
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
+  uploads_data:

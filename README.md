@@ -1,184 +1,182 @@
-# 🌾 FARM BRIDGE - Direct Farm to Market Platform
+# 🌾 FARM BRIDGE
 
-**Stylish, Voice-First AgriTech Platform** built with **HTML + Python (Flask)**
+**Direct Farm-to-Market AgriTech Platform**
 
-> Cut the Middleman. Keep the Profit. 15-25% higher realization, instant UPI payouts, AI quality grading.
+> *Cut the Middleman. Keep the Profit.*
 
-## ✨ Features Implemented
+Farm Bridge connects farmers directly with consumers — cutting out unnecessary
+middlemen, raising farmer income, and getting consumers fresher produce.
 
-### 1. Stylish Header
-- **FARM** → Font: `Syne` Extra Bold 32px, Color `#1a4d1a` (deep farm green)
-- **BRIDGE** → Font: `Bricolage Grotesque` Light 38px, Color `#ff6b00` (vibrant orange), Italic, Larger size
-- Glassmorphism, gradient logo, live indicators
+Built with a **Flask (Python)** backend, a **MySQL** central database (SQLite
+fallback for local demos), and a single-page **HTML/CSS/JS** frontend featuring
+a voice assistant, AI quality grading, and live order tracking.
 
-### 2. Login Page
-- Asks for **Name, Phone Number**
-- Validation + saves to SQLite + localStorage
-- Redirects to portal selection (Farmer / Buyer)
+---
 
-### 3. Portal Selection
-- Two premium cards: Farmer & Buyer with hover animations
+## Problem Statement
 
-### 4. Farmer Portal
+Farmers sell through long chains of middlemen and lose a large share of the
+final price. Consumers pay more for produce that has travelled through many
+hands. Farm Bridge lets a farmer list a crop directly and lets a consumer buy
+it from the same shared database — transparently, with AI-assigned quality
+grades and live inventory.
 
-#### 🎙️ Voice Assistant (Krishi Sahayak)
-- Uses **Web Speech API** (Chrome/Edge)
-- Sequential flow asking for:
-  - Crop name
-  - Harvest date (supports "2 days ago", "yesterday", "15 May 2026")
-  - Quantity
-  - Price
-  - Location
-- **If any missed, voice asks again** (loop until filled)
-- Extracts voice → text → auto-fills form → saves transcript to DB
-- Supports Hindi/English + quick buttons for demo
+## Solution
 
-#### 🤖 AI Grading (A/B/C)
-- Python backend calculates:
-  - Crop shelf life database (tomato 7d, potato 45d, wheat 180d, etc.)
-  - `days_since_harvest` vs `shelf_life`
-  - Freshness score = remaining/shelf * 100 + image quality heuristic (PIL analysis)
-  - **Grade A**: >=70% freshness → Premium Export Quality (Green)
-  - **Grade B**: 35-70% → Good Local Market (Yellow)
-  - **Grade C**: <35% → Quick Sale Recommended (Red)
-  - Expiry date = harvest + shelf_life
-- Photo upload → preview → AI grade card
+A single platform with two connected portals over **one central database**:
 
-#### 📊 Live Mandi Benchmark vs Direct Payout
-- Widget shows:
-  - Nearest Mandi Price (from eNAM mock) + trend
-  - Your Platform Net Realization (15-25% higher)
-  - Visual bar comparison
-  - Extra earning per quintal
-- Updates every 30s, fetches from `/api/mandi-price`
+- **FARMER PORTAL** — list crops (by voice or form), get an AI grade, compare a
+  demo market benchmark, track milestone payouts.
+- **CONSUMER PORTAL** — three ways to buy: **Individual** (quick commerce),
+  **Community** (pool-buy with tier discounts), and **HoReCa** (recurring
+  subscriptions + delivery calendar).
 
-#### 💸 Live Milestone Payment Tracking
-- 4 steps: Order Placed → Produce Picked → Quality Verified at Drop → Instant UPI Payout
-- Animated timeline with progress bar
-- Simulate button for live demo
-- Buyer order triggers auto-progression
+The marketplace reads directly from the farmer's listings — no mock products,
+no separate databases.
 
-### 5. Buyer Portal
+## Features
 
-#### Onboarding
-- **Name & phone auto-filled** from the login session (read-only, marked AUTO)
-- Asks for **email address** + **home/delivery address**
-- **"Use my current location"** button — browser geolocation + OpenStreetMap reverse
-  geocoding auto-fills address, city and pincode (no API key needed)
-- Then asks for buyer type: **Individual / Community / HoReCa** → routes to that portal
-- Profile saved to `buyers` table, remembered on next visit
+- 🎙️ **Krishi Sahayak voice assistant** (Web Speech API, English/Hindi) that
+  extracts crop, harvest date, quantity, price and location into the listing form.
+- 🤖 **AI quality grading** (Grade A/B/C) with freshness score, shelf life and expiry.
+- 📊 **Live Mandi comparison** — clearly labeled demo benchmark (ready for a real eNAM source).
+- 🧺 **Consumer marketplace** with search, category/grade filters, freshness/price sorting, cart, checkout.
+- 🛡️ **Stock-safe ordering** — transactional, overselling is impossible, prices computed server-side.
+- 🚚 **Order tracking** with a controlled status flow and a farmer order-management view.
+- 🏘️ **Community pool-buy** with server-computed tier discounts (4% / 8% / 12% / 18%).
+- 🍽️ **HoReCa subscriptions** with a backend-generated delivery calendar, pause/resume/cancel.
+- 🔐 **Phone + OTP auth** (mock OTP in development; SMS-provider hook for production) with signed tokens and role-based authorization.
+- 📱 **Mobile App — Under Development** (🚧 coming soon for Android & iOS; the site is fully mobile-friendly today).
 
-#### 5a. Individual Portal (Blinkit/Zepto style)
-- Live product grid from the **saved farmer database**
-- **Daily live updates** of qty & price (`/api/market` — stable per-day drift so prices
-  move once a day), photos, A/B/C grades, harvest timestamp ("Harvested yesterday")
-- Stock bar + LOW STOCK badge, ▲▼ price change, mandi price strikethrough & savings
-- Category chips, search, grade filter, sort by fresh/price
-- **Cart** drawer with qty steppers, free delivery above ₹500
-- **Checkout** with UPI / Card / Netbanking / COD
-- **Live delivery tracking**: Order Placed → Farmer Confirmed → Harvest Packed →
-  Out for Delivery → Delivered (auto-advances, ETA countdown)
-- Stock is decremented on the farmer listing when an order is placed
+## Architecture
 
-#### 5b. Community Portal (Pool-Buy)
-- **Pool-Buy widget** for apartments, housing societies & restaurants
-- `Current Pool: 320/500 kg — 18 hrs left to unlock wholesale price` with live countdown
-- **Automatic price drops as collective volume grows**:
-  25% → −4%, 50% → −8%, 75% → −12%, 100% → **−18% full wholesale**
-- Tier markers on the progress bar, "add X kg more to unlock −Y%" nudge
-- Join modal previews your new price, total and saving *before* confirming
-- Price can only go down; everyone in the pool gets the unlocked rate
-
-#### 5c. HoReCa Portal (Recurring & Scheduled Procurement)
-- **New Subscription** builder: produce from live stock, qty/delivery, contract rate
-  (7% below retail), frequency (Daily / Alternate Days / Weekly / Monthly),
-  weekday picker, time slot, start & end date, live monthly cost preview
-- **Delivery Calendar**: month grid auto-generated from active subscriptions,
-  month navigation, per-day breakdown, KPIs for deliveries / volume / est. spend
-- **Active Plans**: pause, resume or cancel any subscription (calendar updates live)
-
-## 🗄 Database (MySQL)
-
-All farmer listings — plus buyers, orders, pools and subscriptions — are
-persisted in **MySQL**, so the Buyer Portal loads its catalogue straight from
-the shared database.
-
-### Configure
-
-```bash
-cp .env.example .env      # then edit credentials
-export DB_ENGINE=mysql
-export MYSQL_HOST=127.0.0.1 MYSQL_PORT=3306
-export MYSQL_USER=farmbridge MYSQL_PASSWORD=secret MYSQL_DB=farmbridge
-python app.py
+```
+  Farmer Portal ─┐                     ┌─ Consumer Portal
+                 ├─► Flask API ◄──────┤
+   (voice, grade,│   routes/ services/ │  (market, orders,
+    listings)    │   models/ database/ │   pools, subscriptions)
+                 └─────────┬───────────┘
+                           ▼
+                   Central MySQL (SQLite in dev)
 ```
 
-The app creates the database and all seven tables on first boot — no manual
-schema step. Check which engine is live at any time:
-
-```bash
-curl localhost:5000/api/db-info
-# {"engine":"mysql","target":"127.0.0.1:3306/farmbridge","counts":{...}}
+```
+Frontend (index.html) → fetch('/api/...') → Flask routes → Services → Models → Database
 ```
 
-### Tables
-`listings` · `users` · `buyers` · `orders` · `pools` · `pool_joins` · `subscriptions`
+## Tech Stack
 
-### Automatic SQLite fallback
-If MySQL is unreachable the app logs a warning and falls back to the local
-`farmbridge.db` SQLite file, so development and demos never block. Everything
-goes through `db.py`, which translates placeholders, upserts and column types
-per engine — application code is identical on both.
+- **Frontend:** HTML5, Tailwind CSS (CDN), Vanilla JS, Web Speech API
+- **Backend:** Python 3.10+, Flask, Flask-Cors
+- **Database:** MySQL (PyMySQL) with a transparent SQLite dev fallback
+- **Other:** Pillow (image handling), itsdangerous (signed tokens), Gunicorn (production), pytest (tests)
 
-> **Sandbox note:** `tools/mysql_test_server.py` is a dev-only MySQL
-> wire-protocol server used to verify the MySQL path where no `mysqld` can be
-> installed. Never use it in production.
+## Project Structure
 
-## 🛠 Tech Stack
-- **Frontend**: HTML5, TailwindCSS CDN, Vanilla JS, Web Speech API, Google Fonts
-- **Backend**: Python Flask, MySQL (PyMySQL) with SQLite fallback, Pillow for image analysis
-- **Database**: MySQL `farmbridge` (7 tables); auto-falls back to `farmbridge.db`
+```
+FarmBridge/
+├── app.py                  # thin entry point (wires the app together)
+├── config.py               # environment-driven configuration
+├── db.py                   # compatibility shim → database/db.py
+├── index.html              # single-page frontend
+├── routes/                 # HTTP endpoints (auth, farmer, consumer, listings, orders, pools, subscriptions, misc)
+├── services/               # business logic (grading, mandi, marketplace, order, pool, subscription)
+├── models/                 # SQL data access per entity
+├── database/               # schema + engine + migrations (buyers→consumers, inventory, order_items)
+├── utils/                  # validators, security (tokens/OTP), responses, image upload
+├── uploads/                # uploaded crop images (git-ignored)
+├── tests/                  # pytest suite (26 tests)
+├── docs/                   # PROJECT_ANALYSIS, BACKEND_INTEGRATION_GUIDE, DEPLOYMENT_GUIDE, API_DOCUMENTATION
+├── Dockerfile / docker-compose.yml
+├── requirements.txt / .env.example / run.sh
+└── tools/mysql_test_server.py   # dev-only MySQL wire-protocol test server
+```
 
-## 🚀 Run Locally
+## Installation
 
 ```bash
-pip install -r requirements.txt --break-system-packages
-python app.py
+git clone <your-repo-url>
+cd FarmBridge
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+## Environment Setup
+
+```bash
+cp .env.example .env            # then edit values
+```
+
+Key variables: `ENVIRONMENT` (development/production), `SECRET_KEY`, `DB_ENGINE`,
+`MYSQL_*`, `UPLOAD_FOLDER`, `MOCK_OTP`. See `.env.example` for the full list.
+
+## Database
+
+- **MySQL** — recommended for real multi-device use. Create the DB + user
+  (see `docs/BACKEND_INTEGRATION_GUIDE.md`), set the `MYSQL_*` vars, and the app
+  **creates the schema and runs migrations automatically** on startup.
+- **SQLite** — automatic fallback in development (`farmbridge.db`), so demos
+  never block. Production never silently falls back.
+
+## Running Locally
+
+```bash
+python app.py        # or ./run.sh
 # Open http://localhost:5000
 ```
 
-## 📁 Structure (Updated - index.html in root)
+Production-style: `gunicorn -w 4 -b 0.0.0.0:8000 app:app`
+
+## API Overview
+
+| Area | Endpoints |
+|---|---|
+| Auth | `POST /api/auth/login`, `POST /api/auth/verify-otp`, `GET /api/auth/me`, `POST /api/auth/logout` |
+| Farmer | `GET/PUT /api/farmer/profile`, `GET /api/farmer/orders` |
+| Consumer | `GET/POST/PUT /api/consumer/profile` (legacy `/api/buyer/profile` alias) |
+| Listings | `POST/GET /api/listings`, `GET/PUT/DELETE /api/listings/<id>` |
+| Marketplace | `GET /api/market` |
+| Orders | `POST/GET /api/orders`, `GET /api/orders/<id>`, `PUT /api/orders/<id>/status` |
+| Pools | `GET /api/pools`, `POST /api/pools/<id>/join` |
+| Subscriptions | `POST/GET /api/subscriptions`, `PUT/DELETE /api/subscriptions/<id>`, `GET /api/subscriptions/calendar` |
+| Mandi / Grade | `GET /api/mandi-price`, `POST /api/grade` |
+| Status | `GET /api/health`, `GET /api/db-info`, `GET /api/stats` |
+
+Full details + curl examples: [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md).
+
+## Deployment
+
+- **Demo/student:** Render/Railway/PythonAnywhere + managed MySQL.
+- **Docker:** `docker compose up --build`.
+- **Production:** Nginx + Gunicorn + MySQL (HTTPS, backups, logging).
+
+See [`docs/DEPLOYMENT_GUIDE.md`](docs/DEPLOYMENT_GUIDE.md).
+
+## Testing
+
+```bash
+python -m pytest tests/ -q
 ```
-FarmBridge/
-├── index.html           # Full stylish SPA frontend (MAIN - in root, not in folder)
-├── app.py               # Flask backend + AI grading logic (serves index.html from root)
-├── requirements.txt
-├── farmbridge.db        # SQLite (auto-created)
-└── README.md
-```
 
-## 🎨 Design Highlights
-- Glassmorphism cards, farm pattern background
-- Gradient badges, shimmer effects
-- Voice wave animation, mic pulse
-- Responsive, mobile-friendly
-- No build step needed
+26 tests cover auth, listings, marketplace, orders, stock reduction,
+overselling prevention, unauthorized-access prevention, consumer profile, pool
+join, subscriptions, grading, and database initialization (SQLite mode; MySQL
+verified via the bundled test server).
 
-## 🔌 Buyer API Endpoints
+## Future Roadmap
 
-| Method | Endpoint | Purpose |
-|---|---|---|
-| GET/POST | `/api/buyer/profile` | Buyer details (email, address, geo, type) |
-| GET | `/api/market` | Live crops from farmer DB (daily qty/price) |
-| POST/GET | `/api/orders` | Create / list orders |
-| PUT | `/api/orders/<id>/advance` | Advance delivery status |
-| GET | `/api/pools` | Active community pools + live tier pricing |
-| POST | `/api/pools/<id>/join` | Add volume to a pool |
-| GET/POST | `/api/subscriptions` | HoReCa recurring plans |
-| PUT/DELETE | `/api/subscriptions/<id>` | Pause / resume / cancel |
-| GET | `/api/subscriptions/calendar` | Expanded delivery schedule |
+- Integrate a real eNAM/Agmarknet mandi price provider.
+- Production SMS/OTP provider integration (Twilio/MSG91/…).
+- Real UPI payments + payout milestones.
+- LLM-based voice parsing (e.g. Whisper) and image-based disease detection.
+- Cloud image storage (S3/Cloudinary/Supabase).
 
-## 🔮 Future
-- Integrate real eNAM API, UPI AutoPay, LLM for better voice parsing (Whisper), image disease detection.
+## Mobile App
+
+🚧 **Under Development** — the Farm Bridge mobile application for Android & iOS
+is coming soon. The website is fully mobile-friendly in the meantime.
+
+---
 
 Built for farmers, by Farm Bridge 🌾
