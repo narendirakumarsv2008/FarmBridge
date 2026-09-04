@@ -1,184 +1,243 @@
-# 🌾 FARM BRIDGE - Direct Farm to Market Platform
+# 🌾 FARM BRIDGE
 
-**Stylish, Voice-First AgriTech Platform** built with **HTML + Python (Flask)**
+> **Cut the Middleman. Keep the Profit.**
 
-> Cut the Middleman. Keep the Profit. 15-25% higher realization, instant UPI payouts, AI quality grading.
+Farm Bridge is a direct farm-to-market AgriTech platform that connects farmers directly with consumers, reducing unnecessary middlemen, increasing farmer income, and giving consumers fresher produce.
 
-## ✨ Features Implemented
+---
 
-### 1. Stylish Header
-- **FARM** → Font: `Syne` Extra Bold 32px, Color `#1a4d1a` (deep farm green)
-- **BRIDGE** → Font: `Bricolage Grotesque` Light 38px, Color `#ff6b00` (vibrant orange), Italic, Larger size
-- Glassmorphism, gradient logo, live indicators
+## Problem
 
-### 2. Login Page
-- Asks for **Name, Phone Number**
-- Validation + saves to SQLite + localStorage
-- Redirects to portal selection (Farmer / Buyer)
+- Farmers often lose a large share of their income to middlemen and multiple market layers.
+- Consumers struggle to find transparently priced, freshly harvested produce.
+- There is usually no shared system that lets a farmer list a crop on one device and have a consumer see and order it from another device.
 
-### 3. Portal Selection
-- Two premium cards: Farmer & Buyer with hover animations
+## Solution
 
-### 4. Farmer Portal
+Farm Bridge provides:
 
-#### 🎙️ Voice Assistant (Krishi Sahayak)
-- Uses **Web Speech API** (Chrome/Edge)
-- Sequential flow asking for:
-  - Crop name
-  - Harvest date (supports "2 days ago", "yesterday", "15 May 2026")
-  - Quantity
-  - Price
-  - Location
-- **If any missed, voice asks again** (loop until filled)
-- Extracts voice → text → auto-fills form → saves transcript to DB
-- Supports Hindi/English + quick buttons for demo
+- **Farmer Portal** — voice-first crop listing, AI freshness grading, live Mandi comparison, and order/payment tracking.
+- **Consumer Portal** — live marketplace, cart + checkout, order tracking, community pool-buy, and HoReCa recurring subscriptions.
+- **Shared central database** — the same MySQL database backs both portals, so a farmer's listing is immediately visible to consumers.
 
-#### 🤖 AI Grading (A/B/C)
-- Python backend calculates:
-  - Crop shelf life database (tomato 7d, potato 45d, wheat 180d, etc.)
-  - `days_since_harvest` vs `shelf_life`
-  - Freshness score = remaining/shelf * 100 + image quality heuristic (PIL analysis)
-  - **Grade A**: >=70% freshness → Premium Export Quality (Green)
-  - **Grade B**: 35-70% → Good Local Market (Yellow)
-  - **Grade C**: <35% → Quick Sale Recommended (Red)
-  - Expiry date = harvest + shelf_life
-- Photo upload → preview → AI grade card
+---
 
-#### 📊 Live Mandi Benchmark vs Direct Payout
-- Widget shows:
-  - Nearest Mandi Price (from eNAM mock) + trend
-  - Your Platform Net Realization (15-25% higher)
-  - Visual bar comparison
-  - Extra earning per quintal
-- Updates every 30s, fetches from `/api/mandi-price`
+## Features
 
-#### 💸 Live Milestone Payment Tracking
-- 4 steps: Order Placed → Produce Picked → Quality Verified at Drop → Instant UPI Payout
-- Animated timeline with progress bar
-- Simulate button for live demo
-- Buyer order triggers auto-progression
+- 🎙️ **Krishi Sahayak voice assistant** (Web Speech API, English/Hindi).
+- 🤖 **AI quality grading** — Grade A / B / C with freshness score, shelf life and expiry.
+- 📊 **Live Mandi comparison** — clearly labelled demo benchmark, easy to integrate with real eNAM/APMC data later.
+- 🧑‍🌾 **Farmer Portal** — crop listing, photo upload, grade card, voice transcript, live payout timeline.
+- 🛒 **Consumer Portal** — search, category & grade filters, freshness/price sort, cart, checkout.
+- 🚚 **Order tracking** — controlled status flow: Order Placed → Farmer Confirmed → Harvest Packed → Out for Delivery → Delivered.
+- 👥 **Community Pool-Buy** — tier discounts (25% → 4%, 50% → 8%, 75% → 12%, 100% → 18%).
+- 🍽️ **HoReCa subscriptions** — recurring Daily / Alternate Days / Weekly / Monthly procurements with a delivery calendar.
+- 🔐 **Phone + OTP authentication** with JWT tokens and role-aware, protected API endpoints.
+- 🛡️ **Transactional stock protection** — no overselling; the backend validates inventory and computes all prices.
 
-### 5. Buyer Portal
+---
 
-#### Onboarding
-- **Name & phone auto-filled** from the login session (read-only, marked AUTO)
-- Asks for **email address** + **home/delivery address**
-- **"Use my current location"** button — browser geolocation + OpenStreetMap reverse
-  geocoding auto-fills address, city and pincode (no API key needed)
-- Then asks for buyer type: **Individual / Community / HoReCa** → routes to that portal
-- Profile saved to `buyers` table, remembered on next visit
+## Architecture
 
-#### 5a. Individual Portal (Blinkit/Zepto style)
-- Live product grid from the **saved farmer database**
-- **Daily live updates** of qty & price (`/api/market` — stable per-day drift so prices
-  move once a day), photos, A/B/C grades, harvest timestamp ("Harvested yesterday")
-- Stock bar + LOW STOCK badge, ▲▼ price change, mandi price strikethrough & savings
-- Category chips, search, grade filter, sort by fresh/price
-- **Cart** drawer with qty steppers, free delivery above ₹500
-- **Checkout** with UPI / Card / Netbanking / COD
-- **Live delivery tracking**: Order Placed → Farmer Confirmed → Harvest Packed →
-  Out for Delivery → Delivered (auto-advances, ETA countdown)
-- Stock is decremented on the farmer listing when an order is placed
-
-#### 5b. Community Portal (Pool-Buy)
-- **Pool-Buy widget** for apartments, housing societies & restaurants
-- `Current Pool: 320/500 kg — 18 hrs left to unlock wholesale price` with live countdown
-- **Automatic price drops as collective volume grows**:
-  25% → −4%, 50% → −8%, 75% → −12%, 100% → **−18% full wholesale**
-- Tier markers on the progress bar, "add X kg more to unlock −Y%" nudge
-- Join modal previews your new price, total and saving *before* confirming
-- Price can only go down; everyone in the pool gets the unlocked rate
-
-#### 5c. HoReCa Portal (Recurring & Scheduled Procurement)
-- **New Subscription** builder: produce from live stock, qty/delivery, contract rate
-  (7% below retail), frequency (Daily / Alternate Days / Weekly / Monthly),
-  weekday picker, time slot, start & end date, live monthly cost preview
-- **Delivery Calendar**: month grid auto-generated from active subscriptions,
-  month navigation, per-day breakdown, KPIs for deliveries / volume / est. spend
-- **Active Plans**: pause, resume or cancel any subscription (calendar updates live)
-
-## 🗄 Database (MySQL)
-
-All farmer listings — plus buyers, orders, pools and subscriptions — are
-persisted in **MySQL**, so the Buyer Portal loads its catalogue straight from
-the shared database.
-
-### Configure
-
-```bash
-cp .env.example .env      # then edit credentials
-export DB_ENGINE=mysql
-export MYSQL_HOST=127.0.0.1 MYSQL_PORT=3306
-export MYSQL_USER=farmbridge MYSQL_PASSWORD=secret MYSQL_DB=farmbridge
-python app.py
+```
+Farmer Portal (browser)
+        |
+        | POST /api/listings
+        v
+Flask API (app.py -> routes -> services)
+        |
+        | transaction
+        v
+Central MySQL database (shared)
+        |
+        | GET /api/market
+        v
+Consumer Portal (browser, another device)
 ```
 
-The app creates the database and all seven tables on first boot — no manual
-schema step. Check which engine is live at any time:
+The frontend is a single-page HTML app (`index.html`). The backend is a modular Flask app. See [`docs/BACKEND_INTEGRATION_GUIDE.md`](docs/BACKEND_INTEGRATION_GUIDE.md) and [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md).
 
-```bash
-curl localhost:5000/api/db-info
-# {"engine":"mysql","target":"127.0.0.1:3306/farmbridge","counts":{...}}
-```
+## Tech Stack
 
-### Tables
-`listings` · `users` · `buyers` · `orders` · `pools` · `pool_joins` · `subscriptions`
+- **Frontend**: HTML5, Tailwind CSS CDN, Vanilla JS, Web Speech API, Google Fonts.
+- **Backend**: Python 3.11, Flask, PyMySQL, Pillow, PyJWT.
+- **Database**: MySQL 8 for production; SQLite for local development and tests.
+- **Tests**: pytest.
 
-### Automatic SQLite fallback
-If MySQL is unreachable the app logs a warning and falls back to the local
-`farmbridge.db` SQLite file, so development and demos never block. Everything
-goes through `db.py`, which translates placeholders, upserts and column types
-per engine — application code is identical on both.
+---
 
-> **Sandbox note:** `tools/mysql_test_server.py` is a dev-only MySQL
-> wire-protocol server used to verify the MySQL path where no `mysqld` can be
-> installed. Never use it in production.
+## Project Structure
 
-## 🛠 Tech Stack
-- **Frontend**: HTML5, TailwindCSS CDN, Vanilla JS, Web Speech API, Google Fonts
-- **Backend**: Python Flask, MySQL (PyMySQL) with SQLite fallback, Pillow for image analysis
-- **Database**: MySQL `farmbridge` (7 tables); auto-falls back to `farmbridge.db`
-
-## 🚀 Run Locally
-
-```bash
-pip install -r requirements.txt --break-system-packages
-python app.py
-# Open http://localhost:5000
-```
-
-## 📁 Structure (Updated - index.html in root)
 ```
 FarmBridge/
-├── index.html           # Full stylish SPA frontend (MAIN - in root, not in folder)
-├── app.py               # Flask backend + AI grading logic (serves index.html from root)
-├── requirements.txt
-├── farmbridge.db        # SQLite (auto-created)
-└── README.md
+├── app.py                     # Flask app factory + server entrypoint
+├── config.py                  # Configuration from environment
+├── database/
+│   ├── db.py                  # Connection layer + schema/migrations
+│   └── __init__.py
+├── routes/                    # API blueprints
+│   ├── auth.py                # Phone + OTP auth
+│   ├── consumer.py            # Consumer profile (Consumer Portal)
+│   ├── farmer.py              # Farmer profile / orders
+│   ├── listings.py            # Farmer listing CRUD
+│   ├── orders.py              # Order placement & status
+│   ├── pools.py               # Community pools
+│   ├── subscriptions.py       # HoReCa subscriptions
+│   ├── market.py              # GET /api/market
+│   └── mandi.py               # Mandi benchmark + AI grading
+├── services/                  # Business logic
+│   ├── auth_service.py
+│   ├── grading_service.py
+│   ├── mandi_service.py
+│   ├── marketplace_service.py
+│   ├── order_service.py
+│   ├── consumer_service.py
+│   ├── pool_service.py
+│   └── subscription_service.py
+├── models/                    # Lightweight model helpers
+├── utils/                     # validation, security, responses, uploads
+├── tests/                     # pytest suite
+├── docs/                      # Project analysis, API, deploy guides
+├── uploads/                   # Local image storage (git-ignored)
+├── Dockerfile
+├── docker-compose.yml
+└── run.sh
 ```
 
-## 🎨 Design Highlights
-- Glassmorphism cards, farm pattern background
-- Gradient badges, shimmer effects
-- Voice wave animation, mic pulse
-- Responsive, mobile-friendly
-- No build step needed
+---
 
-## 🔌 Buyer API Endpoints
+## Installation
 
-| Method | Endpoint | Purpose |
+### 1. Prerequisites
+
+- Python 3.11+
+- pip
+- For production: MySQL 8+ (or use Docker)
+
+### 2. Virtual environment
+
+```bash
+python -m venv venv
+# Linux / macOS
+source venv/bin/activate
+# Windows
+venv\Scripts\activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Environment setup
+
+```bash
+cp .env.example .env
+# Edit .env
+```
+
+For local development without MySQL:
+
+```bash
+export ENVIRONMENT=development
+export DB_ENGINE=sqlite
+export SQLITE_PATH=farmbridge.db
+```
+
+The app creates the tables automatically on first startup.
+
+### 5. Run locally
+
+```bash
+python app.py
+# open http://localhost:5000
+```
+
+---
+
+## Database
+
+MySQL is the production engine. The schema and lightweight in-place migrations run automatically at startup (`database/db.py`). Key tables:
+
+`users` · `farmers` · `consumers` · `listings` · `orders` · `order_items` · `pools` · `pool_joins` · `subscriptions` · `sessions` · `delivery_tracking`
+
+The legacy `buyers` table is retained for backward compatibility while the app migrates to `consumers`.
+
+**Important:** In production the app does **not** silently fall back to SQLite. If MySQL is unreachable, startup fails with a clear error.
+
+---
+
+## API Overview
+
+| Area | Endpoint | Method |
 |---|---|---|
-| GET/POST | `/api/buyer/profile` | Buyer details (email, address, geo, type) |
-| GET | `/api/market` | Live crops from farmer DB (daily qty/price) |
-| POST/GET | `/api/orders` | Create / list orders |
-| PUT | `/api/orders/<id>/advance` | Advance delivery status |
-| GET | `/api/pools` | Active community pools + live tier pricing |
-| POST | `/api/pools/<id>/join` | Add volume to a pool |
-| GET/POST | `/api/subscriptions` | HoReCa recurring plans |
-| PUT/DELETE | `/api/subscriptions/<id>` | Pause / resume / cancel |
-| GET | `/api/subscriptions/calendar` | Expanded delivery schedule |
+| Auth | `/api/auth/request-otp`, `/api/auth/login`, `/api/auth/me`, `/api/auth/logout` | POST / POST / GET / POST |
+| Farmer | `/api/farmer/profile`, `/api/farmer/listings`, `/api/farmer/orders` | GET/PUT, GET, GET |
+| Listings | `/api/listings` | GET, POST |
+| Listing detail | `/api/listings/<id>` | GET, PUT, DELETE |
+| Marketplace | `/api/market` | GET |
+| Consumer profile | `/api/consumer/profile` | GET, POST, PUT |
+| Buyer alias (deprecated) | `/api/buyer/profile` | GET, POST |
+| Orders | `/api/orders` | GET, POST |
+| Order status | `/api/orders/<id>/status`, `/api/orders/<id>/advance` | PUT |
+| Pools | `/api/pools`, `/api/pools/<id>/join` | GET, POST |
+| Subscriptions | `/api/subscriptions`, `/api/subscriptions/<id>`, `/api/subscriptions/calendar` | GET/POST, PUT/DELETE, GET |
+| Mandi + grading | `/api/mandi-price`, `/api/grade` | GET, POST |
+| System | `/api/db-info`, `/health` | GET |
 
-## 🔮 Future
-- Integrate real eNAM API, UPI AutoPay, LLM for better voice parsing (Whisper), image disease detection.
+See [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATION.md).
 
-Built for farmers, by Farm Bridge 🌾
+---
+
+## Testing
+
+```bash
+pip install -r requirements.txt
+pytest -q
+```
+
+The test suite covers authentication, listing creation, marketplace, order placement, stock reduction, overselling prevention, consumer profile, pool join, subscriptions, AI grading, and database initialization.
+
+---
+
+## Deployment
+
+Farm Bridge is ready for **Render + external cloud MySQL**.
+
+- **Render deployment:** see [`docs/RENDER_DEPLOYMENT_GUIDE.md`](docs/RENDER_DEPLOYMENT_GUIDE.md).
+- **Cloud MySQL setup:** see [`docs/CLOUD_DATABASE_GUIDE.md`](docs/CLOUD_DATABASE_GUIDE.md).
+- **GitHub setup:** see [`docs/GITHUB_SETUP_GUIDE.md`](docs/GITHUB_SETUP_GUIDE.md).
+- **Production readiness:** [`docs/PRODUCTION_READINESS_REPORT.md`](docs/PRODUCTION_READINESS_REPORT.md).
+- **Security/backups/deployment checklists:** [`docs/SECURITY_CHECKLIST.md`](docs/SECURITY_CHECKLIST.md), [`docs/BACKUP_AND_RECOVERY.md`](docs/BACKUP_AND_RECOVERY.md), [`docs/FINAL_DEPLOYMENT_CHECKLIST.md`](docs/FINAL_DEPLOYMENT_CHECKLIST.md).
+- **Multi-device testing:** [`docs/MULTI_DEVICE_TESTING.md`](docs/MULTI_DEVICE_TESTING.md).
+
+Alternative paths are in [`docs/DEPLOYMENT_GUIDE.md`](docs/DEPLOYMENT_GUIDE.md):
+
+1. Simple student/demo deployment (Render / Railway / PythonAnywhere + managed MySQL).
+2. Docker with MySQL (`docker compose up --build`).
+3. Production architecture: Nginx → Gunicorn → Flask → MySQL, with HTTPS and backups.
+
+---
+
+## Mobile App
+
+🚧 **Mobile App — Under Development**
+
+The Farm Bridge mobile application is currently under development. We are working on bringing the complete Farm Bridge experience to **Android and iOS**. **Coming Soon.**
+
+The website remains fully responsive and mobile-friendly.
+
+---
+
+## Roadmap
+
+- Real eNAM / Agmarknet market data integration.
+- Real SMS OTP provider.
+- Advanced vision-based image quality / disease scoring.
+- Notifications and price history.
+- WebSockets / Server-Sent Events for real-time marketplace updates.
+
+## License
+
+See [LICENSE](LICENSE).

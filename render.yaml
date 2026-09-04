@@ -1,0 +1,61 @@
+# FarmBridge Render Blueprint
+#
+# To use: push this repo to GitHub, then in Render go to
+#   New + → Blueprint → connect the GitHub repo.
+#
+# It creates ONE Web Service. The external MySQL database must be created
+# separately (Railway, Aiven, DigitalOcean, AWS RDS, etc.) and its values
+# pasted below / set in the Render dashboard environment variables. The
+# database schema is initialized automatically at startup, so no extra render
+# service is needed for migrations.
+
+services:
+  - type: web
+    name: farmbridge
+    runtime: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn -c gunicorn.conf.py app:app"
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_DEBUG
+        value: "false"
+      - key: DB_ENGINE
+        value: mysql
+      - key: MYSQL_SSL_MODE
+        value: preferred
+      - key: GUNICORN_WORKERS
+        value: "1"
+      - key: GUNICORN_THREADS
+        value: "4"
+
+    # Secrets. Provide real values in the Render dashboard.
+      - key: SECRET_KEY
+        generateValue: true
+      - key: MYSQL_HOST
+        sync: false
+      - key: MYSQL_PORT
+        sync: false
+      - key: MYSQL_USER
+        sync: false
+      - key: MYSQL_PASSWORD
+        sync: false
+      - key: MYSQL_DB
+        sync: false
+      - key: MYSQL_SSL_CA
+        sync: false
+      - key: STORAGE_PROVIDER
+        value: local
+      - key: UPLOAD_FOLDER
+        value: /tmp/farmbridge_uploads
+      - key: ALLOWED_ORIGINS
+        value: "*"
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false

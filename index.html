@@ -84,7 +84,7 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
         <div class="relative z-10">
           <div class="inline-flex px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs tracking-widest">TRUSTED BY 12,000+ FARMERS</div>
           <h1 class="mt-8 font-farm text-[52px] leading-[0.9] tracking-[-0.04em] font-800">Cut the<br/>Middleman.<br/><span class="font-bridge font-light italic text-orange-300">Keep the</span><br/>Profit.</h1>
-          <p class="mt-6 text-white/70 text-[15px] leading-relaxed max-w-[36ch]">FARM BRIDGE connects you directly to buyers. 15-25% higher realization, instant UPI payouts, AI quality grading.</p>
+          <p class="mt-6 text-white/70 text-[15px] leading-relaxed max-w-[36ch]">FARM BRIDGE connects you directly to consumers. 15-25% higher realization, instant UPI payouts, AI quality grading.</p>
           <div class="mt-10 grid grid-cols-3 gap-4">
             <div class="glass-dark rounded-2xl p-4 !bg-white/10"><div class="text-2xl font-bold font-farm">18.7%</div><div class="text-[11px] opacity-70 uppercase tracking-widest">Avg. Higher Price</div></div>
             <div class="glass-dark rounded-2xl p-4 !bg-white/10"><div class="text-2xl font-bold font-farm">2.3s</div><div class="text-[11px] opacity-70 uppercase tracking-widest">Payout Speed</div></div>
@@ -111,7 +111,7 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
           <span class="ml-2 px-2 py-0.5 rounded-full bg-green-900 text-white text-[8px] font-bold">DIRECT</span>
         </div>
         <h2 class="font-display text-[22px] sm:text-[28px] font-bold tracking-tight text-gray-900 leading-tight">Welcome 🙏</h2>
-        <p class="text-gray-500 mt-1.5 sm:mt-2 text-[13px] sm:text-sm">Enter your details to access Farmer & Buyer portals.</p>
+        <p class="text-gray-500 mt-1.5 sm:mt-2 text-[13px] sm:text-sm">Enter your details to access Farmer & Consumer portals.</p>
         <form id="loginForm" class="mt-6 sm:mt-8 space-y-4 sm:space-y-5" novalidate>
           <div>
             <label class="text-[10px] sm:text-[11px] font-bold tracking-widest text-gray-500 uppercase">Full Name *</label>
@@ -133,6 +133,14 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
             </div>
             <p id="phoneError" class="hidden mt-6 text-[11px] text-red-600 flex items-center gap-1"><span>⚠️</span><span id="phoneErrorText"></span></p>
             <p class="mt-1.5 text-[10px] text-gray-400">Exactly 10 digits, Indian mobile (6-9 start) • No spaces/symbols</p>
+          </div>
+          <div id="otpField" class="hidden">
+            <label class="text-[10px] sm:text-[11px] font-bold tracking-widest text-gray-500 uppercase">One-Time Password (OTP) *</label>
+            <div class="mt-1.5 sm:mt-2 relative">
+              <input id="otpInput" type="text" inputmode="numeric" maxlength="6" placeholder="6-digit OTP" class="w-full h-[48px] sm:h-[52px] rounded-xl sm:rounded-2xl border border-gray-200 bg-white px-4 pl-10 sm:pl-11 text-[14px] sm:text-[15px] outline-none focus:border-green-700 focus:ring-4 focus:ring-green-700/10 transition tracking-[0.4em]">
+              <div class="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400"><svg width="16" height="16" class="sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            </div>
+            <p id="otpHint" class="mt-1.5 text-[10px] text-gray-400">Demo mode: OTP is shown in the toast for local demos.</p>
           </div>
           <button type="submit" id="loginBtn" disabled class="w-full h-[48px] sm:h-[52px] rounded-xl sm:rounded-2xl bg-gray-300 text-white font-semibold text-[14px] sm:text-[15px] flex items-center justify-center gap-2 transition shadow-lg active:scale-[0.98] disabled:cursor-not-allowed">
             <span id="loginBtnText">Enter Valid Details</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -174,12 +182,12 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
           <div class="relative z-10 mt-6 sm:mt-8 flex items-center gap-2 text-white font-semibold text-[14px] sm:text-base"><span>Enter Farmer Portal</span><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white text-green-900 flex items-center justify-center group-hover:translate-x-1 transition text-sm">→</div></div>
         </div>
       </button>
-      <button id="goBuyer" class="group relative text-left rounded-[20px] sm:rounded-[28px] bg-white border border-gray-200 p-[1px] overflow-hidden shadow-xl shadow-black/5 hover:shadow-2xl transition-all active:scale-[0.99] sm:hover:-translate-y-1">
+      <button id="goConsumer" class="group relative text-left rounded-[20px] sm:rounded-[28px] bg-white border border-gray-200 p-[1px] overflow-hidden shadow-xl shadow-black/5 hover:shadow-2xl transition-all active:scale-[0.99] sm:hover:-translate-y-1">
         <div class="rounded-[19px] sm:rounded-[27px] bg-white p-5 sm:p-7 h-full min-h-[320px] sm:min-h-[380px] flex flex-col relative overflow-hidden">
           <div class="absolute top-0 right-0 w-40 h-40 sm:w-64 sm:h-64 bg-orange-50 rounded-full blur-3xl"></div>
           <div class="relative z-10 flex-1">
             <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gray-900 text-white flex items-center justify-center shadow-lg"><svg width="22" height="22" class="sm:w-7 sm:h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div>
-            <h3 class="mt-4 sm:mt-6 font-farm text-[26px] sm:text-[34px] leading-none text-gray-900">BUYER</h3>
+            <h3 class="mt-4 sm:mt-6 font-farm text-[26px] sm:text-[34px] leading-none text-gray-900">CONSUMER</h3>
             <p class="font-bridge text-[15px] sm:text-[18px] text-orange-600 italic -mt-1">Source directly</p>
             <p class="mt-3 sm:mt-4 text-gray-500 text-[12px] sm:text-[14px] leading-relaxed">Browse AI-graded fresh produce, compare Mandi prices, order with live tracking.</p>
             <div class="mt-4 sm:mt-6 space-y-1.5 sm:space-y-2">
@@ -189,7 +197,7 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
               <div class="flex items-center gap-2 text-[11px] sm:text-[13px] text-gray-700"><span class="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[10px]">✅</span> Quality Verified</div>
             </div>
           </div>
-          <div class="relative z-10 mt-6 sm:mt-8 flex items-center gap-2 text-gray-900 font-semibold text-[14px] sm:text-base"><span>Enter Buyer Portal</span><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-900 text-white flex items-center justify-center group-hover:translate-x-1 transition text-sm">→</div></div>
+          <div class="relative z-10 mt-6 sm:mt-8 flex items-center gap-2 text-gray-900 font-semibold text-[14px] sm:text-base"><span>Enter Consumer Portal</span><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-900 text-white flex items-center justify-center group-hover:translate-x-1 transition text-sm">→</div></div>
         </div>
       </button>
     </div>
@@ -197,6 +205,7 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
       <span class="flex items-center gap-1.5 sm:gap-2"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500"></span> 1,247 Farmers Online</span>
       <span class="flex items-center gap-1.5 sm:gap-2"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-orange-500"></span> Live Mandi Data</span>
       <span class="flex items-center gap-1.5 sm:gap-2"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-500"></span> UPI Auto-Payout Active</span>
+      <span class="flex items-center gap-1.5 sm:gap-2 text-orange-700"><span>🚧</span> Mobile App — Under Development (Android & iOS coming soon)</span>
     </div>
   </div>
 </section>
@@ -317,7 +326,7 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
           <div id="timelineProgress" class="absolute left-[15px] top-[8px] bottom-[8px] w-[2px] bg-gray-200"></div>
           <div id="timelineProgressActive" class="absolute left-[15px] top-[8px] w-[2px] bg-green-600 transition-all duration-700" style="height:0%"></div>
           <div class="space-y-5 sm:space-y-6 relative z-10">
-            <div class="timeline-step flex gap-2.5 sm:gap-3"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-600 text-white flex items-center justify-center shrink-0 shadow text-[12px] sm:text-sm">✓</div><div class="flex-1 min-w-0"><div class="font-semibold text-[13px] sm:text-sm">Order Placed</div><div class="text-[11px] sm:text-xs text-gray-500 leading-snug">Buyer confirmed • Escrow created</div><div class="mt-1 text-[10px] sm:text-[11px] px-2 py-1 rounded-full bg-green-50 border border-green-200 text-green-700 inline-flex">Completed • 10:24 AM</div></div></div>
+            <div class="timeline-step flex gap-2.5 sm:gap-3"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-600 text-white flex items-center justify-center shrink-0 shadow text-[12px] sm:text-sm">✓</div><div class="flex-1 min-w-0"><div class="font-semibold text-[13px] sm:text-sm">Order Placed</div><div class="text-[11px] sm:text-xs text-gray-500 leading-snug">Consumer confirmed • Escrow created</div><div class="mt-1 text-[10px] sm:text-[11px] px-2 py-1 rounded-full bg-green-50 border border-green-200 text-green-700 inline-flex">Completed • 10:24 AM</div></div></div>
             <div class="timeline-step flex gap-2.5 sm:gap-3 opacity-60"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center shrink-0 text-[12px] sm:text-sm">2</div><div class="flex-1 min-w-0"><div class="font-semibold text-[13px] sm:text-sm">Produce Picked</div><div class="text-[11px] sm:text-xs text-gray-500 leading-snug">Logistics partner en route</div><div class="mt-2 h-2 rounded-full bg-gray-100 overflow-hidden"><div class="h-full bg-green-600 w-0 transition-all" id="pickProgress"></div></div></div></div>
             <div class="timeline-step flex gap-2.5 sm:gap-3 opacity-60"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center shrink-0 text-[12px] sm:text-sm">3</div><div class="flex-1 min-w-0"><div class="font-semibold text-[13px] sm:text-sm">Quality Verified at Drop</div><div class="text-[11px] sm:text-xs text-gray-500 leading-snug">AI + manual check at collection hub</div></div></div>
             <div class="timeline-step flex gap-2.5 sm:gap-3 opacity-60"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center shrink-0 text-[12px] sm:text-sm">4</div><div class="flex-1 min-w-0"><div class="font-semibold text-[13px] sm:text-sm">Instant UPI Payout</div><div class="text-[11px] sm:text-xs text-gray-500 leading-snug">Money in your UPI within 2.3s</div><div class="mt-2 flex items-center gap-2"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-900 flex items-center justify-center text-white text-[9px] sm:text-[10px]">UPI</div><div class="text-[10px] sm:text-[11px] text-gray-500">Auto to linked account • ₹/Kg</div></div></div></div>
@@ -333,15 +342,15 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
   </div>
 </section>
 
-<!-- BUYER PORTAL -->
-<!-- ============ BUYER ONBOARDING (details) ============ -->
+<!-- CONSUMER PORTAL -->
+<!-- ============ CONSUMER ONBOARDING (details) ============ -->
 <section id="buyerOnboard" class="hidden">
   <div class="max-w-3xl mx-auto">
     <div class="flex items-center gap-2 pt-1">
       <button onclick="goHome()" class="h-10 px-3.5 rounded-xl border border-gray-200 bg-white flex items-center gap-1.5 active:scale-95 text-[13px] font-bold text-gray-700 hover:bg-gray-50" title="Go to home">🏠 <span>Home</span></button>
     </div>
     <div class="text-center py-4 sm:py-6 px-2">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-800 text-[10px] sm:text-xs font-bold tracking-widest">BUYER SETUP • STEP 1 OF 2</div>
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-800 text-[10px] sm:text-xs font-bold tracking-widest">CONSUMER SETUP • STEP 1 OF 2</div>
       <h1 class="mt-3 font-farm text-[26px] sm:text-[38px] leading-[0.95] tracking-tight">Tell us where to <span class="font-bridge font-light italic text-orange-500">deliver.</span></h1>
       <p class="mt-2 text-gray-500 text-[13px] sm:text-[15px]">Your name & phone are already taken from your login.</p>
     </div>
@@ -396,13 +405,13 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
       </div>
 
       <button id="bo_next" class="mt-6 w-full h-[52px] rounded-2xl bg-gray-900 text-white font-bold text-[15px] flex items-center justify-center gap-2 hover:bg-black transition active:scale-[0.98]">
-        Continue to Buyer Type <span>→</span>
+        Continue to Consumer Type <span>→</span>
       </button>
     </div>
   </div>
 </section>
 
-<!-- ============ BUYER TYPE SELECTION ============ -->
+<!-- ============ CONSUMER TYPE SELECTION ============ -->
 <section id="buyerTypePage" class="hidden">
   <div class="max-w-6xl mx-auto">
     <div class="flex items-center gap-2 pt-1">
@@ -410,7 +419,7 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
       <button onclick="goHome()" class="h-10 px-3.5 rounded-xl border border-gray-200 bg-white flex items-center gap-1.5 active:scale-95 text-[13px] font-bold text-gray-700 hover:bg-gray-50" title="Go to home">🏠 <span>Home</span></button>
     </div>
     <div class="text-center py-4 sm:py-8 px-2">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 border border-green-200 text-green-800 text-[10px] sm:text-xs font-bold tracking-widest">BUYER SETUP • STEP 2 OF 2</div>
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 border border-green-200 text-green-800 text-[10px] sm:text-xs font-bold tracking-widest">CONSUMER SETUP • STEP 2 OF 2</div>
       <h1 class="mt-3 sm:mt-4 font-farm text-[26px] sm:text-[40px] leading-[0.92] tracking-tight">How do you <span class="font-bridge font-light italic text-orange-500">buy?</span></h1>
       <p class="mt-2 text-gray-500 text-[13px] sm:text-[15px] max-w-lg mx-auto">Pick the profile that fits you. Each one unlocks a different portal.</p>
     </div>
@@ -473,7 +482,7 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
   <!-- top bar -->
   <div class="sticky top-[60px] sm:top-[72px] z-40 -mx-3 sm:-mx-6 lg:-mx-8 px-3 sm:px-6 lg:px-8 py-2.5 bg-white/90 backdrop-blur border-b border-gray-100">
     <div class="flex items-center gap-2 sm:gap-3">
-      <button class="backToTypes h-10 w-10 rounded-xl border border-gray-200 bg-white flex items-center justify-center shrink-0 active:scale-95" title="Back to buyer type">←</button><button onclick="goHome()" class="h-10 px-3 rounded-xl border border-gray-200 bg-white flex items-center justify-center gap-1.5 shrink-0 active:scale-95 text-[12px] font-bold text-gray-700 hover:bg-gray-50" title="Go to home">🏠<span class="hidden sm:inline">Home</span></button>
+      <button class="backToTypes h-10 w-10 rounded-xl border border-gray-200 bg-white flex items-center justify-center shrink-0 active:scale-95" title="Back to consumer type">←</button><button onclick="goHome()" class="h-10 px-3 rounded-xl border border-gray-200 bg-white flex items-center justify-center gap-1.5 shrink-0 active:scale-95 text-[12px] font-bold text-gray-700 hover:bg-gray-50" title="Go to home">🏠<span class="hidden sm:inline">Home</span></button>
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-1.5 text-[11px] text-gray-500">
           <span class="text-green-700 font-bold">⚡ Delivery in <span id="ind_eta">14</span> min</span>
@@ -525,7 +534,7 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
 <!-- ============ COMMUNITY PORTAL ============ -->
 <section id="communityPortal" class="hidden">
   <div class="flex items-center gap-3 mb-4">
-    <button class="backToTypes h-10 w-10 rounded-xl border border-gray-200 bg-white flex items-center justify-center shrink-0 active:scale-95" title="Back to buyer type">←</button><button onclick="goHome()" class="h-10 px-3 rounded-xl border border-gray-200 bg-white flex items-center justify-center gap-1.5 shrink-0 active:scale-95 text-[12px] font-bold text-gray-700 hover:bg-gray-50" title="Go to home">🏠<span class="hidden sm:inline">Home</span></button>
+    <button class="backToTypes h-10 w-10 rounded-xl border border-gray-200 bg-white flex items-center justify-center shrink-0 active:scale-95" title="Back to consumer type">←</button><button onclick="goHome()" class="h-10 px-3 rounded-xl border border-gray-200 bg-white flex items-center justify-center gap-1.5 shrink-0 active:scale-95 text-[12px] font-bold text-gray-700 hover:bg-gray-50" title="Go to home">🏠<span class="hidden sm:inline">Home</span></button>
     <div class="min-w-0 flex-1">
       <h2 class="font-farm text-[24px] sm:text-[32px] leading-none">COMMUNITY <span class="font-bridge font-light italic text-orange-600">Pool-Buy</span></h2>
       <p class="text-[12px] sm:text-sm text-gray-500 mt-0.5" id="com_org">Pool demand • Unlock wholesale price</p>
@@ -553,7 +562,7 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
 <!-- ============ HoReCa PORTAL ============ -->
 <section id="horecaPortal" class="hidden">
   <div class="flex items-center gap-3 mb-4">
-    <button class="backToTypes h-10 w-10 rounded-xl border border-gray-200 bg-white flex items-center justify-center shrink-0 active:scale-95" title="Back to buyer type">←</button><button onclick="goHome()" class="h-10 px-3 rounded-xl border border-gray-200 bg-white flex items-center justify-center gap-1.5 shrink-0 active:scale-95 text-[12px] font-bold text-gray-700 hover:bg-gray-50" title="Go to home">🏠<span class="hidden sm:inline">Home</span></button>
+    <button class="backToTypes h-10 w-10 rounded-xl border border-gray-200 bg-white flex items-center justify-center shrink-0 active:scale-95" title="Back to consumer type">←</button><button onclick="goHome()" class="h-10 px-3 rounded-xl border border-gray-200 bg-white flex items-center justify-center gap-1.5 shrink-0 active:scale-95 text-[12px] font-bold text-gray-700 hover:bg-gray-50" title="Go to home">🏠<span class="hidden sm:inline">Home</span></button>
     <div class="min-w-0 flex-1">
       <h2 class="font-farm text-[24px] sm:text-[32px] leading-none">HoReCa <span class="font-bridge font-light italic text-orange-600">Procurement</span></h2>
       <p class="text-[12px] sm:text-sm text-gray-500 mt-0.5" id="hor_org">Recurring subscriptions & scheduled ordering</p>
@@ -741,7 +750,17 @@ body { font-family:'Plus Jakarta Sans',sans-serif; background:#fcfcf8; overflow-
 </div>
 
 <script>
-const API='';let currentUser=JSON.parse(localStorage.getItem('fb_user')||'null');
+const API='';let currentUser=JSON.parse(localStorage.getItem('fb_user')||'null');let currentToken=localStorage.getItem('fb_token')||'';
+/* Attach the JWT to every same-origin API call automatically. */
+const _origFetch=window.fetch;
+window.fetch=function(url,opts){
+  opts=opts||{};
+  if(typeof url==='string' && url.startsWith('/api/') && currentToken){
+    opts.headers=opts.headers||{};
+    if(!opts.headers['Authorization'])opts.headers['Authorization']='Bearer '+currentToken;
+  }
+  return _origFetch(url,opts);
+};
 let voiceState={step:0,data:{crop_name:'',harvest_date:'',quantity:'',price:'',location:''},transcript:'',listening:false,recognition:null};
 
 // --- ENHANCED CROP LIST FOR EXTRACTION ---
@@ -834,25 +853,27 @@ function validatePhone(phone){
   if(!/^[6-9]\d{9}$/.test(digits)) return {valid:false, msg:"Invalid Indian mobile - should start with 6-9"};
   return {valid:true, msg:"", digits};
 }
+let otpVerification=false;let pendingLoginPhone='';let otpValid=false;
 function updateLoginButton(){
   const btn=document.getElementById('loginBtn');
   const txt=document.getElementById('loginBtnText');
-  if(nameValid && phoneValid){
+  const ready=otpVerification?(nameValid&&phoneValid&&otpValid):(nameValid&&phoneValid);
+  if(ready){
     btn.disabled=false;
     btn.classList.remove('bg-gray-300');
     btn.classList.add('bg-gray-900','hover:bg-black');
-    txt.textContent='Continue to FARM BRIDGE';
+    txt.textContent=otpVerification?'Verify & Login':'Send OTP';
   } else {
     btn.disabled=true;
     btn.classList.add('bg-gray-300');
     btn.classList.remove('bg-gray-900','hover:bg-black');
-    txt.textContent='Enter Valid Details';
+    txt.textContent=otpVerification?'Enter OTP':'Enter Valid Details';
   }
 }
 
 function init(){
   if(currentUser){showUser(currentUser);showPortalSelect();}else{updateHomeBtn(true);}
-  setupSpeech();bindEvents();bindBuyerEvents();loadMyListings();syncPendingListings();setInterval(updateMandiWidget,30000);
+  setupSpeech();bindEvents();bindConsumerEvents();loadMyListings();syncPendingListings();setInterval(updateMandiWidget,30000);
   window.addEventListener('online',syncPendingListings);
   // login live validation
   const nameInput=document.getElementById('nameInput');
@@ -898,6 +919,12 @@ function init(){
     }
     updateLoginButton();
   });
+  const otpInput=document.getElementById('otpInput');
+  if(otpInput)otpInput.addEventListener('input',()=>{
+    otpInput.value=otpInput.value.replace(/\D/g,'').slice(0,6);
+    otpValid=otpInput.value.length===6;
+    updateLoginButton();
+  });
 }
 function showUser(user){document.getElementById('userNameDisplay').textContent=user.name;document.getElementById('userPhoneDisplay').textContent=user.phone;document.getElementById('userInitial').textContent=user.name.charAt(0).toUpperCase();userChip.classList.remove('hidden');userChip.classList.add('flex');logoutBtn.classList.remove('hidden');}
 function updateHomeBtn(onHome){
@@ -912,10 +939,10 @@ function goHome(){
   if(poolTimer){clearInterval(poolTimer);poolTimer=null;}
   showPortalSelect();
 }
-function showLogin(){loginPage.classList.remove('hidden');portalPage.classList.add('hidden');farmerPortal.classList.add('hidden');hideAllBuyer();updateHomeBtn(true);window.scrollTo(0,0);}
-function showPortalSelect(){loginPage.classList.add('hidden');portalPage.classList.remove('hidden');farmerPortal.classList.add('hidden');hideAllBuyer();updateHomeBtn(true);window.scrollTo(0,0);}
-function showFarmer(){loginPage.classList.add('hidden');portalPage.classList.add('hidden');farmerPortal.classList.remove('hidden');hideAllBuyer();updateMandiWidget();updateHomeBtn(false);window.scrollTo(0,0);}
-function showBuyer(){showBuyerFlow();}
+function showLogin(){loginPage.classList.remove('hidden');portalPage.classList.add('hidden');farmerPortal.classList.add('hidden');hideAllConsumer();updateHomeBtn(true);window.scrollTo(0,0);}
+function showPortalSelect(){loginPage.classList.add('hidden');portalPage.classList.remove('hidden');farmerPortal.classList.add('hidden');hideAllConsumer();updateHomeBtn(true);window.scrollTo(0,0);}
+function showFarmer(){loginPage.classList.add('hidden');portalPage.classList.add('hidden');farmerPortal.classList.remove('hidden');hideAllConsumer();updateMandiWidget();updateHomeBtn(false);window.scrollTo(0,0);}
+function showConsumer(){showConsumerFlow();}
 function bindEvents(){
   document.getElementById('loginForm').addEventListener('submit',async(e)=>{
     e.preventDefault();
@@ -925,26 +952,42 @@ function bindEvents(){
     const phoneRes=validatePhone(phone);
     if(!nameRes.valid){toast('❌ '+nameRes.msg);return;}
     if(!phoneRes.valid){toast('❌ '+phoneRes.msg);return;}
-    try{
-      const res=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name, phone: phoneRes.digits})});
-      const data=await res.json();
-      if(data.success || res.ok){
+    if(!otpVerification){
+      // Step 1: request OTP
+      try{
+        const res=await fetch('/api/auth/request-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,phone:phoneRes.digits})});
+        const data=await res.json();const body=data.data||data;
+        if(!res.ok){toast('❌ '+((data.error&&data.error.message)||body.error||'Could not send OTP'));return;}
+        otpVerification=true;pendingLoginPhone=phoneRes.digits;
+        document.getElementById('otpField').classList.remove('hidden');
+        document.getElementById('otpHint').textContent=body.demo_otp?'Demo OTP: '+body.demo_otp:'OTP sent to '+phoneRes.digits;
+        if(body.demo_otp){document.getElementById('otpInput').value=body.demo_otp;otpValid=true;toast('✨ Demo OTP: '+body.demo_otp);}
+        else{toast('✅ OTP sent to '+phoneRes.digits);}
+        updateLoginButton();
+      }catch(err){toast('❌ Network error. Could not send OTP');}
+    } else {
+      // Step 2: verify OTP
+      const otp=document.getElementById('otpInput').value.trim();
+      if(!otp){toast('❌ Enter the OTP');return;}
+      try{
+        const res=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,phone:phoneRes.digits,otp})});
+        const data=await res.json();const body=data.data||data;
+        if(!res.ok){toast('❌ '+((data.error&&data.error.message)||body.error||'Login failed'));return;}
         currentUser={name, phone: phoneRes.digits};
+        currentToken=body.token||'';
         localStorage.setItem('fb_user',JSON.stringify(currentUser));
+        localStorage.setItem('fb_token',currentToken);
+        otpVerification=false;otpValid=false;
+        document.getElementById('otpField').classList.add('hidden');
+        document.getElementById('otpInput').value='';
         showUser(currentUser);showPortalSelect();toast(`Welcome ${name}! Choose portal`);
-      } else {
-        toast('❌ '+ (data.error||'Login failed'));
-      }
-    }catch(err){
-      currentUser={name, phone: phoneRes.digits};
-      localStorage.setItem('fb_user',JSON.stringify(currentUser));
-      showUser(currentUser);showPortalSelect();toast(`Welcome ${name}! (offline)`);
+      }catch(err){toast('❌ Network error');}
     }
   });
-  document.getElementById('goFarmer').addEventListener('click',showFarmer);document.getElementById('goBuyer').addEventListener('click',showBuyer);
+  document.getElementById('goFarmer').addEventListener('click',showFarmer);document.getElementById('goConsumer').addEventListener('click',showConsumer);
   document.getElementById('homeBtn').addEventListener('click',goHome);
   document.getElementById('homeLogo').addEventListener('click',goHome);
-  logoutBtn.addEventListener('click',()=>{localStorage.removeItem('fb_user');localStorage.removeItem('fb_buyer');localStorage.removeItem('fb_cart');currentUser=null;buyerProfile=null;CART=[];userChip.classList.add('hidden');userChip.classList.remove('flex');logoutBtn.classList.add('hidden');showLogin();});
+  logoutBtn.addEventListener('click',()=>{localStorage.removeItem('fb_user');localStorage.removeItem('fb_token');localStorage.removeItem('fb_buyer');localStorage.removeItem('fb_consumer');localStorage.removeItem('fb_cart');currentUser=null;currentToken='';buyerProfile=null;CART=[];otpVerification=false;otpValid=false;document.getElementById('otpField').classList.add('hidden');document.getElementById('otpInput').value='';userChip.classList.add('hidden');userChip.classList.remove('flex');logoutBtn.classList.add('hidden');showLogin();});
   document.getElementById('micBtn').addEventListener('click',toggleListening);document.getElementById('resetVoice').addEventListener('click',resetVoice);
   document.querySelectorAll('.voice-quick').forEach(b=>{b.addEventListener('click',()=>{const txt=b.dataset.text||b.textContent;if(txt)handleVoiceResult(txt);});});
   document.getElementById('f_photo').addEventListener('change',handlePhoto);document.getElementById('previewGradeBtn').addEventListener('click',previewGrade);
@@ -1083,9 +1126,9 @@ function resetVoice(){
   document.getElementById('liveTranscript').textContent='Your speech will appear here... I extract only crop name';
 }
 function handlePhoto(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=(ev)=>{currentPhotoBase64=ev.target.result;const preview=document.getElementById('photoPreview');preview.src=currentPhotoBase64;preview.classList.remove('hidden');document.getElementById('photoPlaceholder').classList.add('hidden');previewGrade();};reader.readAsDataURL(file);}
-async function previewGrade(){const crop=document.getElementById('f_crop_name').value;const harvest=document.getElementById('f_harvest_date').value;if(!crop||!harvest){toast('Enter crop name & harvest date first');return;}try{const res=await fetch('/api/grade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({crop_name:crop,harvest_date:harvest,photo:currentPhotoBase64})});const data=await res.json();if(data.grade){showGrade(data);currentGradeInfo=data;}}catch(err){const shelf={tomato:7,potato:45,onion:60,wheat:180}[crop.toLowerCase()]||14;const harvestDate=new Date(harvest);const daysSince=Math.floor((new Date()-harvestDate)/86400000);const remaining=Math.max(0,shelf-daysSince);const freshness=Math.max(0,Math.min(100,Math.floor((remaining/shelf)*100)));let grade='A';if(freshness<70)grade='B';if(freshness<35)grade='C';const expiry=new Date(harvestDate);expiry.setDate(expiry.getDate()+shelf);showGrade({grade,grade_desc:grade==='A'?'Premium - Export Quality':grade==='B'?'Good - Local Market':'Average - Quick Sale',expiry_display:expiry.toLocaleDateString(),freshness_score:freshness,shelf_life:shelf,remaining_days:remaining,grade_color:grade==='A'?'#16a34a':grade==='B'?'#eab308':'#ef4444'});}}
+async function previewGrade(){const crop=document.getElementById('f_crop_name').value;const harvest=document.getElementById('f_harvest_date').value;if(!crop||!harvest){toast('Enter crop name & harvest date first');return;}try{const res=await fetch('/api/grade',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({crop_name:crop,harvest_date:harvest,photo:currentPhotoBase64})});const data=await res.json();const body=data.data||data;if(body.grade){showGrade(body);currentGradeInfo=body;}}catch(err){const shelf={tomato:7,potato:45,onion:60,wheat:180}[crop.toLowerCase()]||14;const harvestDate=new Date(harvest);const daysSince=Math.floor((new Date()-harvestDate)/86400000);const remaining=Math.max(0,shelf-daysSince);const freshness=Math.max(0,Math.min(100,Math.floor((remaining/shelf)*100)));let grade='A';if(freshness<70)grade='B';if(freshness<35)grade='C';const expiry=new Date(harvestDate);expiry.setDate(expiry.getDate()+shelf);showGrade({grade,grade_desc:grade==='A'?'Premium - Export Quality':grade==='B'?'Good - Local Market':'Average - Quick Sale',expiry_display:expiry.toLocaleDateString(),freshness_score:freshness,shelf_life:shelf,remaining_days:remaining,grade_color:grade==='A'?'#16a34a':grade==='B'?'#eab308':'#ef4444'});}}
 function showGrade(info){const card=document.getElementById('gradeCard');const ph=document.getElementById('gradePlaceholder');card.classList.remove('hidden');ph.classList.add('hidden');card.className='rounded-xl p-3 sm:p-4 text-white h-full flex flex-col justify-center shadow-lg';if(info.grade==='A')card.classList.add('grade-a');else if(info.grade==='B')card.classList.add('grade-b');else card.classList.add('grade-c');document.getElementById('gradeLetter').textContent=info.grade;document.getElementById('gradeDesc').textContent=info.grade_desc||info.grade;document.getElementById('gradeExpiry').textContent=`Expires: ${info.expiry_display||info.expiry_date}`;document.getElementById('gradeFreshness').textContent=`Freshness ${info.freshness_score}% • ${info.remaining_days} days left • Shelf ${info.shelf_life}d`;}
-async function updateMandiWidget(){const crop=document.getElementById('f_crop_name').value||voiceState.data.crop_name||'tomato';const location=document.getElementById('f_location').value||voiceState.data.location||'';try{const res=await fetch(`/api/mandi-price?crop=${encodeURIComponent(crop)}&location=${encodeURIComponent(location)}`);const data=await res.json();document.getElementById('mandiPrice').textContent=`₹${data.mandi_price}`;document.getElementById('mandiName').textContent=data.mandi_name;document.getElementById('mandiTrend').textContent=data.mandi_trend;document.getElementById('platformPrice').textContent=`₹${data.platform_price}`;document.getElementById('upliftPercent').textContent=`${data.uplift_percent}%`;document.getElementById('extraEarning').textContent=`₹${data.extra_earning_per_quintal}`;document.getElementById('mandiBarLabel').textContent=`₹${data.mandi_price}`;document.getElementById('platformBarLabel').textContent=`₹${data.platform_price}`;const max=Math.max(data.mandi_price,data.platform_price)*1.2;document.getElementById('mandiBar').style.width=`${(data.mandi_price/max)*100}%`;document.getElementById('platformBar').style.width=`${(data.platform_price/max)*100}%`;}catch(e){console.log('Mandi fetch error',e);}}
+async function updateMandiWidget(){const crop=document.getElementById('f_crop_name').value||voiceState.data.crop_name||'tomato';const location=document.getElementById('f_location').value||voiceState.data.location||'';try{const res=await fetch(`/api/mandi-price?crop=${encodeURIComponent(crop)}&location=${encodeURIComponent(location)}`);const j=await res.json();const data=j.data||j;document.getElementById('mandiPrice').textContent=`₹${data.mandi_price}`;document.getElementById('mandiName').textContent=data.mandi_name;document.getElementById('mandiTrend').textContent=data.mandi_trend;document.getElementById('platformPrice').textContent=`₹${data.platform_price}`;document.getElementById('upliftPercent').textContent=`${data.uplift_percent}%`;document.getElementById('extraEarning').textContent=`₹${data.extra_earning_per_quintal}`;document.getElementById('mandiBarLabel').textContent=`₹${data.mandi_price}`;document.getElementById('platformBarLabel').textContent=`₹${data.platform_price}`;const max=Math.max(data.mandi_price,data.platform_price)*1.2;document.getElementById('mandiBar').style.width=`${(data.mandi_price/max)*100}%`;document.getElementById('platformBar').style.width=`${(data.platform_price/max)*100}%`;}catch(e){console.log('Mandi fetch error',e);}}
 async function syncPendingListings(){
   let pend=JSON.parse(localStorage.getItem('fb_pending')||'[]');
   if(!pend.length)return;
@@ -1110,16 +1153,16 @@ async function submitListing(e){
   const payload={farmer_name:currentUser.name,phone:currentUser.phone,crop_name:document.getElementById('f_crop_name').value,harvest_date:document.getElementById('f_harvest_date').value,quantity:qty,price:price,location:document.getElementById('f_location').value,photo:currentPhotoBase64,voice_transcript:voiceState.transcript||'Manual entry'};
   for(let k in payload)if(!payload[k]&&k!=='photo'&&k!=='voice_transcript'){toast(`Fill ${k}`);return;}
   const btn=e.target.querySelector('button[type=submit]');const old=btn.innerHTML;btn.innerHTML='⏳ Listing...';btn.disabled=true;
-  try{const res=await fetch('/api/listings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await res.json();if(data.success){toast(`Listed! ${payload.quantity}Kg @ ₹${payload.price}/Kg • Grade ${data.grade_info.grade}`);loadMyListings();document.getElementById('cropForm').reset();document.getElementById('photoPreview').classList.add('hidden');document.getElementById('photoPlaceholder').classList.remove('hidden');document.getElementById('gradeCard').classList.add('hidden');document.getElementById('gradePlaceholder').classList.remove('hidden');resetVoice();currentPhotoBase64='';}else{toast('Error: '+(data.error||'failed'));}}catch(err){console.error(err);let pend=JSON.parse(localStorage.getItem('fb_pending')||'[]');pend.push(payload);localStorage.setItem('fb_pending',JSON.stringify(pend));toast('⚠️ Saved offline — will sync to database when back online');loadMyListings();}finally{btn.innerHTML=old;btn.disabled=false;}
+  try{const res=await fetch('/api/listings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const j=await res.json();const body=j.data||j;if(res.ok&&body.success){toast(`Listed! ${payload.quantity}Kg @ ₹${payload.price}/Kg • Grade ${body.grade_info.grade}`);loadMyListings();document.getElementById('cropForm').reset();document.getElementById('photoPreview').classList.add('hidden');document.getElementById('photoPlaceholder').classList.remove('hidden');document.getElementById('gradeCard').classList.add('hidden');document.getElementById('gradePlaceholder').classList.remove('hidden');resetVoice();currentPhotoBase64='';}else{toast('Error: '+((j.error&&j.error.message)||body.error||body.message||'failed'));}}catch(err){console.error(err);let pend=JSON.parse(localStorage.getItem('fb_pending')||'[]');pend.push(payload);localStorage.setItem('fb_pending',JSON.stringify(pend));toast('⚠️ Saved offline — will sync to database when back online');loadMyListings();}finally{btn.innerHTML=old;btn.disabled=false;}
 }
 async function loadMyListings(){
   const container=document.getElementById('myListings');
-  try{const res=await fetch('/api/listings');const data=await res.json();let filtered=data;if(currentUser)filtered=data.filter(l=>l.phone===currentUser.phone||l.farmer_name===currentUser.name);if(filtered.length===0){container.innerHTML=`<div class="text-[13px] sm:text-sm text-gray-400 text-center py-6 sm:py-8">No listings yet. Use voice to create first.</div>`;return;}container.innerHTML=filtered.slice(0,5).map(l=>`<div class="flex gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-xl bg-white border shadow-sm"><div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gray-100 overflow-hidden shrink-0">${l.photo?`<img src="${l.photo}" class="w-full h-full object-cover">`:'🌾'}</div><div class="flex-1 min-w-0"><div class="flex items-center gap-1.5 sm:gap-2"><span class="font-semibold text-[13px] sm:text-sm truncate">${l.crop_name}</span><span class="px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold text-white ${l.grade==='A'?'bg-green-600':l.grade==='B'?'bg-yellow-500':'bg-red-500'}">${l.grade}</span></div><div class="text-[11px] sm:text-xs text-gray-500 truncate">${l.quantity}Kg • ₹${l.platform_price}/Kg • ${l.location}</div><div class="text-[11px] sm:text-xs font-bold">₹${l.platform_price}/Kg • Exp: ${l.expiry_date}</div></div></div>`).join('');}catch(e){let local=JSON.parse(localStorage.getItem('fb_pending')||'[]').map(p=>({...p,grade:'—'}));if(local.length===0){container.innerHTML=`<div class="text-[13px] sm:text-sm text-gray-400 text-center py-6 sm:py-8">No listings yet.</div>`;return;}container.innerHTML=local.slice(0,5).map(l=>`<div class="flex gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-xl bg-white border shadow-sm"><div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gray-100 overflow-hidden shrink-0">${l.photo?`<img src="${l.photo}" class="w-full h-full object-cover">`:'🌾'}</div><div class="flex-1 min-w-0"><div class="font-semibold text-[13px] sm:text-sm truncate">${l.crop_name} <span class="px-1.5 py-0.5 rounded-full text-[9px] bg-green-600 text-white">${l.grade}</span></div><div class="text-[11px] sm:text-xs text-gray-500 truncate">${l.quantity}Kg • ₹${l.price}/Kg</div></div></div>`).join('');}
+  try{const res=await fetch('/api/listings');const j=await res.json();const body=j.data||j;const arr=Array.isArray(body)?body:(body.items||[]);let filtered=arr;if(currentUser)filtered=arr.filter(l=>String(l.phone)===currentUser.phone||l.farmer_name===currentUser.name);if(filtered.length===0){container.innerHTML=`<div class="text-[13px] sm:text-sm text-gray-400 text-center py-6 sm:py-8">No listings yet. Use voice to create first.</div>`;return;}container.innerHTML=filtered.slice(0,5).map(l=>`<div class="flex gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-xl bg-white border shadow-sm"><div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gray-100 overflow-hidden shrink-0">${l.photo?`<img src="${l.photo}" class="w-full h-full object-cover">`:'🌾'}</div><div class="flex-1 min-w-0"><div class="flex items-center gap-1.5 sm:gap-2"><span class="font-semibold text-[13px] sm:text-sm truncate">${l.crop_name}</span><span class="px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold text-white ${l.grade==='A'?'bg-green-600':l.grade==='B'?'bg-yellow-500':'bg-red-500'}">${l.grade}</span></div><div class="text-[11px] sm:text-xs text-gray-500 truncate">${l.quantity}Kg • ₹${l.platform_price||l.price_per_unit}/Kg • ${l.location}</div><div class="text-[11px] sm:text-xs font-bold">₹${l.platform_price||l.price_per_unit}/Kg • Exp: ${l.expiry_date}</div></div></div>`).join('');}catch(e){let local=JSON.parse(localStorage.getItem('fb_pending')||'[]').map(p=>({...p,grade:'—'}));if(local.length===0){container.innerHTML=`<div class="text-[13px] sm:text-sm text-gray-400 text-center py-6 sm:py-8">No listings yet.</div>`;return;}container.innerHTML=local.slice(0,5).map(l=>`<div class="flex gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-xl bg-white border shadow-sm"><div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gray-100 overflow-hidden shrink-0">${l.photo?`<img src="${l.photo}" class="w-full h-full object-cover">`:'🌾'}</div><div class="flex-1 min-w-0"><div class="font-semibold text-[13px] sm:text-sm truncate">${l.crop_name} <span class="px-1.5 py-0.5 rounded-full text-[9px] bg-green-600 text-white">${l.grade}</span></div><div class="text-[11px] sm:text-xs text-gray-500 truncate">${l.quantity}Kg • ₹${l.price}/Kg</div></div></div>`).join('');}
 }
 /* ==================================================================
-   BUYER PORTAL ENGINE — onboarding, Individual, Community, HoReCa
+   CONSUMER PORTAL ENGINE — onboarding, Individual, Community, HoReCa
    ================================================================== */
-let buyerProfile=JSON.parse(localStorage.getItem('fb_buyer')||'null');
+let buyerProfile=JSON.parse(localStorage.getItem('fb_consumer')||localStorage.getItem('fb_buyer')||'null');
 let CART=JSON.parse(localStorage.getItem('fb_cart')||'[]');
 let MARKET=[];let POOLS=[];let ACTIVE_CAT='All';let CART_CTX='individual';
 let calMonth=new Date().getMonth();let calYear=new Date().getFullYear();let CAL_DATA={};
@@ -1131,17 +1174,17 @@ function money(n){return '₹'+Number(n||0).toFixed(2).replace(/\.00$/,'');}
 function gradeBg(g){return g==='A'?'bg-green-600':g==='B'?'bg-yellow-500':'bg-red-500';}
 
 /* ---------- navigation ---------- */
-function hideAllBuyer(){['buyerOnboard','buyerTypePage','individualPortal','communityPortal','horecaPortal'].forEach(id=>document.getElementById(id).classList.add('hidden'));}
-function showBuyerFlow(){
+function hideAllConsumer(){['buyerOnboard','buyerTypePage','individualPortal','communityPortal','horecaPortal'].forEach(id=>document.getElementById(id).classList.add('hidden'));}
+function showConsumerFlow(){
   loginPage.classList.add('hidden');portalPage.classList.add('hidden');farmerPortal.classList.add('hidden');
-  hideAllBuyer();
-  if(buyerProfile&&buyerProfile.buyer_type){routeBuyerType(buyerProfile.buyer_type);}
+  hideAllConsumer();
+  if(buyerProfile&&(buyerProfile.consumer_type||buyerProfile.buyer_type)){routeConsumerType(buyerProfile.consumer_type||buyerProfile.buyer_type);}
   else{prefillOnboard();document.getElementById('buyerOnboard').classList.remove('hidden');}
   updateHomeBtn(false);window.scrollTo(0,0);
 }
-function routeBuyerType(t){
+function routeConsumerType(t){
   loginPage.classList.add('hidden');portalPage.classList.add('hidden');farmerPortal.classList.add('hidden');
-  hideAllBuyer();
+  hideAllConsumer();
   if(t==='Individual'){document.getElementById('individualPortal').classList.remove('hidden');CART_CTX='individual';initIndividual();}
   else if(t==='Community'){document.getElementById('communityPortal').classList.remove('hidden');CART_CTX='community';initCommunity();}
   else{document.getElementById('horecaPortal').classList.remove('hidden');initHoReCa();}
@@ -1212,30 +1255,31 @@ function bindOnboarding(){
         city:document.getElementById('bo_city').value.trim(),
         pincode:document.getElementById('bo_pincode').value.trim(),
         latitude:pickedCoords.lat,longitude:pickedCoords.lng,
-        buyer_type:type,org_name:document.getElementById('bo_org').value.trim()
+        consumer_type:type,buyer_type:type,org_name:document.getElementById('bo_org').value.trim()
       };
       if((type==='Community'||type==='HoReCa')&&!payload.org_name){
         toast('❌ Enter your society / business name below');
         document.getElementById('bo_org').focus();return;
       }
       try{
-        const r=await fetch('/api/buyer/profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-        const d=await r.json();
-        if(!r.ok){toast('❌ '+(d.error||'Could not save'));return;}
+        const r=await fetch('/api/consumer/profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        const d=await r.json();const body=d.data||d;
+        if(!r.ok){toast('❌ '+((d.error&&d.error.message)||body.error||'Could not save'));return;}
       }catch(e){}
       buyerProfile=payload;
+      localStorage.setItem('fb_consumer',JSON.stringify(buyerProfile));
       localStorage.setItem('fb_buyer',JSON.stringify(buyerProfile));
       toast(`✅ ${type} profile ready!`);
-      routeBuyerType(type);
+      routeConsumerType(type);
     });
   });
 
   const btb=document.getElementById('btBack');
   if(btb)btb.addEventListener('click',()=>{
-    hideAllBuyer();prefillOnboard();document.getElementById('buyerOnboard').classList.remove('hidden');window.scrollTo(0,0);
+    hideAllConsumer();prefillOnboard();document.getElementById('buyerOnboard').classList.remove('hidden');window.scrollTo(0,0);
   });
   document.querySelectorAll('.backToTypes').forEach(b=>b.addEventListener('click',()=>{
-    hideAllBuyer();document.getElementById('buyerTypePage').classList.remove('hidden');window.scrollTo(0,0);
+    hideAllConsumer();document.getElementById('buyerTypePage').classList.remove('hidden');window.scrollTo(0,0);
   }));
 }
 
@@ -1251,7 +1295,7 @@ async function loadMarket(){
   const grid=document.getElementById('ind_grid');
   grid.innerHTML=`<div class="col-span-full py-16 text-center"><div class="inline-block w-8 h-8 border-4 border-gray-200 border-t-green-800 rounded-full animate-spin"></div><div class="mt-3 text-[13px] text-gray-500">Loading live farm stock...</div></div>`;
   try{
-    const r=await fetch('/api/market');const d=await r.json();
+    const r=await fetch('/api/market');const j=await r.json();const d=j.data||j;
     MARKET=Array.isArray(d.items)?d.items:[];
     document.getElementById('ind_updated').textContent=new Date(d.updated_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
   }catch(e){MARKET=[];}
@@ -1410,16 +1454,16 @@ async function payNow(){
   const p=buyerProfile||{};
   try{
     const res=await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({items:CART,buyer_phone:p.phone,buyer_name:p.name,buyer_type:p.buyer_type,
+      body:JSON.stringify({items:CART,buyer_phone:p.phone,buyer_name:p.name,buyer_type:p.buyer_type,consumer_type:p.buyer_type||p.consumer_type,
         address:p.address,payment_method:pm,source:CART_CTX})});
-    const d=await res.json();
-    if(!res.ok){toast('❌ '+(d.error||'Order failed'));btn.disabled=false;btn.textContent='Pay & Place Order';return;}
+    const j=await res.json();const body=j.data||j;
+    if(!res.ok){toast('❌ '+((j.error&&j.error.message)||body.error||'Order failed'));btn.disabled=false;btn.textContent='Pay & Place Order';return;}
     CART=[];saveCart();
     closeCheckout();
-    toast(`✅ Order ${d.order_code} placed!`);
+    toast(`✅ Order ${body.order_code} placed!`);
     await loadMarket();await loadOrders();
-    openTracking(d.id);
-    autoAdvance(d.id);
+    openTracking(body.id);
+    autoAdvance(body.id);
   }catch(e){toast('❌ Network error');}
   btn.disabled=false;btn.textContent='Pay & Place Order';
 }
@@ -1427,7 +1471,7 @@ function autoAdvance(id){
   let n=0;
   const iv=setInterval(async()=>{
     n++;if(n>4){clearInterval(iv);return;}
-    try{const r=await fetch(`/api/orders/${id}/advance`,{method:'PUT'});const d=await r.json();
+    try{const r=await fetch(`/api/orders/${id}/advance`,{method:'PUT'});const j=await r.json();const d=j.data||j;
       await loadOrders();
       if(!document.getElementById('trackModal').classList.contains('hidden'))openTracking(id);
       if(d.status==='Delivered'){clearInterval(iv);toast('📦 Order delivered!');}
@@ -1437,8 +1481,8 @@ function autoAdvance(id){
 async function loadOrders(){
   const p=buyerProfile||{};if(!p.phone)return;
   try{
-    const r=await fetch('/api/orders?phone='+p.phone);const j=await r.json();
-    const orders=Array.isArray(j)?j:[];window._orders=orders;
+    const r=await fetch('/api/orders?phone='+p.phone);const j=await r.json();const body=j.data||j;
+    const orders=Array.isArray(body)?body:(Array.isArray(body.items)?body.items:[]);window._orders=orders;
     const box=document.getElementById('ind_orders');if(!box)return;
     if(!orders.length){box.innerHTML=`<div class="text-[13px] text-gray-400 text-center py-8 rounded-2xl border border-dashed">No orders yet. Your first farm-fresh box is a tap away 🌾</div>`;return;}
     box.innerHTML=orders.slice(0,6).map(o=>{
@@ -1507,7 +1551,7 @@ async function initCommunity(){
 async function loadPools(){
   const box=document.getElementById('com_pools');
   box.innerHTML=`<div class="py-16 text-center"><div class="inline-block w-8 h-8 border-4 border-gray-200 border-t-orange-500 rounded-full animate-spin"></div><div class="mt-3 text-[13px] text-gray-500">Loading active pools...</div></div>`;
-  try{const r=await fetch('/api/pools');const j=await r.json();POOLS=Array.isArray(j)?j:[];}catch(e){POOLS=[];}
+  try{const r=await fetch('/api/pools');const j=await r.json();const body=j.data||j;POOLS=Array.isArray(body)?body:(Array.isArray(body.items)?body.items:[]);}catch(e){POOLS=[];}
   renderPools();
   document.getElementById('com_s1').textContent=POOLS.length;
   document.getElementById('com_s2').textContent=POOLS.reduce((s,p)=>s+p.current_kg,0)+' Kg';
@@ -1633,7 +1677,7 @@ async function confirmPoolJoin(id){
 }
 function addPoolToCart(id){
   const p=POOLS.find(x=>x.id===id);if(!p)return;
-  CART.push({listing_id:p.listing_id,crop_name:p.crop_name,price:p.price_now,qty:25,photo:p.photo,grade:p.grade,max:99999,farmer_name:p.farmer_name});
+  CART.push({listing_id:p.listing_id,pool_id:p.id,crop_name:p.crop_name,price:p.price_now,qty:25,photo:p.photo,grade:p.grade,max:99999,farmer_name:p.farmer_name});
   saveCart();toast(`✅ 25 Kg ${p.crop_name} added at pool price`);openCart();
 }
 
@@ -1719,8 +1763,8 @@ async function createSub(){
         listing_id:parseInt(opt.value),qty_kg:qty,price_per_kg:parseFloat(document.getElementById('hor_price').value||0),
         frequency:horFreq,weekdays:horDays,time_slot:document.getElementById('hor_slot').value,
         start_date:document.getElementById('hor_start').value,end_date:document.getElementById('hor_end').value})});
-    const d=await r.json();
-    if(!r.ok){toast('❌ '+(d.error||'Failed'));}
+    const d=await r.json();const body=d.data||d;
+    if(!r.ok){toast('❌ '+((d.error&&d.error.message)||body.error||'Failed'));}
     else{toast('✅ Subscription activated!');await loadSubs();
       document.querySelector('[data-htab="calendar"]').click();}
   }catch(e){toast('❌ Network error');}
@@ -1729,7 +1773,7 @@ async function createSub(){
 async function loadSubs(){
   const p=buyerProfile||{};if(!p.phone)return;
   try{
-    const r=await fetch('/api/subscriptions?phone='+p.phone);const j=await r.json();const subs=Array.isArray(j)?j:[];
+    const r=await fetch('/api/subscriptions?phone='+p.phone);const j=await r.json();const body=j.data||j;const subs=Array.isArray(body)?body:(Array.isArray(body.items)?body.items:[]);
     const box=document.getElementById('hor_subList');const empty=document.getElementById('hor_subEmpty');
     if(!subs.length){box.innerHTML='';empty.classList.remove('hidden');return;}
     empty.classList.add('hidden');
@@ -1768,7 +1812,7 @@ async function loadCalendar(){
   const p=buyerProfile||{};if(!p.phone)return;
   try{
     const r=await fetch('/api/subscriptions/calendar?days=90&phone='+p.phone);
-    const d=await r.json();CAL_DATA=d.schedule||{};
+    const d=await r.json();const body=d.data||d;CAL_DATA=body.schedule||{};
     renderCalendar();
   }catch(e){}
 }
@@ -1811,8 +1855,8 @@ function showDay(ds){
     <div class="mt-2 pt-2 border-t flex justify-between text-[13px] font-bold"><span>Day total</span><span class="text-green-800">${money(total)}</span></div>`;
 }
 
-/* ---------- buyer event bindings ---------- */
-function bindBuyerEvents(){
+/* ---------- consumer event bindings ---------- */
+function bindConsumerEvents(){
   bindOnboarding();bindHoReCa();
   ['ind_search','ind_grade','ind_sort'].forEach(id=>{
     const e=document.getElementById(id);
@@ -1822,7 +1866,7 @@ function bindBuyerEvents(){
     const b=document.getElementById('ind_refresh');b.textContent='⟳';b.classList.add('animate-spin');
     await loadMarket();b.classList.remove('animate-spin');b.textContent='↻';toast('✅ Live farm stock refreshed');
   });
-  // keep buyer market in sync with new farmer listings
+  // keep consumer market in sync with new farmer listings
   setInterval(()=>{
     if(!document.getElementById('individualPortal').classList.contains('hidden')){
       loadMarket();loadOrders();

@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root-change-me}
+      MYSQL_DATABASE: ${MYSQL_DB:-farmbridge}
+      MYSQL_USER: ${MYSQL_USER:-farmbridge}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-change-me}
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ENVIRONMENT: production
+      DB_ENGINE: mysql
+      SECRET_KEY: ${SECRET_KEY:-change-this-in-production}
+      MYSQL_HOST: db
+      MYSQL_PORT: "3306"
+      MYSQL_USER: ${MYSQL_USER:-farmbridge}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-change-me}
+      MYSQL_DB: ${MYSQL_DB:-farmbridge}
+      MYSQL_SSL_MODE: ${MYSQL_SSL_MODE:-preferred}
+      MYSQL_CREATE_DATABASE: "true"
+      STORAGE_PROVIDER: ${STORAGE_PROVIDER:-local}
+      UPLOAD_FOLDER: /app/uploads
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
+    volumes:
+      - uploads_data:/app/uploads
+    ports:
+      - "5000:5000"
+
+volumes:
+  mysql_data:
+  uploads_data:
