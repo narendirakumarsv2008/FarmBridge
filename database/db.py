@@ -20,6 +20,7 @@ import logging
 import os
 import re
 import sqlite3
+import time
 from datetime import datetime
 
 import config
@@ -247,6 +248,21 @@ def _try_mysql():
     except ImportError:
         log.warning("PyMySQL not installed — cannot use MySQL")
         return False
+
+    # 1) Connect straight to the configured database. This is the common case:
+    #    the database + user already exist (e.g. provisioned by the official
+    #    MySQL Docker image or a managed host), so we must NOT require CREATE
+    #    DATABASE privileges.
+    try:
+        conn = _mysql_conn(db=config.Config.MYSQL_DB)
+        conn.close()
+        return True
+    except Exception as exc:
+        log.info("MySQL direct connect failed (%s); attempting to create database",
+                 str(exc).splitlines()[0][:160])
+
+    # 2) Fallback: connect without a default database and create it if we can
+    #    (used for fresh self-managed servers where the app user may create it).
     try:
         conn = _mysql_conn(db="")
         cur = conn.cursor()
@@ -274,20 +290,34 @@ def init_db(engine=None, sqlite_path=None):
     requested = engine or config.Config.DB_ENGINE
 
     if requested == "mysql":
-        if _try_mysql():
-            ENGINE = "mysql"
-        elif config.Config.ALLOW_SQLITE_FALLBACK:
-            log.warning(
-                "Falling back to SQLite (ENVIRONMENT=%s allows this)",
-                config.Config.ENVIRONMENT,
-            )
-            ENGINE = "sqlite"
-        else:
-            raise RuntimeError(
-                "Production is configured to use MySQL but the server is "
-                "unreachable. Refusing to silently fall back to SQLite — "
-                "check MYSQL_HOST/MYSQL_USER/MYSQL_PASSWORD/MYSQL_DB."
-            )
+        # Retry for a little while: on shared platforms the database container
+        # (or managed instance) may still be initialising while this app boots.
+        # Without this, a slow MySQL startup would silently downgrade to SQLite.
+        retries = max(1, int(os.environ.get("MYSQL_CONNECT_RETRIES", "10")))
+        delay = float(os.environ.get("MYSQL_CONNECT_RETRY_DELAY", "3"))
+        connected = False
+        for attempt in range(1, retries + 1):
+            if _try_mysql():
+                ENGINE = "mysql"
+                connected = True
+                break
+            log.warning("MySQL not ready (attempt %d/%d) — retrying in %.0fs",
+                        attempt, retries, delay)
+            time.sleep(delay)
+
+        if not connected:
+            if config.Config.ALLOW_SQLITE_FALLBACK:
+                log.warning(
+                    "Falling back to SQLite (ENVIRONMENT=%s allows this)",
+                    config.Config.ENVIRONMENT,
+                )
+                ENGINE = "sqlite"
+            else:
+                raise RuntimeError(
+                    "Production is configured to use MySQL but the server is "
+                    "unreachable. Refusing to silently fall back to SQLite — "
+                    "check MYSQL_HOST/MYSQL_USER/MYSQL_PASSWORD/MYSQL_DB."
+                )
     else:
         ENGINE = "sqlite"
 

@@ -88,6 +88,8 @@ FarmBridge/
 ├── tests/                  # pytest suite (26 tests)
 ├── docs/                   # PROJECT_ANALYSIS, BACKEND_INTEGRATION_GUIDE, DEPLOYMENT_GUIDE, API_DOCUMENTATION
 ├── Dockerfile / docker-compose.yml
+├── render.yaml             # Render Blueprint (one-click IaC: Flask + MySQL)
+├── mysql/Dockerfile        # MySQL 8 image used by the Render private service
 ├── requirements.txt / .env.example / run.sh
 └── tools/mysql_test_server.py   # dev-only MySQL wire-protocol test server
 ```
@@ -147,7 +149,9 @@ Full details + curl examples: [`docs/API_DOCUMENTATION.md`](docs/API_DOCUMENTATI
 
 ## Deployment
 
-- **Demo/student:** Render/Railway/PythonAnywhere + managed MySQL.
+- **Render (one-click):** `render.yaml` Blueprint provisions the Flask web
+  service + MySQL together — New → Blueprint → connect repo → Apply.
+- **Demo/student:** Render/Railway/PythonAnywhere + an external MySQL host.
 - **Docker:** `docker compose up --build`.
 - **Production:** Nginx + Gunicorn + MySQL (HTTPS, backups, logging).
 

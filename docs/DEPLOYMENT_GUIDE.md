@@ -6,45 +6,89 @@ Farmer Portal and Consumer Portal see the same data from any device.
 
 ---
 
-## Option 1 — Simple Student/Demo Deployment (Render)
+## Option 1 — Render (Blueprint / one-click Infrastructure-as-Code)
 
-Best for demos and coursework. A managed platform gives you a public URL and a
-managed MySQL database with almost no ops.
+The repo ships a `render.yaml` **Blueprint**, so Render can provision the whole
+stack (Flask web service + MySQL private service) from the file — no manual
+click-through needed.
 
 Architecture:
 
 ```
-GitHub repo ──► Render (Flask + Gunicorn) ──► Render managed MySQL
+GitHub repo ──► Render Blueprint ──► farmbridge (web, Gunicorn)
+                                    farmbridge-mysql (private service + disk)
 ```
 
-### Step-by-step (Render)
+> ⚠️ One honest caveat: Render's *managed* databases are PostgreSQL-only, so the
+> Blueprint runs MySQL as a **private service** from the official MySQL 8 image
+> with a persistent disk. Persistent disks require a **paid** instance type, so
+> the MySQL service is set to `0.5c-512mb` (≈$7/month). The web service itself is
+> free. (A free, demo-only alternative is at the end of this section.)
 
-1. **Push to GitHub** (see the GitHub workflow section below). Make sure `.env`
-   is NOT committed.
-2. Create a new **Web Service** on Render, connect your GitHub repo.
-   - Runtime: **Python 3**
-   - Build command: `pip install -r requirements.txt`
-   - Start command: `gunicorn -w 4 -b 0.0.0.0:$PORT app:app`
-3. Create a **MySQL** database on Render (or any MySQL host). Note the host,
-   port, user, password, database name.
-4. Add environment variables to the web service:
-   - `ENVIRONMENT=production`
-   - `SECRET_KEY=<a long random string>`
-   - `DB_ENGINE=mysql`
-   - `MYSQL_HOST=<db host>` `MYSQL_PORT=<db port>`
-   - `MYSQL_USER=<db user>` `MYSQL_PASSWORD=<db password>` `MYSQL_DB=farmbridge`
-   - `UPLOAD_FOLDER=uploads`
-   - `SMS_PROVIDER=` (empty — or wire up an SMS provider for production OTP)
-5. Deploy. On first boot the app **creates the schema and runs migrations
-   automatically**.
-6. Open the public URL, log in (use `ENVIRONMENT=development` first if you want
-   the mock-OTP demo login; switch to `production` once SMS is wired up).
-7. Test multi-device sync: create a listing from one phone, open the URL from
-   another device, confirm the listing appears (within the 30s auto-refresh or
-   after tapping the refresh button).
+### Step-by-step
 
-> Railway and PythonAnywhere work the same way (Gunicorn start command +
-> environment variables + managed MySQL).
+1. **Push the repo to GitHub.** Make sure `render.yaml` is present at the repo
+   root and `.env` is NOT committed (it's git-ignored).
+2. In the Render dashboard, go to **New → Blueprint**, connect your GitHub repo,
+   and select the branch that contains `render.yaml` (e.g. `arena/01a06ac4-farmbridge`).
+3. Review the resources it detected (`farmbridge` web service and
+   `farmbridge-mysql` private service). Click **Apply**.
+4. Render provisions MySQL first, then builds the app (`pip install -r
+   requirements.txt`) and starts it with Gunicorn.
+5. Wait for the first deploy. On boot the app **creates the schema and runs
+   migrations automatically**, and it **retries the MySQL connection** while the
+   database initialises (see `MYSQL_CONNECT_RETRIES`).
+6. Open the service URL (e.g. `https://farmbridge.onrender.com`) and log in.
+   `ENVIRONMENT=development` is set, so the mock-OTP login works out of the box
+   (OTP shown on screen is `123456`).
+7. Test multi-device sync: list a crop on one phone, open the URL on another
+   device, confirm the listing appears (within the ~25s auto-refresh or after
+   tapping refresh) and that stock drops after a purchase.
+
+### How the services are wired (render.yaml)
+
+| Env var (web service) | Source |
+|---|---|
+| `MYSQL_HOST` / `MYSQL_PORT` | referenced from the `farmbridge-mysql` private service |
+| `MYSQL_PASSWORD` | referenced from the MySQL service's generated password |
+| `MYSQL_USER`, `MYSQL_DB` | `farmbridge` / `farmbridge` |
+| `SECRET_KEY` | auto-generated random value (`generateValue: true`) |
+| `ENVIRONMENT` | `development` (mock-OTP login works immediately) |
+
+Because `MYSQL_HOST`/`MYSQL_PORT`/`MYSQL_PASSWORD` are wired by reference, the
+web service always talks to the MySQL instance Render created — no copy-pasting
+credentials.
+
+### Going live for real (production)
+
+1. Switch `ENVIRONMENT` to `production` in the Render dashboard (or in
+   `render.yaml`).
+2. Wire up an SMS provider for OTP login — set `SMS_PROVIDER` to a
+   `"yourmodule:function"` hook (see `utils/security.py`). Until then,
+   production login returns `503 SMS provider not configured` by design.
+3. Add a custom domain (Render Dashboard → Settings → Custom Domain) to get
+   HTTPS at `farmbridge.example.com`.
+
+### Known limits on Render
+
+- **Uploaded images** are written to the local `uploads/` folder, which is
+  **ephemeral** on Render's free tier — images can disappear on redeploy.
+  Listings/orders/inventory all live in MySQL (persistent). For permanent
+  images, point uploads at object storage (S3/Cloudinary) later.
+- **MySQL is self-managed** on Render; back it up with `mysqldump` (Render
+  snapshots the disk, but Render's own docs recommend `mysqldump` for restores).
+
+### 100% free demo alternative (no MySQL service)
+
+For a temporary demo at zero cost: delete the `farmbridge-mysql` service from
+`render.yaml` (or deploy only the web service manually) and either:
+
+- set `DB_ENGINE=sqlite` (data is lost on each redeploy — fine for a quick demo), or
+- point `MYSQL_*` at a free external MySQL host (e.g. Aiven, db4free, or a free
+  tier from a cloud provider) — this keeps the shared-DB behaviour across devices.
+
+> Railway works the same way (Gunicorn start command + environment variables);
+> PythonAnywhere is a good fit too if you only need the web service.
 
 ---
 

@@ -1,0 +1,87 @@
+# =====================================================================
+# Farm Bridge — Render Blueprint (Infrastructure as Code)
+#
+# How to deploy:
+#   In the Render dashboard → New → Blueprint, connect this GitHub repo
+#   and pick the branch that contains this file. Render reads render.yaml
+#   and provisions everything below automatically.
+#
+# What this creates:
+#   1. farmbridge-mysql — a private MySQL 8 service (only reachable from
+#      this workspace) with a persistent disk at /var/lib/mysql.
+#      NOTE: persistent disks require a paid instance type, so this service
+#      uses the paid `0.5c-512mb` plan.
+#   2. farmbridge — the Flask web service (free plan), served by Gunicorn,
+#      wired to MySQL through internal env-var references.
+#
+# For a 100% free (demo-only) alternative, see docs/DEPLOYMENT_GUIDE.md
+# (Option 1 — "External / no MySQL"): point MYSQL_* at a free MySQL host,
+# or set DB_ENGINE=sqlite (data is ephemeral on Render's free tier).
+# =====================================================================
+
+services:
+  # -------------------------------------------------------------------
+  # MySQL (private service)
+  # -------------------------------------------------------------------
+  - type: pserv
+    name: farmbridge-mysql
+    runtime: docker
+    dockerfilePath: mysql/Dockerfile
+    plan: 0.5c-512mb
+    envVars:
+      - key: MYSQL_DATABASE
+        value: farmbridge
+      - key: MYSQL_USER
+        value: farmbridge
+      - key: MYSQL_PASSWORD
+        generateValue: true
+      - key: MYSQL_ROOT_PASSWORD
+        generateValue: true
+    disk:
+      name: mysql-data
+      mountPath: /var/lib/mysql
+      sizeGB: 5
+
+  # -------------------------------------------------------------------
+  # Farm Bridge web service
+  # -------------------------------------------------------------------
+  - type: web
+    name: farmbridge
+    runtime: python
+    branch: arena/01a06ac4-farmbridge
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 2 -b 0.0.0.0:$PORT --timeout 120 app:app
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      # Development mode → mock-OTP login works out of the box (OTP: 123456).
+      # Switch to "production" once a real SMS provider is configured (then a
+      # missing MySQL is fatal instead of falling back to SQLite).
+      - key: ENVIRONMENT
+        value: development
+      - key: DB_ENGINE
+        value: mysql
+      - key: MYSQL_HOST
+        fromService:
+          name: farmbridge-mysql
+          type: pserv
+          property: host
+      - key: MYSQL_PORT
+        fromService:
+          name: farmbridge-mysql
+          type: pserv
+          property: port
+      - key: MYSQL_USER
+        value: farmbridge
+      - key: MYSQL_PASSWORD
+        fromService:
+          name: farmbridge-mysql
+          type: pserv
+          envVarKey: MYSQL_PASSWORD
+      - key: MYSQL_DB
+        value: farmbridge
+      - key: SECRET_KEY
+        generateValue: true
+      - key: UPLOAD_FOLDER
+        value: uploads
