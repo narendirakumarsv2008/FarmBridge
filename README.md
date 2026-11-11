@@ -2,14 +2,14 @@
 
 **Direct Farm to Market Platform** | *Smart India Hackathon Prototype*
 
-🔗 **Live Demo:** [[[Insert your Vercel Link Here](https://farmbridge-qzzn.onrender.com/)]]
+🔗 **Live Demo:** [[[Render Link](https://farmbridge-qzzn.onrender.com/)]]
 
 FarmBridge eliminates agricultural middlemen by connecting farmers directly with diverse consumer segments. It ensures 15-25% higher realization for farmers and wholesale rates for buyers.
 
 ## ✨ Key Features
 *   **Dual-Portal Architecture:** Dedicated, distinct interfaces for Farmers (Sellers) and Consumers (Buyers).
 *   **Smart Buyer Streams:** Shop as an Individual (quick-commerce), Community (pooled bulk buying), or HoReCa (automated recurring hotel/cafe procurement).
-*   **Krishi Sahayak (Voice Assistant):** AI voice-to-text allowing farmers to list crops simply by speaking (e.g., "500kg Tomato at 25/kg"), bypassing digital literacy barriers.
+*   **Voice Assistant:** AI voice-to-text allowing farmers to list crops simply by speaking (e.g., "500kg Tomato at 25/kg"), bypassing digital literacy barriers.
 *   **Live Mandi Benchmark:** Price comparison widget against local wholesale markets.
 *   **AI Grading Simulation:** Automated A/B/C grade assignment via crop photo uploads.
 
